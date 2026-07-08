@@ -16,9 +16,9 @@ This site has no accounts, no sign-up, and no forms that collect personal data. 
 
 **Server logs.** Our hosting provider records standard technical logs when you visit: IP address, browser type, pages requested, and timestamps. These logs exist for security and reliability, and they age out automatically.
 
-**Anonymous usage analytics.** We may use privacy-respecting, aggregate analytics to understand which pages are read and which are ignored. This measurement does not build profiles of individual visitors and does not follow you across other websites.
-
 **Theme preference.** Your light or dark theme choice is stored locally in your browser so the site remembers it. It never leaves your device.
+
+The site currently runs no analytics scripts of any kind. If that ever changes, the measurement will be aggregate only, will not profile individual visitors or follow you across other websites, and this policy will be updated first.
 
 ## What we do not collect
 

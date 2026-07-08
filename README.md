@@ -1,5 +1,7 @@
 # agentling docs
 
+[![CI](https://github.com/folathecoder/agentling-docs/actions/workflows/ci.yml/badge.svg)](https://github.com/folathecoder/agentling-docs/actions/workflows/ci.yml)
+
 The documentation website for [agentling](https://github.com/folathecoder/agentling), a tiny async framework for reliable, observable, tool-using agents in Python.
 
 The site includes an animated homepage, full documentation with sidebar navigation, search, and a table of contents, a blog for releases and technical writing, a changelog, contributing instructions, and legal pages. Light and dark themes are supported, with dark as the default.
@@ -57,14 +59,29 @@ Frontmatter fields by content type:
 | Changelog entry | `version`, `releaseDate` | `title`, `tags` |
 | Site page | `title`, `slug` | `description` |
 
-The body of every file is standard GitHub-flavored markdown. Code fences are syntax highlighted, and h2/h3 headings automatically appear in the on-page table of contents.
+The body of every file is standard GitHub-flavored markdown. Code fences are syntax highlighted, h2/h3 headings automatically appear in the on-page table of contents and get hover anchor links, and GitHub alert syntax renders as styled callouts:
+
+```markdown
+> [!NOTE]
+> Renders as a callout. Also supported: [!TIP], [!IMPORTANT], [!WARNING], [!CAUTION].
+```
+
+## Machine-readable surfaces
+
+- `/feed.xml` and `/changelog.xml`: RSS feeds for the blog and releases.
+- `/llms.txt` and `/llms-full.txt`: an LLM-friendly site index and the full documentation corpus as plain markdown ([llmstxt.org](https://llmstxt.org)).
+- `/search-index.json`: the full-content index behind the site search.
+- Every doc page has a "Copy as Markdown" button for pasting into an LLM.
 
 ## Checks
 
+All of these run in CI on every pull request:
+
 ```bash
-npm run lint    # eslint
-npx tsc --noEmit
-npm run build   # production build
+npm run validate  # content: frontmatter, slugs, internal links, no em dashes
+npm run lint      # eslint
+npx tsc --noEmit  # types
+npm run build     # production build
 ```
 
 ## Contributing

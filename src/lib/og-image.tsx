@@ -1,7 +1,44 @@
+import fs from "node:fs";
+import path from "node:path";
 import { ImageResponse } from "next/og";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_CONTENT_TYPE = "image/png";
+
+const FONTS_DIR = path.join(process.cwd(), "src/assets/fonts");
+
+type OgFont = NonNullable<
+  NonNullable<ConstructorParameters<typeof ImageResponse>[1]>["fonts"]
+>[number];
+
+let fonts: OgFont[] | null = null;
+
+/** Brand fonts for the card, loaded once per process. */
+function loadFonts(): OgFont[] {
+  fonts ??= [
+    {
+      name: "IBM Plex Sans",
+      data: fs.readFileSync(path.join(FONTS_DIR, "IBMPlexSans-Regular.ttf")),
+      weight: 400,
+      style: "normal",
+    },
+    {
+      name: "IBM Plex Sans",
+      data: fs.readFileSync(path.join(FONTS_DIR, "IBMPlexSans-SemiBold.ttf")),
+      weight: 600,
+      style: "normal",
+    },
+    {
+      name: "JetBrains Mono",
+      data: fs.readFileSync(
+        path.join(FONTS_DIR, "JetBrainsMono-SemiBold.ttf"),
+      ),
+      weight: 600,
+      style: "normal",
+    },
+  ];
+  return fonts;
+}
 
 function truncate(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
@@ -34,6 +71,7 @@ export function renderOgImage({
           backgroundImage:
             "radial-gradient(circle at 12% -10%, rgba(52, 211, 153, 0.22), transparent 55%), radial-gradient(circle at 100% 110%, rgba(52, 211, 153, 0.10), transparent 45%)",
           color: "#e8ecf4",
+          fontFamily: "IBM Plex Sans",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
@@ -49,12 +87,20 @@ export function renderOgImage({
               border: "2px solid #2b3345",
               color: "#34d399",
               fontSize: 28,
-              fontWeight: 700,
+              fontWeight: 600,
+              fontFamily: "JetBrains Mono",
             }}
           >
             {">_"}
           </div>
-          <div style={{ display: "flex", fontSize: 36, fontWeight: 700 }}>
+          <div
+            style={{
+              display: "flex",
+              fontSize: 36,
+              fontWeight: 600,
+              fontFamily: "JetBrains Mono",
+            }}
+          >
             <span>agent</span>
             <span style={{ color: "#34d399" }}>ling</span>
           </div>
@@ -64,8 +110,9 @@ export function renderOgImage({
           <div
             style={{
               display: "flex",
-              fontSize: 26,
-              fontWeight: 700,
+              fontSize: 24,
+              fontWeight: 600,
+              fontFamily: "JetBrains Mono",
               letterSpacing: 4,
               textTransform: "uppercase",
               color: "#34d399",
@@ -77,7 +124,7 @@ export function renderOgImage({
             style={{
               display: "flex",
               fontSize: 74,
-              fontWeight: 700,
+              fontWeight: 600,
               lineHeight: 1.08,
               letterSpacing: -2,
               maxWidth: 1000,
@@ -114,6 +161,6 @@ export function renderOgImage({
         </div>
       </div>
     ),
-    OG_SIZE,
+    { ...OG_SIZE, fonts: loadFonts() },
   );
 }

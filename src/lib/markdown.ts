@@ -1,3 +1,4 @@
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
@@ -6,11 +7,22 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 
+import { rehypeCallouts } from "./rehype-callouts";
+
 const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
   .use(remarkRehype)
+  .use(rehypeCallouts)
   .use(rehypeSlug)
+  .use(rehypeAutolinkHeadings, {
+    behavior: "append",
+    properties: {
+      className: ["heading-anchor"],
+      ariaLabel: "Link to this section",
+    },
+    content: { type: "text", value: "#" },
+  })
   .use(rehypePrettyCode, {
     themes: { light: "github-light", dark: "github-dark-dimmed" },
     keepBackground: false,

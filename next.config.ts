@@ -6,11 +6,11 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
-  // The bundled seed content in /content is read from the filesystem at
-  // runtime as the zero-credential fallback, so it must be traced into
-  // serverless output on deploy.
+  // The markdown in /content and the Open Graph fonts are read from the
+  // filesystem at render time, so both must be traced into serverless
+  // output on deploy.
   outputFileTracingIncludes: {
-    "/**": ["./content/**/*"],
+    "/**": ["./content/**/*", "./src/assets/fonts/**"],
   },
 };
 

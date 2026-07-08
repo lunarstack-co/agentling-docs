@@ -73,4 +73,7 @@ You can pass skills as folder paths, strings or `Path` objects, or as pre-built 
 
 ## Security
 
-A skill's `tools:` entry point is imported with `importlib`, which runs that module's top-level code. Load skills only from sources you trust, exactly as you would a Python import. The [Tools](/docs/core-concepts/tools) page covers what registered tools can do, and the project's SECURITY.md documents the full trust model.
+> [!CAUTION]
+> A skill's `tools:` entry point is imported with `importlib`, which runs that module's top-level code. Load skills only from sources you trust, exactly as you would a Python import.
+
+The [Tools](/docs/core-concepts/tools) page covers what registered tools can do, and the project's SECURITY.md documents the full trust model.

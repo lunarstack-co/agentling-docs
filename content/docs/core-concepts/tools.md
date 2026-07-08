@@ -40,7 +40,8 @@ Every agent has a built-in `final_answer` tool. The model can call it to end the
 
 Tools carry their own execution metadata: a per-call `timeout`, a `parallel_safe` flag, and `max_output_chars` to bound how much of the result reaches the model.
 
-One caveat on timeouts: a timeout stops the agent from waiting on a tool and turns it into an observation, but a synchronous tool already running in a thread cannot be forcibly cancelled and will finish in the background. Prefer async tools, or make blocking tools cooperative, when timeouts matter.
+> [!WARNING]
+> A timeout stops the agent from waiting on a tool and turns it into an observation, but a synchronous tool already running in a thread cannot be forcibly cancelled and will finish in the background. Prefer async tools, or make blocking tools cooperative, when timeouts matter.
 
 ## Stateful tools
 

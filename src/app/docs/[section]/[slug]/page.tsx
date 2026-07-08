@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { CopyMarkdownButton } from "@/components/copy-markdown-button";
 import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { ShareLinks } from "@/components/share-links";
@@ -118,15 +119,20 @@ export default async function DocPage({ params }: DocPageParams) {
         </div>
 
         <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
-          <a
-            href={`${GITHUB_DOCS_URL}/blob/main/content/docs/${page.sectionSlug}/${page.slug}.md`}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground"
-          >
-            <PencilLine className="size-3.5" aria-hidden />
-            Edit this page on GitHub
-          </a>
+          <div className="flex flex-wrap items-center gap-5">
+            <a
+              href={`${GITHUB_DOCS_URL}/blob/main/content/docs/${page.sectionSlug}/${page.slug}.md`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground"
+            >
+              <PencilLine className="size-3.5" aria-hidden />
+              Edit this page on GitHub
+            </a>
+            <CopyMarkdownButton
+              markdown={`# ${page.title}\n\n> ${page.description}\n\n${page.body}\n`}
+            />
+          </div>
           <ShareLinks url={pageUrl} title={`${page.title} · agentling docs`} />
         </div>
 

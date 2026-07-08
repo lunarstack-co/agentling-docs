@@ -42,7 +42,8 @@ export default async function ChangelogPage() {
         {entries.map((entry) => (
           <section
             key={entry.version}
-            className="relative grid gap-4 border-l border-border pb-14 pl-8 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-8"
+            id={`v${entry.version}`}
+            className="relative grid scroll-mt-24 gap-4 border-l border-border pb-14 pl-8 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-8"
           >
             <span
               aria-hidden

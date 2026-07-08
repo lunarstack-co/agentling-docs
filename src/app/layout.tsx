@@ -57,6 +57,14 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+  alternates: {
+    types: {
+      "application/rss+xml": [
+        { url: "/feed.xml", title: "agentling blog" },
+        { url: "/changelog.xml", title: "agentling changelog" },
+      ],
+    },
+  },
   openGraph: {
     siteName: SITE_NAME,
     type: "website",

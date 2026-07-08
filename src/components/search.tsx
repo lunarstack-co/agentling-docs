@@ -1,6 +1,7 @@
 "use client";
 
 import { FileText, Newspaper, Search as SearchIcon, Tag } from "lucide-react";
+import MiniSearch from "minisearch";
 import { useRouter } from "next/navigation";
 import {
   useCallback,
@@ -21,6 +22,36 @@ export interface SearchItem {
 
 interface ScoredItem extends SearchItem {
   score: number;
+}
+
+/**
+ * Full-content engine over /search-index.json (titles, headings, and body
+ * text). Fetched once, lazily, the first time the dialog opens; until it
+ * arrives the dialog falls back to metadata-only matching.
+ */
+let enginePromise: Promise<MiniSearch<SearchItem>> | null = null;
+
+function loadEngine(): Promise<MiniSearch<SearchItem>> {
+  enginePromise ??= fetch("/search-index.json")
+    .then((response) => response.json())
+    .then((documents: (SearchItem & { id: string })[]) => {
+      const engine = new MiniSearch<SearchItem>({
+        fields: ["title", "headings", "description", "body"],
+        storeFields: ["title", "description", "href", "group"],
+        searchOptions: {
+          boost: { title: 5, headings: 3, description: 2 },
+          prefix: true,
+          fuzzy: 0.15,
+        },
+      });
+      engine.addAll(documents);
+      return engine;
+    })
+    .catch((error) => {
+      enginePromise = null;
+      throw error;
+    });
+  return enginePromise;
 }
 
 function scoreItem(item: SearchItem, query: string): number {
@@ -47,19 +78,45 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+  const [engine, setEngine] = useState<MiniSearch<SearchItem> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (!open || engine) return;
+    let cancelled = false;
+    loadEngine()
+      .then((loaded) => {
+        if (!cancelled) setEngine(loaded);
+      })
+      .catch(() => {
+        // Index unavailable; metadata matching keeps working.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, engine]);
+
   const results = useMemo<ScoredItem[]>(() => {
-    if (!query.trim()) {
+    const trimmed = query.trim();
+    if (!trimmed) {
       return items.slice(0, 8).map((item) => ({ ...item, score: 0 }));
     }
+    if (engine) {
+      return engine.search(trimmed).slice(0, 10).map((result) => ({
+        title: result.title as string,
+        description: result.description as string,
+        href: result.href as string,
+        group: result.group as string,
+        score: result.score,
+      }));
+    }
     return items
-      .map((item) => ({ ...item, score: scoreItem(item, query.trim()) }))
+      .map((item) => ({ ...item, score: scoreItem(item, trimmed) }))
       .filter((item) => item.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, 10);
-  }, [items, query]);
+  }, [items, query, engine]);
 
   const close = useCallback(() => {
     setOpen(false);

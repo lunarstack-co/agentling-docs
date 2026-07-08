@@ -54,7 +54,8 @@ It is deliberately small, so some things are out of scope: there is no built-in 
 
 ## Status
 
-agentling is in alpha (0.x). The API may still change before 1.0. Follow the [changelog](/changelog) for release notes.
+> [!NOTE]
+> agentling is in alpha (0.x). The API may still change before 1.0. Follow the [changelog](/changelog) for release notes.
 
 ## Next steps
 

@@ -36,6 +36,7 @@ const COLUMNS: {
         href: `${GITHUB_URL}/blob/main/SECURITY.md`,
         external: true,
       },
+      { label: "RSS feed", href: "/feed.xml", external: true },
     ],
   },
   {

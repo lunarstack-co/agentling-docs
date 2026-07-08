@@ -88,7 +88,8 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Blocking and streaming share the same loop, so there is no behavioral difference between the two modes beyond how you consume the output.
+> [!TIP]
+> Blocking and streaming share the same loop, so there is no behavioral difference between the two modes beyond how you consume the output. Prototype with blocking `run()` and switch to streaming later without changing agent behavior.
 
 ## Where to go next
 

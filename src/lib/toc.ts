@@ -25,10 +25,13 @@ export function extractToc(markdown: string): TocEntry[] {
     const match = line.match(/^(#{2,3})\s+(.+?)\s*$/);
     if (!match) continue;
 
+    // Strip code spans, links, and asterisk emphasis, but keep underscores:
+    // they are part of identifiers like final_answer, and rehype-slug keeps
+    // them when generating heading ids.
     const text = match[2]
       .replace(/`([^`]+)`/g, "$1")
       .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-      .replace(/[*_]/g, "");
+      .replace(/\*/g, "");
 
     entries.push({
       id: slugger.slug(text),
