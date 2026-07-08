@@ -5,8 +5,6 @@ import { Markdown } from "@/components/markdown";
 import { getSitePage, getSitePageSlugs } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
-export const revalidate = 300;
-
 interface SitePageParams {
   params: Promise<{ slug: string }>;
 }

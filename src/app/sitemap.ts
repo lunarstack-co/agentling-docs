@@ -7,8 +7,6 @@ import {
 } from "@/lib/content";
 import { SITE_URL } from "@/lib/site";
 
-export const revalidate = 3600;
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [sections, posts, sitePageSlugs] = await Promise.all([
     getDocSections(),

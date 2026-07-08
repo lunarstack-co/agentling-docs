@@ -5,8 +5,6 @@ import Link from "next/link";
 import { getDocSections } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
-export const revalidate = 300;
-
 export const metadata: Metadata = pageMetadata({
   title: "Documentation",
   description:

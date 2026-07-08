@@ -3,8 +3,6 @@ import type { ReactNode } from "react";
 import { DocsSidebar } from "@/components/docs/sidebar";
 import { getDocSections } from "@/lib/content";
 
-export const revalidate = 300;
-
 export default async function DocsLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {

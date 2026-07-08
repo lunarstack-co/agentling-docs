@@ -11,8 +11,6 @@ import { absoluteUrl, pageMetadata } from "@/lib/seo";
 import { GITHUB_DOCS_URL } from "@/lib/site";
 import { extractToc } from "@/lib/toc";
 
-export const revalidate = 300;
-
 interface DocPageParams {
   params: Promise<{ section: string; slug: string }>;
 }

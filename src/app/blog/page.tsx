@@ -7,8 +7,6 @@ import { getBlogPosts } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 
-export const revalidate = 300;
-
 export const metadata: Metadata = pageMetadata({
   title: "Blog",
   description:

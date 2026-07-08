@@ -53,7 +53,7 @@ Please report suspected vulnerabilities privately by emailing me@folarin.dev. Do
 
 ## Contributing to these docs
 
-This documentation site is open source too. Content lives in a headless CMS with a markdown fallback in the repository, so fixing a typo is a pull request against [agentling-docs](https://github.com/folathecoder/agentling-docs).
+This documentation site is open source too. Every page, blog post, and changelog entry is a markdown file in the repository, so fixing a typo or improving an explanation is a pull request against [agentling-docs](https://github.com/folathecoder/agentling-docs). Merged changes go live on the next deploy.
 
 ## License
 

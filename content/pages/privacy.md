@@ -28,7 +28,7 @@ This site has no accounts, no sign-up, and no forms that collect personal data. 
 
 ## Third parties
 
-The site is served by a hosting provider and its content is delivered from a headless content platform. Both process the technical data necessary to serve pages, under their own privacy terms. Links to external services such as GitHub or PyPI take you to sites governed by their own policies.
+The site is served by a hosting provider, which processes the technical data necessary to serve pages under its own privacy terms. Links to external services such as GitHub or PyPI take you to sites governed by their own policies.
 
 ## The agentling package
 

@@ -19,8 +19,6 @@ import { Reveal } from "@/components/reveal";
 import { pageMetadata } from "@/lib/seo";
 import { GITHUB_URL, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 
-export const revalidate = 300;
-
 export const metadata = {
   ...pageMetadata({
     title: `${SITE_NAME} · The agent framework you can read in one sitting`,
@@ -116,29 +114,31 @@ const EVENTS = [
   { name: "FinalEvent", meaning: "the run is done" },
 ];
 
-const BLOCKING_SNIPPET = `\`\`\`python
-import asyncio
-
-from agentling import Agent, OpenAIModel, tool
-
-
-@tool
-def get_weather(city: str) -> str:
-    """Get the current weather for a city.
-
-    Args:
-        city: The city to look up.
-    """
-    return f"It is 22C and sunny in {city}."
-
-
-async def main() -> None:
-    agent = Agent(model=OpenAIModel("gpt-4o-mini"), tools=[get_weather])
-    print(await agent.run("What's the weather in Paris?"))
-
-
-asyncio.run(main())
-\`\`\``;
+const BLOCKING_SNIPPET = [
+  "```python",
+  "import asyncio",
+  "",
+  "from agentling import Agent, OpenAIModel, tool",
+  "",
+  "",
+  "@tool",
+  "def get_weather(city: str) -> str:",
+  '    """Get the current weather for a city.',
+  "",
+  "    Args:",
+  "        city: The city to look up.",
+  '    """',
+  '    return f"It is 22C and sunny in {city}."',
+  "",
+  "",
+  "async def main() -> None:",
+  '    agent = Agent(model=OpenAIModel("gpt-4o-mini"), tools=[get_weather])',
+  "    print(await agent.run(\"What's the weather in Paris?\"))",
+  "",
+  "",
+  "asyncio.run(main())",
+  "```",
+].join("\n");
 
 const STREAMING_SNIPPET = `\`\`\`python
 from agentling import FinalEvent, TextDelta, ToolCallEvent

@@ -9,8 +9,6 @@ import { getBlogPost, getBlogPosts } from "@/lib/content";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 
-export const revalidate = 300;
-
 interface BlogPostParams {
   params: Promise<{ slug: string }>;
 }

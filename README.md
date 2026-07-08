@@ -8,30 +8,29 @@ The site includes an animated homepage, full documentation with sidebar navigati
 
 - [Next.js 16](https://nextjs.org/) (App Router, TypeScript, Turbopack)
 - [Tailwind CSS v4](https://tailwindcss.com/) with semantic design tokens
-- [Hygraph](https://hygraph.com/) as the headless CMS
 - [Motion](https://motion.dev/) for animation, [shiki](https://shiki.style/) via rehype-pretty-code for syntax highlighting
+- Content as markdown in the repository, no CMS and no external services
 
-## Architecture
+## How content works
 
-The interesting part of this repository is the content layer:
+Everything the site renders lives in `/content` as markdown with frontmatter:
 
 ```
-content/            markdown seed content (docs, blog, changelog, pages)
-src/lib/content/    the data layer
-  hygraph.ts        minimal Content API client, credentials read lazily
-  seed.ts           filesystem loader for /content
-  index.ts          getters that ask Hygraph first, then fall back to seed
-scripts/
-  hygraph-seed.mjs  idempotent upsert of /content into Hygraph
+content/
+  docs/<section>/_section.md   section title, icon, and sidebar order
+  docs/<section>/<page>.md     one documentation page
+  blog/<slug>.md               one blog post
+  changelog/<version>.md       one release
+  pages/<slug>.md              contributing, privacy, terms
 ```
 
-Every page asks Hygraph for content and transparently falls back to the bundled markdown in `/content` when the CMS is not configured, unreachable, or empty. That means:
+`src/lib/content/index.ts` reads these files at build time and every page is statically generated. Publishing a doc page, blog post, or changelog entry is:
 
-- The site builds and runs with zero environment variables.
-- `/content` is the single source of truth for seeding the CMS, and the safety net at runtime.
-- Fixing a typo in the docs can be a pull request against this repository.
+1. Add or edit a markdown file in `/content`.
+2. Commit and push (or open a pull request).
+3. The next deploy ships it.
 
-Pages are statically generated and revalidate every five minutes (ISR), so published changes in Hygraph appear without a redeploy.
+There are no environment variables, tokens, or external services required, which also means contributions to the docs are ordinary pull requests.
 
 ## Getting started
 
@@ -44,21 +43,21 @@ npm install
 npm run dev
 ```
 
-The site runs at `http://localhost:3000` using the bundled seed content. No credentials needed.
+The site runs at `http://localhost:3000`.
 
-## Connecting Hygraph
+## Writing content
 
-1. Create a Hygraph project and add the models described in [`hygraph/SCHEMA.md`](hygraph/SCHEMA.md).
-2. Copy `.env.example` to `.env.local` and fill in `HYGRAPH_CONTENT_API` and `HYGRAPH_TOKEN`.
-3. Push the seed content into your project:
+Frontmatter fields by content type:
 
-```bash
-npm run seed
-```
+| Type | Required | Optional |
+| --- | --- | --- |
+| Doc section (`_section.md`) | `title`, `slug`, `order` | `description`, `icon` (lucide name) |
+| Doc page | `title`, `slug`, `order` | `description` |
+| Blog post | `title`, `slug`, `publishDate` | `excerpt`, `authorName`, `tags`, `featured`, `readingMinutes` |
+| Changelog entry | `version`, `releaseDate` | `title`, `tags` |
+| Site page | `title`, `slug` | `description` |
 
-The seed script is idempotent: it upserts by slug (or version) and publishes, so running it again is always safe.
-
-For a deployed site, prefer a token that can only read published content. The seed script is the only thing that needs write permissions, and it runs from your machine.
+The body of every file is standard GitHub-flavored markdown. Code fences are syntax highlighted, and h2/h3 headings automatically appear in the on-page table of contents.
 
 ## Checks
 
