@@ -13,11 +13,46 @@ import { GithubIcon } from "@/components/icons/github";
 
 import { CodeTabs } from "@/components/home/code-tabs";
 import { Hero } from "@/components/home/hero";
+import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { Reveal } from "@/components/reveal";
-import { GITHUB_URL } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
+import { GITHUB_URL, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 
 export const revalidate = 300;
+
+export const metadata = {
+  ...pageMetadata({
+    title: `${SITE_NAME} · The agent framework you can read in one sitting`,
+    description: SITE_TAGLINE,
+    path: "/",
+  }),
+  // Opt out of the layout's "%s · agentling" template on the homepage.
+  title: { absolute: `${SITE_NAME} · The agent framework you can read in one sitting` },
+};
+
+const HOME_JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: SITE_NAME,
+      url: SITE_URL,
+      description: SITE_TAGLINE,
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      name: SITE_NAME,
+      description: SITE_TAGLINE,
+      url: SITE_URL,
+      codeRepository: GITHUB_URL,
+      programmingLanguage: "Python",
+      runtimePlatform: "Python 3.11+",
+      license: "https://opensource.org/license/mit",
+      author: { "@type": "Person", name: "Folarin Akinloye" },
+    },
+  ],
+};
 
 const STATS = [
   { value: "~800", label: "lines of source" },
@@ -144,6 +179,7 @@ await restored.run("A follow-up", reset=False)
 export default function HomePage() {
   return (
     <>
+      <JsonLd data={HOME_JSON_LD} />
       <Hero />
 
       {/* Stats strip */}

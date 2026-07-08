@@ -4,15 +4,17 @@ import Link from "next/link";
 
 import { PostCover } from "@/components/blog/post-cover";
 import { getBlogPosts } from "@/lib/content";
+import { pageMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Blog",
   description:
     "Release announcements and technical deep dives from the agentling project.",
-};
+  path: "/blog",
+});
 
 export default async function BlogIndexPage() {
   const posts = await getBlogPosts();

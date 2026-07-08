@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { Markdown } from "@/components/markdown";
 import { getSitePage, getSitePageSlugs } from "@/lib/content";
+import { pageMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -21,7 +22,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const page = await getSitePage(slug);
   if (!page) return {};
-  return { title: page.title, description: page.description };
+  return pageMetadata({
+    title: page.title,
+    description: page.description,
+    path: `/${page.slug}`,
+  });
 }
 
 export default async function StandaloneSitePage({ params }: SitePageParams) {

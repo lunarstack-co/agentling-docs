@@ -2,16 +2,18 @@ import type { Metadata } from "next";
 
 import { Markdown } from "@/components/markdown";
 import { getChangelog } from "@/lib/content";
+import { pageMetadata } from "@/lib/seo";
 import { GITHUB_URL } from "@/lib/site";
 import { formatDate } from "@/lib/utils";
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Changelog",
   description:
     "Every agentling release, documented. The format follows Keep a Changelog and the project aims to follow semantic versioning.",
-};
+  path: "/changelog",
+});
 
 export default async function ChangelogPage() {
   const entries = await getChangelog();

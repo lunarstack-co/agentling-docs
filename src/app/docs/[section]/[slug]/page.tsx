@@ -3,9 +3,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { Toc } from "@/components/docs/toc";
 import { getDocPage, getDocSections } from "@/lib/content";
+import { absoluteUrl, pageMetadata } from "@/lib/seo";
 import { GITHUB_DOCS_URL } from "@/lib/site";
 import { extractToc } from "@/lib/toc";
 
@@ -28,7 +30,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const page = await getDocPage(slug);
   if (!page) return {};
-  return { title: page.title, description: page.description };
+  return pageMetadata({
+    title: page.title,
+    description: page.description,
+    path: `/docs/${page.sectionSlug}/${page.slug}`,
+    ogType: "article",
+  });
 }
 
 export default async function DocPage({ params }: DocPageParams) {
@@ -53,8 +60,37 @@ export default async function DocPage({ params }: DocPageParams) {
 
   const toc = extractToc(page.body);
 
+  const pageUrl = absoluteUrl(`/docs/${page.sectionSlug}/${page.slug}`);
+
   return (
     <div className="grid grid-cols-1 gap-10 py-10 lg:py-14 lg:pl-12 xl:grid-cols-[minmax(0,1fr)_13rem]">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "TechArticle",
+              headline: page.title,
+              description: page.description,
+              url: pageUrl,
+              author: { "@type": "Person", name: "Folarin Akinloye" },
+              isPartOf: {
+                "@type": "WebSite",
+                name: "agentling documentation",
+                url: absoluteUrl("/docs"),
+              },
+            },
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Docs", item: absoluteUrl("/docs") },
+                { "@type": "ListItem", position: 2, name: page.sectionTitle },
+                { "@type": "ListItem", position: 3, name: page.title, item: pageUrl },
+              ],
+            },
+          ],
+        }}
+      />
       <article className="min-w-0 max-w-3xl">
         <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm">
           <Link

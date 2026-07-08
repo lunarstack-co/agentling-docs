@@ -3,14 +3,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { getDocSections } from "@/lib/content";
+import { pageMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Documentation",
   description:
     "Learn agentling: installation, the agent loop, tools, memory, streaming events, skills, and the full API reference.",
-};
+  path: "/docs",
+});
 
 export default async function DocsIndexPage() {
   const sections = await getDocSections();

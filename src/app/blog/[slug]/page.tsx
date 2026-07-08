@@ -3,8 +3,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { getBlogPost, getBlogPosts } from "@/lib/content";
+import { absoluteUrl, pageMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 
 export const revalidate = 300;
@@ -24,17 +26,17 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = await getBlogPost(slug);
   if (!post) return {};
-  return {
+  return pageMetadata({
     title: post.title,
     description: post.excerpt,
-    openGraph: {
-      type: "article",
-      title: post.title,
-      description: post.excerpt,
+    path: `/blog/${post.slug}`,
+    ogType: "article",
+    article: {
       publishedTime: post.publishDate,
       authors: [post.authorName],
+      tags: post.tags,
     },
-  };
+  });
 }
 
 export default async function BlogPostPage({ params }: BlogPostParams) {
@@ -44,6 +46,20 @@ export default async function BlogPostPage({ params }: BlogPostParams) {
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.excerpt,
+          url: absoluteUrl(`/blog/${post.slug}`),
+          datePublished: post.publishDate,
+          author: { "@type": "Person", name: post.authorName },
+          keywords: post.tags.join(", "),
+          timeRequired: `PT${post.readingMinutes}M`,
+          isPartOf: { "@type": "Blog", name: "agentling blog", url: absoluteUrl("/blog") },
+        }}
+      />
       <Link
         href="/blog"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground"
