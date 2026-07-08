@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
+import { ShareLinks } from "@/components/share-links";
 import { getBlogPost, getBlogPosts } from "@/lib/content";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
@@ -101,6 +102,14 @@ export default async function BlogPostPage({ params }: BlogPostParams) {
       <div className="mt-10">
         <Markdown source={post.body} />
       </div>
+
+      <footer className="mt-12 border-t border-border pt-6">
+        <ShareLinks
+          url={absoluteUrl(`/blog/${post.slug}`)}
+          title={post.title}
+          label="Share this post"
+        />
+      </footer>
     </article>
   );
 }

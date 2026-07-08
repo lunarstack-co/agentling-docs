@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
+import { ShareLinks } from "@/components/share-links";
 import { Toc } from "@/components/docs/toc";
 import { getDocPage, getDocSections } from "@/lib/content";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
@@ -116,7 +117,7 @@ export default async function DocPage({ params }: DocPageParams) {
           <Markdown source={page.body} />
         </div>
 
-        <div className="mt-10 border-t border-border pt-5">
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
           <a
             href={`${GITHUB_DOCS_URL}/blob/main/content/docs/${page.sectionSlug}/${page.slug}.md`}
             target="_blank"
@@ -126,6 +127,7 @@ export default async function DocPage({ params }: DocPageParams) {
             <PencilLine className="size-3.5" aria-hidden />
             Edit this page on GitHub
           </a>
+          <ShareLinks url={pageUrl} title={`${page.title} · agentling docs`} />
         </div>
 
         <nav aria-label="Pagination" className="mt-6 grid gap-4 sm:grid-cols-2">
