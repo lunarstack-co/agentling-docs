@@ -148,6 +148,7 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
                 onKeyDown={onInputKeyDown}
                 placeholder="Search docs, blog, changelog..."
                 aria-label="Search query"
+                data-focus-ring="none"
                 className="h-13 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-faint"
               />
               <kbd className="shrink-0 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">

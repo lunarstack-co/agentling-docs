@@ -97,7 +97,11 @@ body {
   color: var(--accent-strong);
 }
 
-:focus-visible {
+/* Default keyboard focus ring. The bundler flattens @layer wrappers here,
+   so this stays un-layered and would beat the `outline-none` utility;
+   elements where the ring is wrong (e.g. the search input, whose dialog
+   provides the focus context) opt out with data-focus-ring="none". */
+:focus-visible:not([data-focus-ring="none"]) {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
   border-radius: 2px;
