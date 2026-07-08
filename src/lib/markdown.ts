@@ -14,7 +14,9 @@ const processor = unified()
   .use(rehypePrettyCode, {
     themes: { light: "github-light", dark: "github-dark-dimmed" },
     keepBackground: false,
-    defaultLang: "text",
+    // Block scope only: a bare string would also run every inline code
+    // span through shiki, breaking the prose inline-code styling.
+    defaultLang: { block: "text" },
   })
   .use(rehypeStringify);
 

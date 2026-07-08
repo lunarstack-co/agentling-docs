@@ -205,7 +205,7 @@ body {
   padding: 0;
 }
 
-[data-rehype-pretty-code-figure] code [data-line] {
+[data-rehype-pretty-code-figure] pre code [data-line] {
   padding: 0 1.25rem;
 }
 
