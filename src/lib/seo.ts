@@ -25,6 +25,18 @@ interface PageMetadataInput {
  * card, all derived from one title/description/path triple so they can
  * never drift apart. Relative URLs resolve against metadataBase.
  */
+/**
+ * Feed autodiscovery links. Repeated on every page because Next.js
+ * replaces (rather than deep-merges) the `alternates` object when a page
+ * sets its canonical URL.
+ */
+const FEED_TYPES = {
+  "application/rss+xml": [
+    { url: "/feed.xml", title: "agentling blog" },
+    { url: "/changelog.xml", title: "agentling changelog" },
+  ],
+};
+
 export function pageMetadata({
   title,
   description,
@@ -35,7 +47,7 @@ export function pageMetadata({
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: path, types: FEED_TYPES },
     openGraph: {
       title,
       description,
