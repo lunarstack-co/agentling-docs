@@ -2,7 +2,9 @@
 
 [![CI](https://github.com/folathecoder/agentling-docs/actions/workflows/ci.yml/badge.svg)](https://github.com/folathecoder/agentling-docs/actions/workflows/ci.yml)
 
-The documentation website for [agentling](https://github.com/folathecoder/agentling), a tiny async framework for reliable, observable, tool-using agents in Python.
+**Live at [agentling.dev](https://agentling.dev)**
+
+The documentation website for [agentling](https://github.com/folathecoder/agentling), a tiny async framework for reliable, observable, tool-using agents in Python. Deployed on Railway; every push to `main` deploys automatically.
 
 The site includes an animated homepage, full documentation with sidebar navigation, search, and a table of contents, a blog for releases and technical writing, a changelog, contributing instructions, and legal pages. Light and dark themes are supported, with dark as the default.
 
