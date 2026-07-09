@@ -11,7 +11,7 @@ featured: true
 readingMinutes: 4
 ---
 
-Today I am releasing agentling 0.1.0, a tiny async framework for building tool-using agents in Python. It gives you a clean ReAct loop, typed memory, streaming events, recoverable failures, and progressive-disclosure skills, in around 800 lines of source you can actually read.
+Today I am releasing agentling 0.1.0, a tiny async framework for building tool-using agents in Python. It gives you a clean ReAct loop, typed memory, streaming events, recoverable failures, and progressive-disclosure skills, in a codebase you can actually read, with more test code than source.
 
 ## Why another agent framework
 

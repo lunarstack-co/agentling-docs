@@ -97,10 +97,10 @@ export function Hero() {
 
           <Entrance delay={0.16}>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              agentling is a tiny async framework for reliable, observable,
-              tool-using agents: a clean ReAct loop, typed memory, streaming
-              events, recoverable failures, and progressive-disclosure skills,
-              in around 800 lines of Python.
+              A tiny async framework where nothing is hidden: one readable
+              loop, typed memory you can persist and replay, events that
+              narrate every step, and failures the model recovers from. Small
+              enough to audit before lunch.
             </p>
           </Entrance>
 

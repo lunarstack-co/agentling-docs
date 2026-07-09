@@ -25,8 +25,9 @@ export default async function DocsIndexPage() {
       </h1>
       <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
         Everything you need to build reliable, observable, tool-using agents:
-        from your first install to the full API surface. The framework is
-        around 800 lines of source, and these docs cover all of it.
+        from your first install to the full API surface. The framework is a
+        handful of focused modules you can read end to end, and these docs
+        cover all of them.
       </p>
 
       <div className="mt-10 grid gap-5 sm:grid-cols-2">

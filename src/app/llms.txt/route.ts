@@ -17,7 +17,7 @@ export async function GET() {
   const lines: string[] = [
     "# agentling",
     "",
-    `> ${SITE_TAGLINE} A clean ReAct loop, typed memory, streaming events, recoverable failures, and progressive-disclosure skills, in around 800 lines of Python.`,
+    `> ${SITE_TAGLINE} A clean ReAct loop, typed memory, streaming events, recoverable failures, and progressive-disclosure skills, in a Python codebase small enough to read in one sitting.`,
     "",
     "agentling is an open source (MIT) Python framework. This site hosts its documentation, blog, and changelog. The complete documentation text is available at " +
       `${SITE_URL}/llms-full.txt.`,

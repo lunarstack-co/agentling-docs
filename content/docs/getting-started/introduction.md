@@ -16,7 +16,7 @@ The framework is built around one idea: an agent is a loop that turns a model, s
 - **Typed memory.** A run is a list of typed steps, not a bag of raw messages. Steps know how to render themselves back into model messages and serialize to JSON for persistence and replay.
 - **Progressive-disclosure skills.** Drop a `SKILL.md` folder in and the model sees only its name and description until it decides to load it. Big skill libraries stay cheap.
 - **Self-healing.** A tool that raises becomes an observation the model can recover from, not a crash.
-- **Small and readable.** No metaclasses, no plugin registry, no DSL. Around 800 lines of source you can actually read.
+- **Small and readable.** No metaclasses, no plugin registry, no DSL. A handful of focused modules you can actually read, with more test code than source.
 
 ## A taste of the API
 
@@ -51,11 +51,6 @@ That is a complete, working agent. The `@tool` decorator turns a plain function 
 agentling is a good fit when you want to understand and control every part of your agent: a service that calls a handful of trusted tools, a CLI assistant, a background worker that needs resumable runs, or a research harness where you want full visibility into each step.
 
 It is deliberately small, so some things are out of scope: there is no built-in tracing backend, no sandboxing, and no automatic context summarization. The [Limitations](/docs/getting-started/installation#requirements) are documented honestly, and the hooks to build those layers yourself are part of the public API.
-
-## Status
-
-> [!NOTE]
-> agentling is in alpha (0.x). The API may still change before 1.0. Follow the [changelog](/changelog) for release notes.
 
 ## Next steps
 

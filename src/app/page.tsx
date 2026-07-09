@@ -1,6 +1,8 @@
 import {
   ArrowRight,
   BookOpenText,
+  CircleCheck,
+  CircleMinus,
   GitMerge,
   HeartPulse,
   Layers,
@@ -53,10 +55,10 @@ const HOME_JSON_LD = {
 };
 
 const STATS = [
-  { value: "~800", label: "lines of source" },
-  { value: "2", label: "runtime dependencies" },
-  { value: "100%", label: "typed, mypy checked" },
   { value: "1", label: "loop for everything" },
+  { value: "2", label: "runtime dependencies" },
+  { value: "More", label: "tests than source" },
+  { value: "0", label: "magic: no metaclasses, no registry, no DSL" },
 ];
 
 const FEATURES = [
@@ -112,6 +114,18 @@ const EVENTS = [
   { name: "ToolResultEvent", meaning: "a tool finished" },
   { name: "StepEvent", meaning: "a step hit memory" },
   { name: "FinalEvent", meaning: "the run is done" },
+];
+
+const GOOD_FIT = [
+  "You want to audit every decision an agent makes: a service calling trusted tools, a CLI assistant, a background worker.",
+  "You need runs you can persist, replay, resume, and test offline without an API key.",
+  "You want a framework your whole team can read end to end and reason about.",
+];
+
+const BAD_FIT = [
+  "You want orchestration graphs and a built-in tracing dashboard out of the box.",
+  "You need sandboxed execution for untrusted tools; agentling tools run as trusted code.",
+  "You expect automatic context summarization on very long runs; you supply the context_manager.",
 ];
 
 const BLOCKING_SNIPPET = [
@@ -205,12 +219,15 @@ export default function HomePage() {
             Why agentling
           </p>
           <h2 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Everything is a thin layer on one readable loop
+            Read the source. All of it. Tonight.
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            An agent is a loop that turns a model, some tools, and a memory of
-            what happened into more actions, until it has an answer. agentling
-            keeps that loop legible and layers everything else on top.
+            Agents fail in weird ways, and in most frameworks you cannot see
+            why: the decision happened somewhere inside a graph, a registry,
+            or a callback forest. agentling is an agent that is just a loop
+            you can read. Every step is typed, every event is observable,
+            every failure is recoverable, and every run is resumable and
+            testable offline.
           </p>
         </Reveal>
 
@@ -327,6 +344,62 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Fit: honest filter */}
+      <section className="border-t border-border bg-muted/40">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:py-24">
+          <Reveal>
+            <p className="font-mono text-xs font-semibold tracking-wider text-accent uppercase">
+              An honest filter
+            </p>
+            <h2 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              Is agentling right for your project?
+            </h2>
+          </Reveal>
+          <div className="mt-10 grid gap-5 lg:grid-cols-2">
+            <Reveal delay={0.05}>
+              <div className="h-full rounded-2xl border border-border bg-card p-7">
+                <h3 className="text-base font-semibold text-foreground">
+                  Reach for agentling when
+                </h3>
+                <ul className="mt-5 space-y-4">
+                  {GOOD_FIT.map((line) => (
+                    <li key={line} className="flex gap-3">
+                      <CircleCheck
+                        className="mt-0.5 size-4.5 shrink-0 text-accent"
+                        aria-hidden
+                      />
+                      <span className="text-sm leading-relaxed text-muted-foreground">
+                        {line}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <div className="h-full rounded-2xl border border-border bg-card p-7">
+                <h3 className="text-base font-semibold text-foreground">
+                  Look elsewhere when
+                </h3>
+                <ul className="mt-5 space-y-4">
+                  {BAD_FIT.map((line) => (
+                    <li key={line} className="flex gap-3">
+                      <CircleMinus
+                        className="mt-0.5 size-4.5 shrink-0 text-faint"
+                        aria-hidden
+                      />
+                      <span className="text-sm leading-relaxed text-muted-foreground">
+                        {line}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="border-t border-border">
         <div className="relative mx-auto max-w-7xl overflow-hidden px-4 py-24 text-center sm:px-6">
@@ -336,11 +409,11 @@ export default function HomePage() {
           />
           <Reveal className="relative">
             <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Read the source. All of it. Tonight.
+              Know exactly what your agent will do
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
               No metaclasses, no plugin registry, no DSL. Install it, read the
-              loop, and know exactly what your agent will do.
+              loop, and ship an agent you can explain.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
