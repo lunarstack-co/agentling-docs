@@ -19,7 +19,13 @@ import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { Reveal } from "@/components/reveal";
 import { pageMetadata } from "@/lib/seo";
-import { GITHUB_URL, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
+import {
+  AUTHOR_JSON_LD,
+  GITHUB_URL,
+  SITE_NAME,
+  SITE_TAGLINE,
+  SITE_URL,
+} from "@/lib/site";
 
 export const metadata = {
   ...pageMetadata({
@@ -49,7 +55,7 @@ const HOME_JSON_LD = {
       programmingLanguage: "Python",
       runtimePlatform: "Python 3.11+",
       license: "https://opensource.org/license/mit",
-      author: { "@type": "Person", name: "Folarin Akinloye" },
+      author: AUTHOR_JSON_LD,
     },
   ],
 };

@@ -10,7 +10,7 @@ import { ShareLinks } from "@/components/share-links";
 import { Toc } from "@/components/docs/toc";
 import { getDocPage, getDocSections } from "@/lib/content";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
-import { GITHUB_DOCS_URL } from "@/lib/site";
+import { AUTHOR_JSON_LD, GITHUB_DOCS_URL } from "@/lib/site";
 import { extractToc } from "@/lib/toc";
 
 interface DocPageParams {
@@ -73,7 +73,7 @@ export default async function DocPage({ params }: DocPageParams) {
               headline: page.title,
               description: page.description,
               url: pageUrl,
-              author: { "@type": "Person", name: "Folarin Akinloye" },
+              author: AUTHOR_JSON_LD,
               isPartOf: {
                 "@type": "WebSite",
                 name: "agentling documentation",

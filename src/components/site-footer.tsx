@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Logo } from "@/components/logo";
-import { GITHUB_DOCS_URL, GITHUB_URL, PYPI_URL } from "@/lib/site";
+import { AUTHOR, GITHUB_DOCS_URL, GITHUB_URL, PYPI_URL } from "@/lib/site";
 
 const COLUMNS: {
   heading: string;
@@ -99,8 +99,16 @@ export function SiteFooter() {
         </div>
         <div className="mt-12 flex flex-col gap-2 border-t border-border pt-6 text-xs text-faint sm:flex-row sm:items-center sm:justify-between">
           <p>
-            MIT licensed. Copyright {new Date().getFullYear()} Folarin
-            Akinloye.
+            Built by{" "}
+            <a
+              href={AUTHOR.url}
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground"
+            >
+              {AUTHOR.name}
+            </a>
+            . MIT licensed, copyright {new Date().getFullYear()}.
           </p>
           <p className="font-mono">pip install agentling</p>
         </div>

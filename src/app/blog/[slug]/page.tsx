@@ -3,11 +3,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { GithubIcon } from "@/components/icons/github";
 import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { ShareLinks } from "@/components/share-links";
 import { getBlogPost, getBlogPosts } from "@/lib/content";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
+import { AUTHOR, AUTHOR_JSON_LD } from "@/lib/site";
 import { formatDate } from "@/lib/utils";
 
 interface BlogPostParams {
@@ -53,7 +55,7 @@ export default async function BlogPostPage({ params }: BlogPostParams) {
           description: post.excerpt,
           url: absoluteUrl(`/blog/${post.slug}`),
           datePublished: post.publishDate,
-          author: { "@type": "Person", name: post.authorName },
+          author: { ...AUTHOR_JSON_LD, name: post.authorName },
           keywords: post.tags.join(", "),
           timeRequired: `PT${post.readingMinutes}M`,
           isPartOf: { "@type": "Blog", name: "agentling blog", url: absoluteUrl("/blog") },
@@ -80,12 +82,40 @@ export default async function BlogPostPage({ params }: BlogPostParams) {
           {post.excerpt}
         </p>
         <div className="mt-6 flex items-center justify-between gap-4 border-y border-border py-4">
-          <p className="text-sm">
-            <span className="font-medium text-foreground">{post.authorName}</span>
-            <span className="block text-xs text-muted-foreground">
-              Creator of agentling
+          <div className="flex items-center gap-3">
+            <span
+              aria-hidden
+              className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft font-mono text-sm font-semibold text-accent"
+            >
+              {post.authorName
+                .split(" ")
+                .map((part) => part[0])
+                .slice(0, 2)
+                .join("")}
             </span>
-          </p>
+            <p className="text-sm">
+              <a
+                href={AUTHOR.url}
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium text-foreground transition-colors duration-150 hover:text-accent"
+              >
+                {post.authorName}
+              </a>
+              <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                {AUTHOR.role}
+                <a
+                  href={AUTHOR.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${post.authorName} on GitHub`}
+                  className="text-faint transition-colors duration-150 hover:text-foreground"
+                >
+                  <GithubIcon className="size-3.5" aria-hidden />
+                </a>
+              </span>
+            </p>
+          </div>
           <p className="flex flex-wrap justify-end gap-2">
             {post.tags.map((tag) => (
               <span
