@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { Markdown } from "@/components/markdown";
 import { getChangelog } from "@/lib/content";
@@ -35,7 +36,14 @@ export default async function ChangelogPage() {
         >
           GitHub
         </a>
-        .
+        , and the{" "}
+        <Link
+          href="/roadmap"
+          className="font-medium text-accent underline decoration-accent/40 underline-offset-2 hover:decoration-accent"
+        >
+          roadmap
+        </Link>{" "}
+        shows what is coming next.
       </p>
 
       <div className="mt-12 space-y-0">

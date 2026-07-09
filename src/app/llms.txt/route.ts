@@ -42,6 +42,7 @@ export async function GET() {
 
   lines.push("## Optional", "");
   lines.push(`- [Changelog](${SITE_URL}/changelog): all releases, latest v${releases[0]?.version ?? ""}`);
+  lines.push(`- [Roadmap](${SITE_URL}/roadmap): where the framework is heading, milestone by milestone`);
   lines.push(`- [Contributing](${SITE_URL}/contributing): development setup and guidelines`);
   lines.push(`- [GitHub repository](https://github.com/folathecoder/agentling): source code`);
   lines.push("");

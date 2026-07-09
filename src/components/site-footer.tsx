@@ -21,6 +21,7 @@ const COLUMNS: {
     links: [
       { label: "Blog", href: "/blog" },
       { label: "Changelog", href: "/changelog" },
+      { label: "Roadmap", href: "/roadmap" },
       { label: "Contributing", href: "/contributing" },
       { label: "Docs source", href: GITHUB_DOCS_URL, external: true },
     ],

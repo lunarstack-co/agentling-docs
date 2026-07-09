@@ -59,7 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${SITE_URL}/${slug}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
-      priority: slug === "contributing" ? 0.6 : 0.3,
+      priority: ["contributing", "roadmap"].includes(slug) ? 0.6 : 0.3,
     })),
   ];
 }
