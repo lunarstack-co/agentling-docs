@@ -11,6 +11,7 @@ export const AUTHOR = {
   role: "Creator of agentling",
   url: "https://folarin.dev",
   github: "https://github.com/folathecoder",
+  linkedin: "https://www.linkedin.com/in/akinloye-folarin/",
 };
 
 /**
@@ -22,5 +23,5 @@ export const AUTHOR_JSON_LD = {
   "@type": "Person",
   name: AUTHOR.name,
   url: AUTHOR.url,
-  sameAs: [AUTHOR.github, AUTHOR.url],
+  sameAs: [AUTHOR.github, AUTHOR.linkedin, AUTHOR.url],
 };
