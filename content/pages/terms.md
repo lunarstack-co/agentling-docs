@@ -10,7 +10,7 @@ These terms apply to the agentling website (the documentation, blog, and changel
 
 ## The software
 
-agentling is open source software released under the [MIT License](https://github.com/folathecoder/agentling/blob/main/LICENSE). Your use of the software is governed by that license, not by these terms. In plain language, the MIT License lets you use, copy, modify, and distribute the software for any purpose, provided you preserve the copyright notice, and it provides the software "as is" without warranty of any kind.
+agentling is open source software released under the [MIT License](https://github.com/lunarstack-co/agentling/blob/main/LICENSE). Your use of the software is governed by that license, not by these terms. In plain language, the MIT License lets you use, copy, modify, and distribute the software for any purpose, provided you preserve the copyright notice, and it provides the software "as is" without warranty of any kind.
 
 ## The content
 
@@ -26,7 +26,7 @@ To the maximum extent permitted by law, we are not liable for any damages arisin
 
 ## Acceptable use
 
-Do not attempt to disrupt the site, probe it for vulnerabilities outside responsible disclosure, or use it to distribute malware or unlawful content. Security reports are welcome through the process described in [SECURITY.md](https://github.com/folathecoder/agentling/blob/main/SECURITY.md).
+Do not attempt to disrupt the site, probe it for vulnerabilities outside responsible disclosure, or use it to distribute malware or unlawful content. Security reports are welcome through the process described in [SECURITY.md](https://github.com/lunarstack-co/agentling/blob/main/SECURITY.md).
 
 ## Third-party links
 

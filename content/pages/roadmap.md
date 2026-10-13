@@ -55,4 +55,4 @@ Once reliability, observability, and the model surface settle, 1.0 is about comm
 
 ## Influence the roadmap
 
-This is an open, early project and the priorities above are open to input. [Open an issue](https://github.com/folathecoder/agentling/issues) to propose something, describe a use case we are missing, or tell us which item matters most to you. Bug reports and small PRs are especially welcome: see the [contributing guide](/contributing).
+This is an open, early project and the priorities above are open to input. [Open an issue](https://github.com/lunarstack-co/agentling/issues) to propose something, describe a use case we are missing, or tell us which item matters most to you. Bug reports and small PRs are especially welcome: see the [contributing guide](/contributing).

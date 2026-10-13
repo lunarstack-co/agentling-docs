@@ -1,10 +1,10 @@
 # agentling docs
 
-[![CI](https://github.com/folathecoder/agentling-docs/actions/workflows/ci.yml/badge.svg)](https://github.com/folathecoder/agentling-docs/actions/workflows/ci.yml)
+[![CI](https://github.com/lunarstack-co/agentling-docs/actions/workflows/ci.yml/badge.svg)](https://github.com/lunarstack-co/agentling-docs/actions/workflows/ci.yml)
 
 **Live at [agentling.dev](https://agentling.dev)**
 
-The documentation website for [agentling](https://github.com/folathecoder/agentling), a tiny async framework for reliable, observable, tool-using agents in Python. Deployed on Railway; every push to `main` deploys automatically.
+The documentation website for [agentling](https://github.com/lunarstack-co/agentling), a tiny async framework for reliable, observable, tool-using agents in Python. Deployed on Railway; every push to `main` deploys automatically.
 
 The site includes an animated homepage, full documentation with sidebar navigation, search, and a table of contents, a blog for releases and technical writing, a changelog, contributing instructions, and legal pages. Light and dark themes are supported, with dark as the default.
 
@@ -41,7 +41,7 @@ There are no environment variables, tokens, or external services required, which
 Requires Node.js 20.9 or newer.
 
 ```bash
-git clone https://github.com/folathecoder/agentling-docs
+git clone https://github.com/lunarstack-co/agentling-docs
 cd agentling-docs
 npm install
 npm run dev

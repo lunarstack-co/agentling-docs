@@ -1,5 +1,5 @@
 import { getBlogPosts, getChangelog, getDocSections } from "@/lib/content";
-import { SITE_TAGLINE, SITE_URL } from "@/lib/site";
+import { GITHUB_URL, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-static";
 
@@ -44,7 +44,7 @@ export async function GET() {
   lines.push(`- [Changelog](${SITE_URL}/changelog): all releases, latest v${releases[0]?.version ?? ""}`);
   lines.push(`- [Roadmap](${SITE_URL}/roadmap): where the framework is heading, milestone by milestone`);
   lines.push(`- [Contributing](${SITE_URL}/contributing): development setup and guidelines`);
-  lines.push(`- [GitHub repository](https://github.com/folathecoder/agentling): source code`);
+  lines.push(`- [GitHub repository](${GITHUB_URL}): source code`);
   lines.push("");
 
   return new Response(lines.join("\n"), {

@@ -59,7 +59,7 @@ tools:
 
 Each entry is a `"module.path:attribute"` string that must resolve to a function decorated with `@tool`. When the skill loads, those tools are imported and registered on the session. Because the loop reads the live tool set fresh on every step, the new tools are available on the very next turn. Instructions and capabilities arrive together, on demand.
 
-One important note: an entry point is imported with `importlib`, which runs that module's top-level code. Load skills only from sources you trust, exactly as you would treat a Python import. The [security policy](https://github.com/folathecoder/agentling/blob/main/SECURITY.md) spells out the full trust model.
+One important note: an entry point is imported with `importlib`, which runs that module's top-level code. Load skills only from sources you trust, exactly as you would treat a Python import. The [security policy](https://github.com/lunarstack-co/agentling/blob/main/SECURITY.md) spells out the full trust model.
 
 ## Why this beats prompt stuffing
 

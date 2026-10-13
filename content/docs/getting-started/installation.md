@@ -47,7 +47,7 @@ If that prints `agentling`, you are ready to build your first agent.
 The repository ships runnable examples. The offline ones need no API key at all:
 
 ```bash
-git clone https://github.com/folathecoder/agentling
+git clone https://github.com/lunarstack-co/agentling
 cd agentling
 uv sync
 

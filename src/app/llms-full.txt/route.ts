@@ -3,7 +3,7 @@ import {
   getDocPage,
   getDocSections,
 } from "@/lib/content";
-import { SITE_TAGLINE, SITE_URL } from "@/lib/site";
+import { GITHUB_URL, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-static";
 
@@ -19,7 +19,7 @@ export async function GET() {
     "",
     `> ${SITE_TAGLINE}`,
     "",
-    `Source: ${SITE_URL} · Repository: https://github.com/folathecoder/agentling · License: MIT`,
+    `Source: ${SITE_URL} · Repository: ${GITHUB_URL} · License: MIT`,
     "",
   ];
 

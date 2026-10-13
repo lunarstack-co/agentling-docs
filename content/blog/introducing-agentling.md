@@ -83,4 +83,4 @@ pip install agentling
 
 The [quickstart](/docs/getting-started/quickstart) takes you from an empty file to a streaming agent in a few minutes. The repository ships offline examples that need no API key, so you can watch failure recovery, persistence, and the full event stream before you spend a single token.
 
-agentling is MIT licensed and open to contributions. If you build something with it, or you hit a rough edge, open an issue on [GitHub](https://github.com/folathecoder/agentling). This is version 0.1.0 of something I want to keep small, sharp, and readable all the way to 1.0.
+agentling is MIT licensed and open to contributions. If you build something with it, or you hit a rough edge, open an issue on [GitHub](https://github.com/lunarstack-co/agentling). This is version 0.1.0 of something I want to keep small, sharp, and readable all the way to 1.0.

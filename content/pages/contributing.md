@@ -11,7 +11,7 @@ Thanks for your interest in improving agentling. The framework stays deliberatel
 agentling uses [uv](https://docs.astral.sh/uv/) for environment and dependency management:
 
 ```bash
-git clone https://github.com/folathecoder/agentling
+git clone https://github.com/lunarstack-co/agentling
 cd agentling
 uv sync   # create the environment and install all dependencies
 ```
@@ -45,16 +45,16 @@ uv build                              # the package builds
 
 ## Reporting bugs
 
-Open a [GitHub issue](https://github.com/folathecoder/agentling/issues) for bugs. Include the smallest script that reproduces the problem, your Python version, and the agentling version.
+Open a [GitHub issue](https://github.com/lunarstack-co/agentling/issues) for bugs. Include the smallest script that reproduces the problem, your Python version, and the agentling version.
 
 ## Reporting vulnerabilities
 
-Please report suspected vulnerabilities privately by emailing me@folarin.dev. Do not open a public issue for a security report. Receipt is acknowledged within a few days, and you will be kept posted on the fix. The full trust model is documented in [SECURITY.md](https://github.com/folathecoder/agentling/blob/main/SECURITY.md).
+Please report suspected vulnerabilities privately by emailing me@folarin.dev. Do not open a public issue for a security report. Receipt is acknowledged within a few days, and you will be kept posted on the fix. The full trust model is documented in [SECURITY.md](https://github.com/lunarstack-co/agentling/blob/main/SECURITY.md).
 
 ## Contributing to these docs
 
-This documentation site is open source too. Every page, blog post, and changelog entry is a markdown file in the repository, so fixing a typo or improving an explanation is a pull request against [agentling-docs](https://github.com/folathecoder/agentling-docs). Merged changes go live on the next deploy.
+This documentation site is open source too. Every page, blog post, and changelog entry is a markdown file in the repository, so fixing a typo or improving an explanation is a pull request against [agentling-docs](https://github.com/lunarstack-co/agentling-docs). Merged changes go live on the next deploy.
 
 ## License
 
-agentling is [MIT licensed](https://github.com/folathecoder/agentling/blob/main/LICENSE). By contributing, you agree that your contributions will be licensed under the same terms.
+agentling is [MIT licensed](https://github.com/lunarstack-co/agentling/blob/main/LICENSE). By contributing, you agree that your contributions will be licensed under the same terms.
