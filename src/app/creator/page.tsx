@@ -58,6 +58,36 @@ const WRITING = [
   },
 ];
 
+const PROJECTS = [
+  {
+    title: "OpenFocus",
+    href: "https://github.com/folathecoder/study-agent",
+    live: "https://study-agent-production.up.railway.app",
+    note: "A study companion built as a multi-agent app, with five agents that each teach in a different style. The problem is coordinating several specialised agents behind one conversation without the seams showing.",
+  },
+  {
+    title: "finops-agent",
+    href: "https://github.com/folathecoder/finops-agent",
+    note: "A multi-agent personal finance app for budgeting. The problem is splitting a money question across agents that each own one job and getting one coherent answer back.",
+  },
+  {
+    title: "adzuna-job-search-mcp",
+    href: "https://github.com/folathecoder/adzuna-job-search-mcp",
+    note: "An MCP server that lets an agent search jobs, analyse salaries, and research employers across 12 countries through the Adzuna API. The problem is exposing an external dataset to agents as typed, bounded tools.",
+  },
+  {
+    title: "uk-visa-sponsor-mcp",
+    href: "https://github.com/folathecoder/uk-visa-sponsor-mcp",
+    note: "An MCP server that lets an agent check whether an employer is a licensed UK visa sponsor. The problem is turning a government register into a single reliable yes-or-no tool call.",
+  },
+  {
+    title: "UK Visa Sponsor Search",
+    href: "https://github.com/folathecoder/uk-visa-sponsor-search",
+    live: "https://uksponsorsearch.co.uk",
+    note: "A daily-updated, searchable list of UK visa sponsors sourced from gov.uk. The problem is making a large, awkward public dataset fast to search and keep current without manual work.",
+  },
+];
+
 const PROFILES = [
   { label: "Website", href: AUTHOR.url, text: "folarin.dev" },
   { label: "Writing", href: BLOG_URL, text: "folarin.dev/blog" },
@@ -311,6 +341,20 @@ export default function CreatorPage() {
               ))}
             </ul>
           </li>
+          {PROJECTS.map((project) => (
+            <li key={project.href}>
+              <strong>
+                <ExternalLink href={project.href}>{project.title}</ExternalLink>
+              </strong>
+              . {project.note}
+              {project.live && (
+                <>
+                  {" "}
+                  <ExternalLink href={project.live}>Live app</ExternalLink>.
+                </>
+              )}
+            </li>
+          ))}
         </ul>
 
         <h2 id="background">Professional background</h2>
