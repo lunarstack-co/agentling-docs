@@ -41,7 +41,7 @@ await restored.run("A follow-up", reset=False)
 
 Loading validates the payload as it rebuilds the steps. A malformed or incompatible payload raises `MemoryLoadError` rather than silently producing a broken session. See [Errors](/docs/reference/errors) for the full exception hierarchy.
 
-## What this unlocks
+## What this enables
 
 Because the full run state lives in one serializable object, several features fall out for free:
 
