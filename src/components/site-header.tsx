@@ -41,9 +41,9 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
           <Link
             href={`/changelog#v${VERSION}`}
             className="chip hidden transition-colors duration-150 hover:text-fg sm:inline-flex"
-            aria-label={`Version ${VERSION}, view changelog`}
           >
             v{VERSION}
+            <span className="sr-only">, view changelog</span>
           </Link>
         </div>
 

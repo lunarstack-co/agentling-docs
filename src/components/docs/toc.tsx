@@ -49,7 +49,7 @@ export function Toc({ items, sectionSlug, slug }: TocProps) {
         {items.length > 0 && (
           <div>
             <p className="mb-2 font-semibold text-fg">On this page</p>
-            <ul className="grid gap-1.5">
+            <ul className="grid gap-0.5">
               {items.map((item) => {
                 const active = activeId === item.id;
                 return (
@@ -58,7 +58,7 @@ export function Toc({ items, sectionSlug, slug }: TocProps) {
                       href={`#${item.id}`}
                       aria-current={active ? "true" : undefined}
                       className={cn(
-                        "-ml-[17px] block border-l-2 pl-4 leading-snug transition-colors duration-150",
+                        "-ml-[17px] flex min-h-6 items-center border-l-2 pl-4 leading-snug transition-colors duration-150",
                         item.depth === 3 && "pl-7",
                         active
                           ? "border-accent text-accent"
@@ -108,10 +108,10 @@ export function TocInline({ items }: { items: TocEntry[] }) {
         On this page
         <ChevronDown className="size-3.5 text-fg-tertiary transition-transform duration-150 group-open:rotate-180" aria-hidden />
       </summary>
-      <ul className="grid gap-1.5 px-3 pb-2.5 pt-1">
+      <ul className="grid gap-0.5 px-3 pb-2 pt-0.5">
         {items.map((item) => (
           <li key={item.id} className={cn(item.depth === 3 && "pl-3")}>
-            <a href={`#${item.id}`} className="text-fg-secondary hover:text-fg">
+            <a href={`#${item.id}`} className="flex min-h-6 items-center text-fg-secondary hover:text-fg">
               {item.text}
             </a>
           </li>

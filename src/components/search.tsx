@@ -229,7 +229,7 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
             data-focus-ring="none"
             className="h-8 w-full min-w-0 bg-transparent text-[15px] text-fg outline-none placeholder:text-fg-tertiary"
           />
-          <kbd className="shrink-0">esc</kbd>
+          <kbd className="shrink-0" aria-hidden>esc</kbd>
         </div>
 
         <div
@@ -304,13 +304,13 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
         ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Search documentation"
+        aria-label="Search docs"
         aria-keyshortcuts={isMac ? "Meta+K" : "Control+K"}
         className="group flex size-8 cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default bg-raised text-ui text-fg-tertiary transition-[border-color,color,transform] duration-150 ease-out hover:border-fg-tertiary hover:text-fg active:scale-[0.98] active:duration-100 sm:w-full sm:justify-start sm:px-2.5"
       >
         <SearchIcon className="size-3.5 shrink-0" aria-hidden />
         <span className="hidden whitespace-nowrap sm:inline">Search docs</span>
-        <kbd className="ml-auto hidden sm:inline-block">{isMac ? "⌘K" : "Ctrl K"}</kbd>
+        <kbd className="ml-auto hidden sm:inline-block" aria-hidden>{isMac ? "⌘K" : "Ctrl K"}</kbd>
       </button>
 
       {open && mounted && createPortal(modalNode, document.body)}

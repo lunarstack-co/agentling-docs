@@ -20,11 +20,7 @@ export function CopyMarkdownButton({ markdown }: { markdown: string }) {
   }
 
   return (
-    <Button
-      onClick={copy}
-      aria-label={copied ? "Markdown copied" : "Copy page as Markdown"}
-      className="-mr-2.5"
-    >
+    <Button onClick={copy} aria-live="polite" className="-mr-2.5">
       {copied ? (
         <Check className="size-3.5 text-accent" aria-hidden />
       ) : (
