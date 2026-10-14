@@ -304,12 +304,11 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
         ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Search docs"
         aria-keyshortcuts={isMac ? "Meta+K" : "Control+K"}
         className="group flex size-8 cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default bg-raised text-ui text-fg-tertiary transition-[border-color,color,transform] duration-150 ease-out hover:border-fg-tertiary hover:text-fg active:scale-[0.98] active:duration-100 sm:w-full sm:justify-start sm:px-2.5"
       >
         <SearchIcon className="size-3.5 shrink-0" aria-hidden />
-        <span className="hidden whitespace-nowrap sm:inline">Search docs</span>
+        <span className="sr-only whitespace-nowrap sm:not-sr-only">Search docs</span>
         <kbd className="ml-auto hidden sm:inline-block" aria-hidden>{isMac ? "⌘K" : "Ctrl K"}</kbd>
       </button>
 
