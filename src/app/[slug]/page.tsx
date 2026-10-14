@@ -33,16 +33,14 @@ export default async function StandaloneSitePage({ params }: SitePageParams) {
   if (!page) notFound();
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 lg:py-12 min-w-0 overflow-hidden">
-      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+    <div className="mx-auto w-full min-w-0 max-w-[760px] px-4 pb-20 pt-8 sm:px-6 lg:pt-10">
+      <h1 className="text-balance text-h1 font-semibold tracking-[-0.02em] text-fg">
         {page.title}
       </h1>
       {page.description && (
-        <p className="mt-3 text-sm sm:text-base text-muted-foreground leading-relaxed">
-          {page.description}
-        </p>
+        <p className="mt-2.5 text-lede text-fg-secondary">{page.description}</p>
       )}
-      <div className="mt-8 border-t border-border pt-6 min-w-0 break-words">
+      <div className="mt-6 min-w-0 border-t border-border-subtle pt-6">
         <Markdown source={page.body} />
       </div>
     </div>

@@ -95,6 +95,7 @@ export function DocsSidebar({ sections }: { sections: DocSection[] }) {
   useEffect(() => {
     if (!mobileOpen) return;
     const previous = document.body.style.overflow;
+    const trigger = triggerRef.current;
     document.body.style.overflow = "hidden";
     closeRef.current?.focus();
 
@@ -121,7 +122,7 @@ export function DocsSidebar({ sections }: { sections: DocSection[] }) {
     return () => {
       document.body.style.overflow = previous;
       window.removeEventListener("keydown", onKeyDown);
-      triggerRef.current?.focus();
+      trigger?.focus();
     };
   }, [mobileOpen]);
 
