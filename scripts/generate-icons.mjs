@@ -83,12 +83,14 @@ function write(rel, data) {
 
 console.log("Generating icons");
 
-// favicon.ico: transparent ground so it works on light and dark tab strips.
+// favicon.ico cannot follow the colour scheme, so it sits on a paper tile
+// that reads on both light and dark tab strips. Browsers that support SVG
+// favicons use icon.svg instead, which does follow the scheme.
 write(
   "src/app/favicon.ico",
   ico([
-    { size: 32, data: await png(markSvg({ size: 32 }), 32) },
-    { size: 16, data: await png(markSvg({ size: 16 }), 16) },
+    { size: 32, data: await png(markSvg({ size: 32, ground: PAPER, radius: 6 }), 32) },
+    { size: 16, data: await png(markSvg({ size: 16, ground: PAPER, radius: 3 }), 16) },
   ]),
 );
 
