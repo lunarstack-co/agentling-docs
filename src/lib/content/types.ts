@@ -20,21 +20,6 @@ export interface DocSection {
   pages: DocPageMeta[];
 }
 
-export interface BlogPostMeta {
-  title: string;
-  slug: string;
-  excerpt: string;
-  publishDate: string;
-  authorName: string;
-  tags: string[];
-  featured: boolean;
-  readingMinutes: number;
-}
-
-export interface BlogPost extends BlogPostMeta {
-  body: string;
-}
-
 export interface ChangelogEntry {
   version: string;
   title: string;

@@ -141,7 +141,7 @@ export default async function DocPage({ params }: DocPageParams) {
 
         {/* Was this helpful? Widget */}
         <div className="mt-14 pt-8 border-t border-border">
-          <FeedbackWidget />
+          <FeedbackWidget pageTitle={page.title} pagePath={`/docs/${page.sectionSlug}/${page.slug}`} />
         </div>
 
         {/* Prev / Next within section */}

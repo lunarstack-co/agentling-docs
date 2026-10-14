@@ -197,7 +197,7 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={onInputKeyDown}
-            placeholder="Search documentation, API, concepts..."
+            placeholder="Search documentation..."
             aria-label="Search query"
             data-focus-ring="none"
             className="h-7 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-faint font-sans"
@@ -280,14 +280,15 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
 
   return (
     <>
+      {/* Icon-only button below sm; a full-width field from sm up. */}
       <button
         onClick={() => setOpen(true)}
         aria-label="Search documentation"
-        className="group flex h-8.5 w-full cursor-pointer items-center justify-between rounded border border-border bg-card px-3 text-xs text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
+        className="group flex size-8 cursor-pointer items-center justify-center rounded border border-border bg-card text-xs text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground sm:h-8.5 sm:w-full sm:justify-between sm:px-3"
       >
         <div className="flex items-center gap-2">
           <SearchIcon className="size-3.5 text-faint group-hover:text-muted-foreground transition-colors" aria-hidden />
-          <span className="font-normal">Search or ask...</span>
+          <span className="hidden sm:inline whitespace-nowrap font-normal">Search docs...</span>
         </div>
         <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-faint">
           ⌘K

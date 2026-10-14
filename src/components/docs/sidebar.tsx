@@ -3,7 +3,8 @@
 import { ChevronDown, FileText, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 
 import type { DocSection } from "@/lib/content/types";
 import { GITHUB_URL } from "@/lib/site";
@@ -16,6 +17,8 @@ const DIATAXIS_HINTS: Record<string, string> = {
   guides: "How-To",
   reference: "Reference",
 };
+
+const emptySubscribe = () => () => {};
 
 function SectionNav({ sections, onNavigate }: { sections: DocSection[]; onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -117,6 +120,29 @@ function SectionNav({ sections, onNavigate }: { sections: DocSection[]; onNaviga
 export function DocsSidebar({ sections }: { sections: DocSection[] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+
+  // Close the sheet whenever the route changes.
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (lastPathname !== pathname) {
+    setLastPathname(pathname);
+    setMobileOpen(false);
+  }
+
+  // Lock page scroll and close on Escape while the sheet is open.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setMobileOpen(false);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [mobileOpen]);
 
   const current = sections
     .flatMap((section) =>
@@ -127,13 +153,41 @@ export function DocsSidebar({ sections }: { sections: DocSection[] }) {
     )
     .find((page) => page.href === pathname);
 
+  // Rendered through a portal: the sticky bar below uses backdrop-filter,
+  // which would otherwise become the containing block for this fixed sheet.
+  const sheet = (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Documentation index"
+      className="fixed inset-x-0 bottom-0 top-14 z-50 flex flex-col bg-background lg:hidden"
+    >
+      <div className="flex items-center justify-between border-b border-border px-4 py-3 bg-muted/40">
+        <span className="text-xs font-semibold text-foreground uppercase tracking-wider font-mono">
+          Documentation Index
+        </span>
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="flex size-8 cursor-pointer items-center justify-center rounded border border-border text-muted-foreground hover:text-foreground"
+          aria-label="Close menu"
+        >
+          <X className="size-4" />
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-auto p-5 overscroll-contain">
+        <SectionNav sections={sections} onNavigate={() => setMobileOpen(false)} />
+      </div>
+    </div>
+  );
+
   return (
     <>
       {/* Mobile: sticky page selector bar */}
-      <div className="sticky top-14 z-30 flex w-full items-center justify-between border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur-md lg:hidden">
+      <div className="sticky top-14 z-30 w-full border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur-md lg:hidden">
         <button
           onClick={() => setMobileOpen((open) => !open)}
           aria-expanded={mobileOpen}
+          aria-controls="docs-mobile-index"
           className="flex w-full cursor-pointer items-center justify-between text-xs font-medium"
         >
           <div className="flex items-center gap-2 truncate pr-2">
@@ -150,29 +204,9 @@ export function DocsSidebar({ sections }: { sections: DocSection[] }) {
             aria-hidden
           />
         </button>
-
-        {mobileOpen && (
-          <div className="fixed inset-0 top-14 z-50 flex flex-col bg-background/98 backdrop-blur-md">
-            {/* Top close header bar */}
-            <div className="flex items-center justify-between border-b border-border px-4 py-3 bg-muted/40">
-              <span className="text-xs font-semibold text-foreground uppercase tracking-wider font-mono">
-                Documentation Index
-              </span>
-              <button
-                onClick={() => setMobileOpen(false)}
-                className="flex size-7 items-center justify-center rounded border border-border text-muted-foreground hover:text-foreground"
-                aria-label="Close menu"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-            {/* Nav content */}
-            <div className="flex-1 overflow-y-auto p-5">
-              <SectionNav sections={sections} onNavigate={() => setMobileOpen(false)} />
-            </div>
-          </div>
-        )}
       </div>
+
+      {mobileOpen && mounted && createPortal(sheet, document.body)}
 
       {/* Desktop: 260px Left Map Rail */}
       <aside className="hidden lg:block w-[260px] shrink-0 border-r border-border">

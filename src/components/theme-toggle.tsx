@@ -17,10 +17,12 @@ function useMounted(): boolean {
 }
 
 export function ThemeToggle({ className }: { className?: string }) {
-  const { theme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const mounted = useMounted();
 
-  const isDark = mounted ? theme === "dark" : true;
+  // resolvedTheme accounts for "system", so the compact toggle always flips
+  // what the visitor is actually looking at.
+  const isDark = mounted ? resolvedTheme === "dark" : true;
 
   function toggle() {
     setTheme(isDark ? "light" : "dark");

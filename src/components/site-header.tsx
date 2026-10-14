@@ -3,7 +3,7 @@
 import { ChevronDown, ExternalLink, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { GithubIcon } from "@/components/icons/github";
 import { Logo } from "@/components/logo";
@@ -22,6 +22,7 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [versionOpen, setVersionOpen] = useState(false);
+  const versionRef = useRef<HTMLDivElement>(null);
 
   const [lastPathname, setLastPathname] = useState(pathname);
   if (lastPathname !== pathname) {
@@ -30,18 +31,44 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
     setVersionOpen(false);
   }
 
+  // Close the version dropdown on outside click or Escape.
+  useEffect(() => {
+    if (!versionOpen) return;
+    function onPointerDown(event: PointerEvent) {
+      if (!versionRef.current?.contains(event.target as Node)) {
+        setVersionOpen(false);
+      }
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setVersionOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [versionOpen]);
+
+  function isActive(href: string) {
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
+
   return (
-    <header className="sticky top-0 z-40 h-14 border-b border-border bg-background/90 backdrop-blur-md transition-colors w-full overflow-hidden">
-      <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-1 sm:gap-3 px-3 sm:px-6">
+    // No overflow clipping here: the version dropdown and the mobile menu
+    // both hang below the 56px bar.
+    <header className="sticky top-0 z-40 h-14 border-b border-border bg-background/90 backdrop-blur-md transition-colors w-full">
+      <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-2 sm:gap-3 px-3 sm:px-6">
         {/* Left: Logo + Version Dropdown Pill */}
-        <div className="flex items-center gap-1.5 sm:gap-3 shrink min-w-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
           <Logo />
 
-          <div className="relative shrink-0 hidden sm:block">
+          <div ref={versionRef} className="relative shrink-0 hidden sm:block">
             <button
               onClick={() => setVersionOpen((o) => !o)}
               aria-label="Version selector"
               aria-expanded={versionOpen}
+              aria-haspopup="menu"
               className="flex items-center gap-1 rounded border border-border bg-card px-2 py-0.5 font-mono text-[11px] text-muted-foreground hover:text-foreground hover:border-border-strong transition-colors cursor-pointer"
             >
               <span>v0.1.0</span>
@@ -50,6 +77,7 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
 
             {versionOpen && (
               <div
+                role="menu"
                 className="absolute left-0 top-full mt-1.5 w-32 border border-border bg-card p-1 text-xs shadow-md z-50 rounded"
                 onClick={() => setVersionOpen(false)}
               >
@@ -57,7 +85,8 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
                   Releases
                 </div>
                 <Link
-                  href="/changelog"
+                  href="/changelog#v0.1.0"
+                  role="menuitem"
                   className="flex items-center justify-between px-2 py-1 text-foreground font-medium rounded hover:bg-muted"
                 >
                   <span>v0.1.0</span>
@@ -67,6 +96,7 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
                   href={`${GITHUB_URL}/releases`}
                   target="_blank"
                   rel="noreferrer"
+                  role="menuitem"
                   className="flex items-center justify-between px-2 py-1 text-muted-foreground hover:text-foreground rounded hover:bg-muted"
                 >
                   <span>All versions</span>
@@ -78,17 +108,14 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
 
           <nav aria-label="Main" className="hidden lg:flex items-center gap-1 ml-2">
             {NAV.map((item) => {
-              const active =
-                item.href === "/docs"
-                  ? pathname.startsWith("/docs")
-                  : pathname.startsWith(item.href);
+              const active = isActive(item.href);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "px-2.5 py-1 text-xs transition-colors rounded",
+                    "px-2.5 py-1 text-xs transition-colors rounded whitespace-nowrap",
                     active
                       ? "text-foreground font-semibold bg-muted"
                       : "text-muted-foreground hover:text-foreground",
@@ -101,8 +128,8 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
           </nav>
         </div>
 
-        {/* Center: Search Field */}
-        <div className="flex-1 min-w-0 max-w-[120px] xs:max-w-[180px] sm:max-w-xs md:max-w-md mx-1 sm:mx-2">
+        {/* Center: Search. Icon-only below sm, a full field above. */}
+        <div className="shrink-0 sm:shrink sm:flex-1 sm:min-w-0 sm:max-w-xs md:max-w-md sm:mx-2">
           <SearchDialog items={searchItems} />
         </div>
 
@@ -128,6 +155,7 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
           <button
             onClick={() => setMenuOpen((open) => !open)}
             aria-expanded={menuOpen}
+            aria-controls="site-mobile-nav"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             className="flex size-8 cursor-pointer items-center justify-center rounded border border-border text-muted-foreground lg:hidden shrink-0"
           >
@@ -136,10 +164,12 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
         </div>
       </div>
 
+      {/* Mobile menu: a panel anchored below the bar, not inside its 56px box. */}
       {menuOpen && (
         <nav
+          id="site-mobile-nav"
           aria-label="Mobile"
-          className="border-t border-border bg-background px-4 py-3 lg:hidden shadow-lg"
+          className="absolute inset-x-0 top-full border-b border-border bg-background px-4 py-3 lg:hidden shadow-lg"
         >
           <ul className="flex flex-col gap-1">
             {NAV.map((item) => (
@@ -147,16 +177,27 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
                 <Link
                   href={item.href}
                   className={cn(
-                    "block px-3 py-1.5 text-xs rounded",
-                    pathname.startsWith(item.href)
+                    "block px-3 py-2 text-sm rounded",
+                    isActive(item.href)
                       ? "bg-muted text-foreground font-semibold"
-                      : "text-muted-foreground",
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {item.label}
                 </Link>
               </li>
             ))}
+            <li className="sm:hidden border-t border-border mt-1 pt-2">
+              <a
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 px-3 py-2 text-sm rounded text-muted-foreground hover:text-foreground"
+              >
+                <GithubIcon className="size-3.5" aria-hidden />
+                GitHub
+              </a>
+            </li>
           </ul>
         </nav>
       )}

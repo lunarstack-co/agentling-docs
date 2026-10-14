@@ -32,7 +32,6 @@ interface PageMetadataInput {
  */
 const FEED_TYPES = {
   "application/rss+xml": [
-    { url: "/feed.xml", title: "agentling blog" },
     { url: "/changelog.xml", title: "agentling changelog" },
   ],
 };

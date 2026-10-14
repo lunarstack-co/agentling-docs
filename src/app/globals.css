@@ -313,6 +313,16 @@ body {
   padding: 0.5rem 1.25rem;
 }
 
+/* Hover-revealed controls have no hover on touch devices: keep them visible. */
+@media (hover: none) {
+  .prose :where(h2, h3, h4) .heading-anchor {
+    opacity: 0.6;
+  }
+  [data-markdown-root] [data-copy-button] {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
