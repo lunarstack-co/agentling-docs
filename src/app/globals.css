@@ -339,7 +339,13 @@ kbd {
 }
 
 .prose :where(h2, h3, h4) .heading-anchor {
-  margin-left: 0.4em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  margin-left: 0.25em;
+  vertical-align: middle;
   color: var(--fg-tertiary);
   font-weight: 400;
   text-decoration: none;
