@@ -24,7 +24,8 @@ const processor = unified()
     content: { type: "text", value: "#" },
   })
   .use(rehypePrettyCode, {
-    themes: { light: "github-light", dark: "github-dark-dimmed" },
+    // Code blocks are dark in both themes, so one theme is enough.
+    theme: "github-dark-dimmed",
     keepBackground: false,
     // Block scope only: a bare string would also run every inline code
     // span through shiki, breaking the prose inline-code styling.
