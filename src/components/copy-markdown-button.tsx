@@ -1,12 +1,11 @@
 "use client";
 
-import { Check, FileCode } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 
-/**
- * Copies the page's raw markdown source, handy for pasting a doc page
- * into an LLM conversation.
- */
+import { Button } from "@/components/ui/button";
+
+/** Copies the page's raw markdown, for pasting a doc page into an LLM. */
 export function CopyMarkdownButton({ markdown }: { markdown: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -21,17 +20,17 @@ export function CopyMarkdownButton({ markdown }: { markdown: string }) {
   }
 
   return (
-    <button
+    <Button
       onClick={copy}
       aria-label={copied ? "Markdown copied" : "Copy page as Markdown"}
-      className="inline-flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground"
+      className="-mr-2.5"
     >
       {copied ? (
         <Check className="size-3.5 text-accent" aria-hidden />
       ) : (
-        <FileCode className="size-3.5" aria-hidden />
+        <Copy className="size-3.5" aria-hidden />
       )}
       {copied ? "Copied" : "Copy as Markdown"}
-    </button>
+    </Button>
   );
 }

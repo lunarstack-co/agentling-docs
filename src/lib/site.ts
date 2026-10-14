@@ -1,4 +1,6 @@
 export const SITE_NAME = "Agentling";
+/** Latest released version, shown in the header. */
+export const VERSION = "0.1.0";
 export const SITE_TAGLINE =
   "A tiny async framework for reliable, observable, tool-using agents.";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://agentling.dev";
