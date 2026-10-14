@@ -126,7 +126,7 @@ export function renderOgImage({
                 maxWidth: 960,
               }}
             >
-              {truncate(subtitle, 110)}
+              {truncate(subtitle, 140)}
             </div>
           ) : null}
         </div>
