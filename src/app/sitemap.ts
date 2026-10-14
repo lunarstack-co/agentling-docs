@@ -1,11 +1,14 @@
 import type { MetadataRoute } from "next";
 
+import path from "node:path";
+
 import {
   getContentModified,
   getDocSections,
   getSitePage,
   getSitePageSlugs,
 } from "@/lib/content";
+import { getFileDates } from "@/lib/content/dates";
 import { SITE_URL } from "@/lib/site";
 
 /**
@@ -36,9 +39,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: page.slug === "contributing" ? 0.6 : 0.3,
     }));
 
+  // /creator is indexable but intentionally unlinked from navigation; the
+  // sitemap is how crawlers find it. See src/app/creator/page.tsx.
+  const creatorModified = getFileDates(
+    path.join(process.cwd(), "src/app/creator/page.tsx"),
+  ).modified;
+
   return [
     ...docRoutes,
     { url: `${SITE_URL}/changelog`, lastModified: changelogModified, priority: 0.7 },
     ...standaloneRoutes,
+    { url: `${SITE_URL}/creator`, lastModified: creatorModified, priority: 0.5 },
   ];
 }

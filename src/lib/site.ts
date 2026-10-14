@@ -27,8 +27,11 @@ export const AUTHOR = {
  * to the same person across the web, which is how search engines learn
  * who created the project.
  */
+export const PERSON_ID = `${SITE_URL}/creator#person`;
+
 export const AUTHOR_JSON_LD = {
   "@type": "Person",
+  "@id": PERSON_ID,
   name: AUTHOR.name,
   url: AUTHOR.url,
   sameAs: [AUTHOR.github, AUTHOR.linkedin, AUTHOR.url],

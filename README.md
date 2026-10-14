@@ -44,6 +44,10 @@ npx tsc --noEmit   # type check
 npm run build      # static export build
 ```
 
+## Intentionally unlinked pages
+
+- `/creator` (`src/app/creator/page.tsx`) is the creator profile. It is indexable (200, self-referencing canonical, listed in `sitemap.xml`) but deliberately absent from the header, sidebar, footer, and search index, and nothing links to it internally. That is a product decision, not an oversight. Keep it that way unless the decision changes.
+
 ## Machine-readable endpoints
 
 - `/changelog.xml`: RSS feed for releases.

@@ -59,10 +59,13 @@ export function renderOgImage({
   eyebrow,
   title,
   subtitle,
+  footerNote = "Python 3.11+ · MIT",
 }: {
   eyebrow: string;
   title: string;
   subtitle?: string;
+  /** Right-hand footer text; the framework line by default. */
+  footerNote?: string;
 }): ImageResponse {
   return new ImageResponse(
     (
@@ -144,7 +147,7 @@ export function renderOgImage({
           }}
         >
           <div style={{ display: "flex" }}>agentling.dev</div>
-          <div style={{ display: "flex" }}>Python 3.11+ · MIT</div>
+          <div style={{ display: "flex" }}>{footerNote}</div>
         </div>
       </div>
     ),

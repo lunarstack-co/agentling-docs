@@ -25,6 +25,8 @@ interface PageMetadataInput {
   kind: PageKind;
   /** Page part of the title; the layout template appends " | Agentling". */
   title: string;
+  /** Use the title exactly as given, without the template. */
+  absoluteTitle?: boolean;
   /** Search-result description. Falls back to the site tagline. */
   description?: string;
   /** Route path starting with "/". Required for every indexable kind. */
@@ -51,13 +53,16 @@ const FEED_TYPES = {
 export function pageMetadata({
   kind,
   title,
+  absoluteTitle = false,
   description = SITE_TAGLINE,
   path,
   dates,
 }: PageMetadataInput): Metadata {
+  const titleField = absoluteTitle ? { absolute: title } : title;
+
   if (kind === "notFound") {
     return {
-      title,
+      title: titleField,
       description,
       robots: { index: false, follow: false },
     };
@@ -65,7 +70,7 @@ export function pageMetadata({
 
   const isArticle = kind === "doc";
   return {
-    title,
+    title: titleField,
     description,
     alternates: { canonical: path, types: FEED_TYPES },
     openGraph: {
@@ -116,6 +121,7 @@ export function siteGraph() {
         description: SITE_TAGLINE,
         publisher: { "@id": ORG_ID },
       },
+      AUTHOR_JSON_LD,
       {
         "@type": "SoftwareApplication",
         "@id": APP_ID,
@@ -128,7 +134,8 @@ export function siteGraph() {
         installUrl: PYPI_URL,
         url: SITE_URL,
         sameAs: [GITHUB_URL, PYPI_URL],
-        author: AUTHOR_JSON_LD,
+        author: { "@id": AUTHOR_JSON_LD["@id"] },
+        creator: { "@id": AUTHOR_JSON_LD["@id"] },
         offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
       },
     ],
@@ -179,7 +186,7 @@ export function docArticleGraph({
         image: absoluteUrl(`${path}/opengraph-image`),
         datePublished: published,
         dateModified: modified,
-        author: AUTHOR_JSON_LD,
+        author: { "@id": AUTHOR_JSON_LD["@id"] },
         publisher: { "@id": ORG_ID },
         isPartOf: { "@id": SITE_ID },
         about: { "@id": APP_ID },
