@@ -3,6 +3,8 @@ title: Memory
 slug: memory
 description: A run is a list of typed steps that serialize, replay, and resume.
 order: 3
+metaTitle: "Memory: typed steps that persist and resume"
+metaDescription: "A run is a list of TaskStep, ActionStep, and FinalStep objects. Each renders into model messages and saves as JSON for persistence, replay, and resuming."
 ---
 
 A run is recorded as a list of typed steps rather than a flat list of messages. Steps know how to render themselves back into model messages and how to serialize to JSON, which gives you persistence, replay, and multi-turn continuation without extra machinery.
@@ -41,7 +43,7 @@ await restored.run("A follow-up", reset=False)
 
 Loading validates the payload as it rebuilds the steps. A malformed or incompatible payload raises `MemoryLoadError` rather than silently producing a broken session. See [Errors](/docs/reference/errors) for the full exception hierarchy.
 
-## What this unlocks
+## What this enables
 
 Because the full run state lives in one serializable object, several features fall out for free:
 

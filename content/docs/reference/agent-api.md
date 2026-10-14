@@ -3,6 +3,8 @@ title: Agent API
 slug: agent-api
 description: Every Agent constructor parameter, the run method, and the AgentSession surface.
 order: 1
+metaTitle: "Agent API: constructor, run(), and AgentSession"
+metaDescription: "Every Agent constructor parameter and its default, what run() and start() do, and the AgentSession surface for multi-turn, interruptible runs."
 ---
 
 `Agent` is immutable configuration: a model, some tools, and settings. Build one once, share it freely, and let sessions carry the per-run state. This page lists every knob on the constructor and the semantics of `run()` and `start()`.

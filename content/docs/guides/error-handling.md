@@ -3,6 +3,8 @@ title: Error Handling
 slug: error-handling
 description: Self-healing tool errors, timeouts, redaction, output truncation, and the retry behavior of the model layer.
 order: 4
+metaTitle: "Error handling: self-healing tools and retries"
+metaDescription: "How tool exceptions become observations the model can fix, per-call timeouts, output truncation, error redaction, and the retry policy of the model layer."
 ---
 
 agentling treats failure as something the model can recover from, not something that kills the run. This guide covers the layers of that design: self-healing tool errors, timeouts, redaction, and how the model layer retries.

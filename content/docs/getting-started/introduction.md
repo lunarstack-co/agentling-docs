@@ -3,6 +3,8 @@ title: Introduction
 slug: introduction
 description: What Agentling is, the idea behind it, and when to reach for it.
 order: 1
+metaTitle: "What Agentling is and when to use it"
+metaDescription: "What Agentling is, the loop it is built on, what you get (typed memory, streamed events, self-healing tools, skills), and when to use something else."
 ---
 
 Agentling is a small async Python framework for building tool-using agents. It gives you a clean ReAct loop, typed memory, streaming events, and recoverable failures in an auditable codebase.

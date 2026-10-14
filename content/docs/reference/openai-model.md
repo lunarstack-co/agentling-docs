@@ -3,6 +3,8 @@ title: OpenAIModel
 slug: openai-model
 description: The built-in provider adapter, its retry policy, and the Model protocol for custom adapters.
 order: 2
+metaTitle: "OpenAIModel reference and the Model protocol"
+metaDescription: "The built-in provider adapter: constructor options, its retry policy, how it streams, and the Model protocol a custom adapter must implement."
 ---
 
 `OpenAIModel` is an adapter for any OpenAI-compatible chat-completions endpoint. It is the only place in agentling that knows OpenAI's wire format: it converts framework-neutral `ChatMessage` lists into provider payloads on the way out and converts responses back on the way in.

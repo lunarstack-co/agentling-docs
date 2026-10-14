@@ -3,6 +3,8 @@ title: Tools
 slug: tools
 description: Plain Python functions become schema-validated tools with @tool.
 order: 2
+metaTitle: "Tools: plain Python functions with @tool"
+metaDescription: "Turn a typed Python function into a schema-validated tool with @tool. Docstrings become descriptions, exceptions become observations, timeouts per call."
 ---
 
 A tool is any Python function wrapped with `@tool`. The function name becomes the tool name, the docstring summary becomes the description, and the type hints plus a Google-style `Args:` section become the JSON Schema the model sees.

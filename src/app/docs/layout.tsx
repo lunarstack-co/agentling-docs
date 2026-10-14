@@ -9,9 +9,11 @@ export default async function DocsLayout({
   const sections = await getDocSections();
 
   return (
-    <div className="mx-auto flex w-full max-w-[1440px] flex-1">
+    // Column flow below lg so the sticky page selector stacks above the
+    // content instead of competing with it for width.
+    <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col lg:flex-row">
       <DocsSidebar sections={sections} />
-      <div className="min-w-0 flex-1 px-4 py-6 sm:px-8 lg:px-10 lg:py-10 overflow-x-hidden">
+      <div className="w-full min-w-0 flex-1 px-4 pb-16 pt-6 sm:px-8 lg:px-10 lg:pb-20 lg:pt-10">
         {children}
       </div>
     </div>

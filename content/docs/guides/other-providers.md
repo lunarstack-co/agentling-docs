@@ -3,6 +3,8 @@ title: Using Other Providers
 slug: other-providers
 description: Point OpenAIModel at any OpenAI-compatible endpoint, or implement the Model protocol for a custom provider.
 order: 5
+metaTitle: "Use other providers with OpenAIModel or Model"
+metaDescription: "Point OpenAIModel at any OpenAI-compatible endpoint, or implement the small Model protocol to plug in a provider of your own."
 ---
 
 agentling ships one provider adapter, `OpenAIModel`, but it is not tied to OpenAI. The adapter speaks to any OpenAI-compatible chat-completions endpoint, and the `Model` protocol lets you write your own adapter for anything else.

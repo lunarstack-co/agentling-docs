@@ -32,7 +32,10 @@ let enginePromise: Promise<MiniSearch<SearchItem>> | null = null;
 
 function loadEngine(): Promise<MiniSearch<SearchItem>> {
   enginePromise ??= fetch("/search-index.json")
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) throw new Error(`search index ${response.status}`);
+      return response.json();
+    })
     .then((documents: (SearchItem & { id: string })[]) => {
       const engine = new MiniSearch<SearchItem>({
         fields: ["title", "headings", "description", "body"],
@@ -55,30 +58,28 @@ function loadEngine(): Promise<MiniSearch<SearchItem>> {
 
 function scoreItem(item: SearchItem, query: string): number {
   const q = query.toLowerCase();
-  const title = item.title.toLowerCase();
-  const description = item.description.toLowerCase();
-  const group = item.group.toLowerCase();
-
-  if (title.startsWith(q)) return 4;
-  if (title.includes(q)) return 3;
-  if (group.includes(q)) return 2;
-  if (description.includes(q)) return 1;
+  if (item.title.toLowerCase().startsWith(q)) return 4;
+  if (item.title.toLowerCase().includes(q)) return 3;
+  if (item.group.toLowerCase().includes(q)) return 2;
+  if (item.description.toLowerCase().includes(q)) return 1;
   return 0;
-}
-
-function groupIcon(group: string) {
-  if (group === "Changelog") return Tag;
-  return FileText;
 }
 
 export function SearchDialog({ items }: { items: SearchItem[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const isMac = useSyncExternalStore(
+    emptySubscribe,
+    () => /Mac|iPhone|iPad/.test(navigator.platform),
+    () => true,
+  );
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const [engine, setEngine] = useState<MiniSearch<SearchItem> | null>(null);
+  const [engineFailed, setEngineFailed] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -88,7 +89,9 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
       .then((loaded) => {
         if (!cancelled) setEngine(loaded);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setEngineFailed(true);
+      });
     return () => {
       cancelled = true;
     };
@@ -119,6 +122,7 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
     setOpen(false);
     setQuery("");
     setActiveIndex(0);
+    triggerRef.current?.focus();
   }, []);
 
   const select = useCallback(
@@ -131,29 +135,34 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
+      const target = event.target as HTMLElement | null;
+      const typing =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target?.isContentEditable;
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setOpen((current) => !current);
-      }
-      if (event.key === "/" && !["INPUT", "TEXTAREA"].includes((event.target as HTMLElement)?.tagName)) {
+      } else if (event.key === "/" && !typing) {
         event.preventDefault();
         setOpen(true);
+      } else if (event.key === "Escape" && open) {
+        event.preventDefault();
+        close();
       }
-      if (event.key === "Escape") close();
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [close]);
+  }, [close, open]);
 
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-      setTimeout(() => inputRef.current?.focus(), 50);
-    } else {
-      document.body.style.overflow = "";
-    }
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const id = requestAnimationFrame(() => inputRef.current?.focus());
     return () => {
-      document.body.style.overflow = "";
+      cancelAnimationFrame(id);
+      document.body.style.overflow = previous;
     };
   }, [open]);
 
@@ -162,6 +171,14 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
     setLastQuery(query);
     setActiveIndex(0);
   }
+
+  // Keep the selected row in view when navigating with the keyboard.
+  useEffect(() => {
+    const row = listRef.current?.querySelector<HTMLElement>(
+      `[data-index="${activeIndex}"]`,
+    );
+    row?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex]);
 
   function onInputKeyDown(event: React.KeyboardEvent) {
     if (event.key === "ArrowDown") {
@@ -173,12 +190,17 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
     } else if (event.key === "Enter" && results[activeIndex]) {
       event.preventDefault();
       select(results[activeIndex].href);
+    } else if (event.key === "Tab") {
+      // Keep focus inside the dialog; the input is its only field.
+      event.preventDefault();
     }
   }
 
+  const trimmed = query.trim();
+
   const modalNode = (
     <div
-      className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/60 backdrop-blur-sm p-4 pt-[10vh] sm:pt-[14vh]"
+      className="fixed inset-0 z-[70] flex items-start justify-center bg-base/80 px-4 pb-4 pt-[12vh]"
       onClick={close}
       role="presentation"
     >
@@ -186,93 +208,90 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
         role="dialog"
         aria-modal="true"
         aria-label="Search documentation"
-        className="w-full max-w-[640px] overflow-hidden rounded-xl border border-border bg-card shadow-2xl transition-all"
+        className="w-full max-w-[600px] overflow-hidden rounded-panel bg-raised shadow-dialog"
         onClick={(event) => event.stopPropagation()}
       >
-        {/* Search Input Bar */}
-        <div className="flex items-center gap-3 border-b border-border px-4 py-3 bg-card">
-          <SearchIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+        <div className="flex h-12 items-center gap-2.5 border-b border-border-subtle px-4">
+          <SearchIcon className="size-[15px] shrink-0 text-fg-tertiary" aria-hidden />
           <input
             ref={inputRef}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={onInputKeyDown}
-            placeholder="Search documentation, API, concepts..."
+            placeholder="Search documentation"
             aria-label="Search query"
+            aria-controls="search-results"
+            aria-activedescendant={results[activeIndex] ? `search-option-${activeIndex}` : undefined}
+            role="combobox"
+            aria-expanded="true"
+            autoComplete="off"
+            spellCheck={false}
             data-focus-ring="none"
-            className="h-7 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-faint font-sans"
+            className="h-8 w-full min-w-0 bg-transparent text-[15px] text-fg outline-none placeholder:text-fg-tertiary"
           />
-          <kbd className="shrink-0 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-faint">
-            esc
-          </kbd>
+          <kbd className="shrink-0" aria-hidden>esc</kbd>
         </div>
 
-        {/* Results List */}
         <div
           ref={listRef}
-          className="max-h-[380px] overflow-y-auto p-2 divide-y divide-border/30"
+          id="search-results"
+          role="listbox"
+          aria-label="Results"
+          className="max-h-[360px] overflow-y-auto p-1.5"
         >
-          {results.length === 0 ? (
-            <div className="py-12 text-center text-xs text-muted-foreground">
-              <p>No results found for &ldquo;{query}&rdquo;</p>
-              <p className="mt-1 text-faint">Try searching for an API method or concept</p>
+          {engineFailed && trimmed ? (
+            <p className="px-4 py-8 text-center text-fg-secondary">
+              Search is unavailable right now. Use the sidebar to find a page.
+            </p>
+          ) : results.length === 0 ? (
+            <div className="px-4 py-8 text-center text-fg-secondary">
+              <p className="font-medium text-fg">Nothing matches &ldquo;{trimmed}&rdquo;</p>
+              <p className="mt-1">
+                Search by class or method name, like AgentSession or run().
+              </p>
             </div>
           ) : (
             results.map((item, index) => {
-              const Icon = groupIcon(item.group);
-              const isSelected = index === activeIndex;
+              const Icon = item.group === "Changelog" ? Tag : FileText;
+              const selected = index === activeIndex;
               return (
                 <button
                   key={item.href}
+                  id={`search-option-${index}`}
+                  data-index={index}
+                  role="option"
+                  aria-selected={selected}
+                  tabIndex={-1}
                   onClick={() => select(item.href)}
-                  onMouseEnter={() => setActiveIndex(index)}
+                  onMouseMove={() => setActiveIndex(index)}
                   className={cn(
-                    "flex w-full cursor-pointer items-start gap-3 rounded-md px-3 py-2.5 text-left transition-colors duration-100",
-                    isSelected
-                      ? "bg-muted text-foreground"
-                      : "text-muted-foreground hover:bg-muted/50",
+                    "flex h-10 w-full cursor-pointer items-center gap-2.5 rounded-control px-2.5 text-left text-ui",
+                    selected ? "bg-sunken" : "hover:bg-sunken/60",
                   )}
                 >
-                  <Icon
-                    className={cn(
-                      "size-4 shrink-0 mt-0.5",
-                      isSelected ? "text-accent" : "text-faint",
-                    )}
-                    aria-hidden
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span
-                        className={cn(
-                          "text-xs font-medium truncate",
-                          isSelected ? "text-foreground font-semibold" : "text-foreground",
-                        )}
-                      >
-                        {item.title}
-                      </span>
-                      <span className="font-mono text-[10px] text-faint shrink-0">
-                        {item.group}
-                      </span>
-                    </div>
-                    {item.description && (
-                      <p className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground">
-                        {item.description}
-                      </p>
-                    )}
-                  </div>
+                  <Icon className="size-3.5 shrink-0 text-fg-tertiary" aria-hidden />
+                  <span className="min-w-0 flex-1 truncate font-medium text-fg">
+                    {item.title}
+                  </span>
+                  <span className="shrink-0 font-mono text-2xs text-fg-tertiary">
+                    {item.group}
+                  </span>
                 </button>
               );
             })
           )}
         </div>
 
-        {/* Footer Navigation Hints */}
-        <div className="flex items-center justify-between border-t border-border px-4 py-2 font-mono text-[10px] text-faint bg-muted/40">
-          <div className="flex items-center gap-3">
-            <span>↑↓ Navigate</span>
-            <span>↵ Open</span>
-          </div>
-          <span>ESC to close</span>
+        <div className="flex h-9 items-center gap-4 border-t border-border-subtle bg-sunken px-4 text-xs text-fg-tertiary">
+          <span className="flex items-center gap-1">
+            <kbd className="bg-raised">↑</kbd>
+            <kbd className="bg-raised">↓</kbd>
+            <span className="ml-1">navigate</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <kbd className="bg-raised">↵</kbd>
+            <span className="ml-1">open</span>
+          </span>
         </div>
       </div>
     </div>
@@ -280,18 +299,17 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
 
   return (
     <>
+      {/* Icon-only below sm, a field from sm up. */}
       <button
+        ref={triggerRef}
+        type="button"
         onClick={() => setOpen(true)}
-        aria-label="Search documentation"
-        className="group flex h-8.5 w-full cursor-pointer items-center justify-between rounded border border-border bg-card px-3 text-xs text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
+        aria-keyshortcuts={isMac ? "Meta+K" : "Control+K"}
+        className="group flex size-8 cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default bg-raised text-ui text-fg-tertiary transition-[border-color,color,transform] duration-150 ease-out hover:border-fg-tertiary hover:text-fg active:scale-[0.98] active:duration-100 sm:w-full sm:justify-start sm:px-2.5"
       >
-        <div className="flex items-center gap-2">
-          <SearchIcon className="size-3.5 text-faint group-hover:text-muted-foreground transition-colors" aria-hidden />
-          <span className="font-normal">Search or ask...</span>
-        </div>
-        <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-faint">
-          ⌘K
-        </kbd>
+        <SearchIcon className="size-3.5 shrink-0" aria-hidden />
+        <span className="sr-only whitespace-nowrap sm:not-sr-only">Search docs</span>
+        <kbd className="ml-auto hidden sm:inline-block" aria-hidden>{isMac ? "⌘K" : "Ctrl K"}</kbd>
       </button>
 
       {open && mounted && createPortal(modalNode, document.body)}

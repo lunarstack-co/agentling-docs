@@ -21,16 +21,20 @@ function escapeXml(text: string): string {
 export function renderRss({
   title,
   path,
+  feedPath,
   description,
   items,
 }: {
   title: string;
+  /** The HTML page the feed describes. */
   path: string;
+  /** The feed's own route, used for the atom:link rel="self". */
+  feedPath: string;
   description: string;
   items: FeedItem[];
 }): string {
   const channelUrl = `${SITE_URL}${path}`;
-  const selfUrl = `${SITE_URL}${path === "/blog" ? "/feed.xml" : "/changelog.xml"}`;
+  const selfUrl = `${SITE_URL}${feedPath}`;
   const lastBuildDate = items[0]?.pubDate ?? new Date().toUTCString();
 
   const itemsXml = items

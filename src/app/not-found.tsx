@@ -1,30 +1,32 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+import { buttonClass } from "@/components/ui/button";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = pageMetadata({
+  kind: "notFound",
+  title: "Page not found",
+  description: "There is no page at this address.",
+});
 
 export default function NotFound() {
   return (
-    <div className="mx-auto flex max-w-3xl flex-col items-center px-4 py-24 text-center sm:px-6">
-      <p className="font-mono text-sm text-accent">404</p>
-      <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground">
-        This page took a different tool call
+    <div className="mx-auto flex w-full max-w-[680px] flex-col items-start px-4 pb-20 pt-16 sm:px-6 lg:pt-24">
+      <p className="eyebrow">404</p>
+      <h1 className="mt-3 text-balance text-h1 font-semibold tracking-[-0.02em] text-fg">
+        There is no page at this address.
       </h1>
-      <p className="mt-4 max-w-md text-muted-foreground">
-        The page you are looking for does not exist or has moved. Try the
-        docs, or head back home.
+      <p className="mt-3 max-w-md text-lede text-fg-secondary">
+        It may have moved, or the link may be out of date. The documentation
+        index lists every page, and search is one keystroke away.
       </p>
-      <div className="mt-8 flex gap-3">
-        <Link
-          href="/docs"
-          className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-opacity duration-150 hover:opacity-90"
-        >
-          Browse the docs
-        </Link>
-        <Link
-          href="/"
-          className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors duration-150 hover:border-border-strong"
-        >
-          Go home
-        </Link>
-      </div>
+      <Link
+        href="/docs/getting-started/introduction"
+        className={buttonClass({ variant: "outline", className: "mt-8" })}
+      >
+        Open the documentation
+      </Link>
     </div>
   );
 }

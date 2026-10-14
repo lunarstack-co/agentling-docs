@@ -2,6 +2,8 @@
 title: Privacy Policy
 slug: privacy
 description: What data this website collects, what it does not, and your choices.
+metaTitle: "Privacy policy: what this site collects"
+metaDescription: "What this website collects, what it does not, which third parties are involved, and the choices you have."
 ---
 
 Last updated: 7 July 2026

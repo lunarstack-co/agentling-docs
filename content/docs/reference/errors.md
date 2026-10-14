@@ -3,6 +3,8 @@ title: Errors
 slug: errors
 description: The exception hierarchy, which failures the model recovers from, and what redact_errors changes.
 order: 4
+metaTitle: "Errors reference: the exception hierarchy"
+metaDescription: "Every exception under AgentlingError, which failures the loop recovers from on its own, and what redact_errors changes about what the model sees."
 ---
 
 Every exception agentling raises lives under a single base class, `AgentlingError`, so one `except` clause can catch anything the framework produces. Just as important is what does not raise: most tool failures are converted into observations the model can recover from instead of crashing the run.

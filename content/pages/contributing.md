@@ -2,6 +2,8 @@
 title: Contributing
 slug: contributing
 description: How to set up a development environment, run the checks, and contribute to agentling.
+metaTitle: "Contributing: setup, checks, pull requests"
+metaDescription: "Set up a dev environment with uv, run the test, lint, format, and type checks that CI runs, and open a pull request against the agentling repository."
 ---
 
 Thanks for your interest in improving agentling. The framework stays deliberately small, so thoughtful contributions matter more than big ones.

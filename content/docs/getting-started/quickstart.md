@@ -3,6 +3,8 @@ title: Quickstart
 slug: quickstart
 description: Build, run, and stream your first agent in a few lines of Python.
 order: 3
+metaTitle: "Quickstart: build and stream your first agent"
+metaDescription: "Define a tool with @tool, create an Agent with a model, run it, then stream events from the same loop. About 30 lines of Python from start to finish."
 ---
 
 This page takes you from an empty file to a streaming agent with one tool.
