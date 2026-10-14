@@ -102,20 +102,6 @@
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  /* Legacy aliases so each migration commit keeps rendering. Removed in
-     the cleanup commit once no component references them. */
-  --color-background: var(--bg-base);
-  --color-foreground: var(--fg);
-  --color-card: var(--bg-raised);
-  --color-muted: var(--bg-sunken);
-  --color-muted-foreground: var(--fg-secondary);
-  --color-faint: var(--fg-tertiary);
-  --color-border: var(--border-subtle);
-  --color-border-strong: var(--border-default);
-  --color-accent-foreground: var(--accent-fg);
-  --color-accent-soft: var(--accent-subtle);
-  --color-code-bg: var(--bg-code);
-
   /* Two radii: controls and panels. */
   --radius-*: initial;
   --radius-control: 4px;

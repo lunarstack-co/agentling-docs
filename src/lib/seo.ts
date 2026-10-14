@@ -21,11 +21,6 @@ interface PageMetadataInput {
 }
 
 /**
- * Builds the full per-page metadata: canonical URL, Open Graph, and Twitter
- * card, all derived from one title/description/path triple so they can
- * never drift apart. Relative URLs resolve against metadataBase.
- */
-/**
  * Feed autodiscovery links. Repeated on every page because Next.js
  * replaces (rather than deep-merges) the `alternates` object when a page
  * sets its canonical URL.
@@ -36,6 +31,11 @@ const FEED_TYPES = {
   ],
 };
 
+/**
+ * Builds the full per-page metadata: canonical URL, Open Graph, and Twitter
+ * card, all derived from one title/description/path triple so they can
+ * never drift apart. Relative URLs resolve against metadataBase.
+ */
 export function pageMetadata({
   title,
   description,
