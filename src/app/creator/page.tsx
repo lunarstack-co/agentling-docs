@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { JsonLd } from "@/components/json-ld";
 import { getFileDates } from "@/lib/content/dates";
@@ -274,8 +275,8 @@ export default function CreatorPage() {
         </ul>
         <p>
           <ExternalLink href={GITHUB_URL}>Source on GitHub</ExternalLink>,{" "}
-          <a href="/docs/getting-started/introduction">documentation</a>,{" "}
-          <a href="/docs/getting-started/installation">installation</a>,{" "}
+          <Link href="/docs/getting-started/introduction">documentation</Link>,{" "}
+          <Link href="/docs/getting-started/installation">installation</Link>,{" "}
           <ExternalLink href={`${GITHUB_URL}/tree/main/examples`}>examples</ExternalLink>, and{" "}
           <ExternalLink href={PYPI_URL}>the package on PyPI</ExternalLink>. MIT
           licensed, Python 3.11 or newer.
@@ -382,7 +383,7 @@ export default function CreatorPage() {
         </ul>
         <p>
           For security reports about Agentling, see the{" "}
-          <a href="/contributing#reporting-vulnerabilities">contributing page</a>.
+          <Link href="/contributing#reporting-vulnerabilities">contributing page</Link>.
         </p>
 
         <h2 id="bio">Short biography</h2>
