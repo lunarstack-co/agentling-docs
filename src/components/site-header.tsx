@@ -31,13 +31,13 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 h-14 border-b border-border bg-background/90 backdrop-blur-md transition-colors">
-      <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6">
+    <header className="sticky top-0 z-40 h-14 border-b border-border bg-background/90 backdrop-blur-md transition-colors w-full overflow-hidden">
+      <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-1 sm:gap-3 px-3 sm:px-6">
         {/* Left: Logo + Version Dropdown Pill */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink min-w-0">
           <Logo />
 
-          <div className="relative">
+          <div className="relative shrink-0 hidden sm:block">
             <button
               onClick={() => setVersionOpen((o) => !o)}
               aria-label="Version selector"
@@ -76,7 +76,7 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
             )}
           </div>
 
-          <nav aria-label="Main" className="hidden items-center gap-1 ml-4 md:flex">
+          <nav aria-label="Main" className="hidden lg:flex items-center gap-1 ml-2">
             {NAV.map((item) => {
               const active =
                 item.href === "/docs"
@@ -101,18 +101,14 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
           </nav>
         </div>
 
-        {/* Center / Wide Search: ⌘K or / */}
-        <div className="flex-1 max-w-md mx-2 hidden sm:block">
+        {/* Center: Search Field */}
+        <div className="flex-1 min-w-0 max-w-[120px] xs:max-w-[180px] sm:max-w-xs md:max-w-md mx-1 sm:mx-2">
           <SearchDialog items={searchItems} />
         </div>
 
-        {/* Right: Language, GitHub, Theme, Mobile toggle */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          <div className="sm:hidden">
-            <SearchDialog items={searchItems} />
-          </div>
-
-          <div className="hidden sm:flex items-center rounded border border-border bg-card px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
+        {/* Right Controls */}
+        <div className="flex items-center gap-1 shrink-0">
+          <div className="hidden xl:flex items-center rounded border border-border bg-card px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
             <span className="font-semibold text-foreground">Python</span>
             <span className="text-faint ml-1">3.11+</span>
           </div>
@@ -122,7 +118,7 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
             target="_blank"
             rel="noreferrer"
             aria-label="Agentling on GitHub"
-            className="flex size-8 items-center justify-center rounded border border-border text-muted-foreground hover:text-foreground hover:border-border-strong transition-colors"
+            className="hidden sm:flex size-8 items-center justify-center rounded border border-border text-muted-foreground hover:text-foreground hover:border-border-strong transition-colors"
           >
             <GithubIcon className="size-3.5" aria-hidden />
           </a>
@@ -133,7 +129,7 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
             onClick={() => setMenuOpen((open) => !open)}
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
-            className="flex size-8 cursor-pointer items-center justify-center rounded border border-border text-muted-foreground md:hidden"
+            className="flex size-8 cursor-pointer items-center justify-center rounded border border-border text-muted-foreground lg:hidden shrink-0"
           >
             {menuOpen ? <X className="size-3.5" aria-hidden /> : <Menu className="size-3.5" aria-hidden />}
           </button>
@@ -143,7 +139,7 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
       {menuOpen && (
         <nav
           aria-label="Mobile"
-          className="border-t border-border bg-background px-4 py-3 md:hidden shadow-lg"
+          className="border-t border-border bg-background px-4 py-3 lg:hidden shadow-lg"
         >
           <ul className="flex flex-col gap-1">
             {NAV.map((item) => (

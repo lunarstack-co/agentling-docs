@@ -70,7 +70,7 @@ export default async function DocPage({ params }: DocPageParams) {
   const templateBadge = TEMPLATE_BADGES[page.sectionSlug] ?? { label: "Guide", color: "bg-muted text-muted-foreground border-border" };
 
   return (
-    <div className="flex w-full justify-between gap-12">
+    <div className="flex w-full justify-between gap-8 lg:gap-12 min-w-0">
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -100,30 +100,30 @@ export default async function DocPage({ params }: DocPageParams) {
       />
 
       {/* Centre Column: max-w-[720px] for prose, code breaks wider up to 860px */}
-      <article className="min-w-0 max-w-[720px] flex-1 pb-16">
+      <article className="min-w-0 max-w-full lg:max-w-[720px] flex-1 pb-16">
         {/* Breadcrumb + Diataxis badge */}
         <div className="flex items-center justify-between gap-2 text-xs mb-3">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-muted-foreground">
-            <Link href="/docs" className="hover:text-foreground transition-colors">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-muted-foreground truncate pr-2">
+            <Link href="/docs" className="hover:text-foreground transition-colors shrink-0">
               Docs
             </Link>
-            <span className="text-border-strong">/</span>
-            <span>{page.sectionTitle}</span>
+            <span className="text-border-strong shrink-0">/</span>
+            <span className="truncate">{page.sectionTitle}</span>
           </nav>
 
-          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-medium border ${templateBadge.color}`}>
+          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-medium border shrink-0 ${templateBadge.color}`}>
             {templateBadge.label}
           </span>
         </div>
 
         {/* H1 Title */}
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground leading-tight">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-tight">
           {page.title}
         </h1>
 
         {/* One-sentence summary in larger, muted text */}
         {page.description && (
-          <p className="mt-3 text-lg leading-relaxed text-muted-foreground font-normal">
+          <p className="mt-3 text-base sm:text-lg leading-relaxed text-muted-foreground font-normal">
             {page.description}
           </p>
         )}
@@ -135,7 +135,7 @@ export default async function DocPage({ params }: DocPageParams) {
         </div>
 
         {/* Markdown Content */}
-        <div className="mt-6">
+        <div className="mt-6 min-w-0 max-w-full overflow-hidden">
           <Markdown source={page.body} />
         </div>
 

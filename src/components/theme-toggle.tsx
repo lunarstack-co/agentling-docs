@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 
 const emptySubscribe = () => () => {};
 
-/** True after hydration; false during SSR, so theme state never mismatches. */
 function useMounted(): boolean {
   return useSyncExternalStore(
     emptySubscribe,
@@ -17,43 +16,79 @@ function useMounted(): boolean {
   );
 }
 
-const OPTIONS = [
-  { value: "light", label: "Light theme", icon: Sun },
-  { value: "dark", label: "Dark theme", icon: Moon },
-  { value: "system", label: "System theme", icon: Monitor },
-] as const;
-
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme();
   const mounted = useMounted();
 
+  const isDark = mounted ? theme === "dark" : true;
+
+  function toggle() {
+    setTheme(isDark ? "light" : "dark");
+  }
+
   return (
-    <div
-      role="radiogroup"
-      aria-label="Theme"
-      className="flex items-center gap-0.5 rounded-full border border-border p-0.5"
-    >
-      {OPTIONS.map(({ value, label, icon: Icon }) => {
-        const active = mounted && theme === value;
-        return (
-          <button
-            key={value}
-            role="radio"
-            aria-checked={active}
-            aria-label={label}
-            title={label}
-            onClick={() => setTheme(value)}
-            className={cn(
-              "flex size-7 cursor-pointer items-center justify-center rounded-full transition-colors duration-150",
-              active
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <Icon className="size-3.5" aria-hidden />
-          </button>
-        );
-      })}
-    </div>
+    <>
+      {/* Mobile / Tablet compact 1-button toggle (32x32px) */}
+      <button
+        onClick={toggle}
+        aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+        className={cn(
+          "flex size-8 cursor-pointer items-center justify-center rounded border border-border text-muted-foreground hover:text-foreground hover:border-border-strong transition-colors sm:hidden",
+          className
+        )}
+      >
+        {isDark ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}
+      </button>
+
+      {/* Desktop 3-option toggle pill */}
+      <div
+        role="radiogroup"
+        aria-label="Theme"
+        className={cn("hidden sm:flex items-center gap-0.5 rounded-full border border-border p-0.5", className)}
+      >
+        <button
+          role="radio"
+          aria-checked={mounted ? theme === "light" : false}
+          aria-label="Light theme"
+          onClick={() => setTheme("light")}
+          className={cn(
+            "flex size-6 cursor-pointer items-center justify-center rounded-full transition-colors duration-150",
+            mounted && theme === "light"
+              ? "bg-muted text-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          <Sun className="size-3" aria-hidden />
+        </button>
+        <button
+          role="radio"
+          aria-checked={mounted ? theme === "dark" : true}
+          aria-label="Dark theme"
+          onClick={() => setTheme("dark")}
+          className={cn(
+            "flex size-6 cursor-pointer items-center justify-center rounded-full transition-colors duration-150",
+            mounted && theme === "dark"
+              ? "bg-muted text-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          <Moon className="size-3" aria-hidden />
+        </button>
+        <button
+          role="radio"
+          aria-checked={mounted ? theme === "system" : false}
+          aria-label="System theme"
+          onClick={() => setTheme("system")}
+          className={cn(
+            "flex size-6 cursor-pointer items-center justify-center rounded-full transition-colors duration-150",
+            mounted && theme === "system"
+              ? "bg-muted text-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          <Monitor className="size-3" aria-hidden />
+        </button>
+      </div>
+    </>
   );
 }

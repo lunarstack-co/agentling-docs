@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, FileText, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -17,11 +17,11 @@ const DIATAXIS_HINTS: Record<string, string> = {
   reference: "Reference",
 };
 
-function SectionNav({ sections }: { sections: DocSection[] }) {
+function SectionNav({ sections, onNavigate }: { sections: DocSection[]; onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Documentation" className="space-y-6 text-xs flex flex-col justify-between min-h-[calc(100vh-6.5rem)]">
+    <nav aria-label="Documentation" className="space-y-6 text-xs flex flex-col justify-between min-h-full">
       <div className="space-y-6">
         {sections.map((section) => {
           const modeHint = DIATAXIS_HINTS[section.slug];
@@ -43,6 +43,7 @@ function SectionNav({ sections }: { sections: DocSection[] }) {
                     <li key={page.slug}>
                       <Link
                         href={href}
+                        onClick={onNavigate}
                         aria-current={active ? "page" : undefined}
                         className={cn(
                           "block px-2.5 py-1.5 rounded transition-colors text-xs leading-snug",
@@ -71,6 +72,7 @@ function SectionNav({ sections }: { sections: DocSection[] }) {
           <li>
             <Link
               href="/privacy"
+              onClick={onNavigate}
               className={cn(
                 "block px-2 py-1 rounded transition-colors",
                 pathname === "/privacy"
@@ -84,6 +86,7 @@ function SectionNav({ sections }: { sections: DocSection[] }) {
           <li>
             <Link
               href="/terms"
+              onClick={onNavigate}
               className={cn(
                 "block px-2 py-1 rounded transition-colors",
                 pathname === "/terms"
@@ -126,30 +129,47 @@ export function DocsSidebar({ sections }: { sections: DocSection[] }) {
 
   return (
     <>
-      {/* Mobile: bottom drawer toggle */}
+      {/* Mobile: sticky page selector bar */}
       <div className="sticky top-14 z-30 flex w-full items-center justify-between border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur-md lg:hidden">
         <button
           onClick={() => setMobileOpen((open) => !open)}
           aria-expanded={mobileOpen}
           className="flex w-full cursor-pointer items-center justify-between text-xs font-medium"
         >
-          <span className="text-foreground">
-            {current?.title ?? "Documentation"}
-          </span>
+          <div className="flex items-center gap-2 truncate pr-2">
+            <FileText className="size-3.5 text-muted-foreground shrink-0" />
+            <span className="text-foreground truncate">
+              {current?.title ?? "Documentation"}
+            </span>
+          </div>
           <ChevronDown
             className={cn(
-              "size-4 text-muted-foreground transition-transform duration-200",
+              "size-4 text-muted-foreground transition-transform duration-200 shrink-0",
               mobileOpen && "rotate-180",
             )}
             aria-hidden
           />
         </button>
+
         {mobileOpen && (
-          <div
-            className="absolute left-0 right-0 top-full max-h-[75vh] overflow-y-auto border-b border-border bg-background p-4 shadow-xl z-50"
-            onClick={() => setMobileOpen(false)}
-          >
-            <SectionNav sections={sections} />
+          <div className="fixed inset-0 top-14 z-50 flex flex-col bg-background/98 backdrop-blur-md">
+            {/* Top close header bar */}
+            <div className="flex items-center justify-between border-b border-border px-4 py-3 bg-muted/40">
+              <span className="text-xs font-semibold text-foreground uppercase tracking-wider font-mono">
+                Documentation Index
+              </span>
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="flex size-7 items-center justify-center rounded border border-border text-muted-foreground hover:text-foreground"
+                aria-label="Close menu"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+            {/* Nav content */}
+            <div className="flex-1 overflow-y-auto p-5">
+              <SectionNav sections={sections} onNavigate={() => setMobileOpen(false)} />
+            </div>
           </div>
         )}
       </div>
