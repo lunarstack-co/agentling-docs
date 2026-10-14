@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { getSitePage, getSitePageSlugs } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, webPageGraph } from "@/lib/seo";
 
 interface SitePageParams {
   params: Promise<{ slug: string }>;
@@ -21,9 +22,11 @@ export async function generateMetadata({
   const page = await getSitePage(slug);
   if (!page) return {};
   return pageMetadata({
-    title: page.title,
-    description: page.description,
+    kind: "page",
+    title: page.metaTitle ?? page.title,
+    description: page.metaDescription ?? page.description,
     path: `/${page.slug}`,
+    dates: { published: page.published, modified: page.modified },
   });
 }
 
@@ -34,6 +37,18 @@ export default async function StandaloneSitePage({ params }: SitePageParams) {
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-[760px] px-4 pb-20 pt-8 sm:px-6 lg:pt-10">
+      <JsonLd
+        data={webPageGraph({
+          title: page.title,
+          description: page.description,
+          path: `/${page.slug}`,
+          modified: page.modified,
+          crumbs: [
+            { name: "Docs", path: "/docs/getting-started/introduction" },
+            { name: page.title, path: `/${page.slug}` },
+          ],
+        })}
+      />
       <h1 className="text-balance text-h1 font-semibold tracking-[-0.02em] text-fg">
         {page.title}
       </h1>

@@ -1,23 +1,43 @@
 import type { Metadata } from "next";
 
+import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
-import { getChangelog } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { getChangelog, getContentModified } from "@/lib/content";
+import { pageMetadata, webPageGraph } from "@/lib/seo";
 import { GITHUB_URL } from "@/lib/site";
 import { formatDate } from "@/lib/utils";
 
+const TITLE = "Changelog: every release, with an RSS feed";
+const DESCRIPTION =
+  "What shipped in each Agentling release, following Keep a Changelog and semantic versioning, with an RSS feed at /changelog.xml.";
+
 export const metadata: Metadata = pageMetadata({
-  title: "Changelog",
-  description:
-    "Every Agentling release, documented. Follows Keep a Changelog and semantic versioning.",
+  kind: "changelog",
+  title: TITLE,
+  description: DESCRIPTION,
   path: "/changelog",
 });
 
 export default async function ChangelogPage() {
-  const entries = await getChangelog();
+  const [entries, modified] = await Promise.all([
+    getChangelog(),
+    getContentModified("changelog"),
+  ]);
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-[760px] px-4 pb-20 pt-8 sm:px-6 lg:pt-10">
+      <JsonLd
+        data={webPageGraph({
+          title: "Changelog",
+          description: DESCRIPTION,
+          path: "/changelog",
+          modified,
+          crumbs: [
+            { name: "Docs", path: "/docs/getting-started/introduction" },
+            { name: "Changelog", path: "/changelog" },
+          ],
+        })}
+      />
       <h1 className="text-balance text-h1 font-semibold tracking-[-0.02em] text-fg">
         Changelog
       </h1>

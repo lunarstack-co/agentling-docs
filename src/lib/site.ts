@@ -8,6 +8,12 @@ export const GITHUB_URL = "https://github.com/lunarstack-co/agentling";
 export const GITHUB_DOCS_URL = "https://github.com/lunarstack-co/agentling-docs";
 export const PYPI_URL = "https://pypi.org/project/agentling/";
 
+/** The organisation that publishes the project. */
+export const ORG = {
+  name: "Lunarstack",
+  github: "https://github.com/lunarstack-co",
+};
+
 export const AUTHOR = {
   name: "Folarin Akinloye",
   role: "Creator of agentling",

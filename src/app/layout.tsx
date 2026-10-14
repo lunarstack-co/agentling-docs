@@ -2,10 +2,13 @@ import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 
+import { JsonLd } from "@/components/json-ld";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import type { SearchItem } from "@/components/search";
 import { getChangelog, getDocSections } from "@/lib/content";
+import { DEFAULT_TITLE, siteGraph } from "@/lib/seo";
 import { SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 import { THEME_COLORS } from "@/lib/theme";
 
@@ -31,8 +34,8 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} Documentation`,
-    template: `%s · ${SITE_NAME}`,
+    default: DEFAULT_TITLE,
+    template: `%s | ${SITE_NAME}`,
   },
   description: SITE_TAGLINE,
   applicationName: SITE_NAME,
@@ -51,17 +54,6 @@ export const metadata: Metadata = {
     "LLM",
     "open source",
   ],
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
-  },
   alternates: {
     types: {
       "application/rss+xml": [
@@ -131,10 +123,12 @@ export default async function RootLayout({
           >
             Skip to content
           </a>
+          <JsonLd data={siteGraph()} />
           <SiteHeader searchItems={searchItems} />
-          <div id="main" className="flex-1 flex flex-col">
+          <main id="main" className="flex flex-1 flex-col">
             {children}
-          </div>
+          </main>
+          <SiteFooter />
         </ThemeProvider>
       </body>
     </html>

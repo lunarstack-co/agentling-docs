@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 
+import { getFileDates } from "./dates";
 import type {
   ChangelogEntry,
   DocPage,
@@ -26,6 +27,10 @@ function markdownFiles(dir: string): string[] {
     .readdirSync(dir)
     .filter((name) => name.endsWith(".md"))
     .map((name) => path.join(dir, name));
+}
+
+function optionalString(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value : undefined;
 }
 
 function toIsoString(value: unknown): string {
@@ -54,6 +59,9 @@ export async function getDocSections(): Promise<DocSection[]> {
             slug: String(page.slug),
             description: String(page.description ?? ""),
             order: Number(page.order ?? 0),
+            metaTitle: optionalString(page.metaTitle),
+            metaDescription: optionalString(page.metaDescription),
+            modified: getFileDates(file).modified,
           };
         })
         .sort(byOrder);
@@ -77,14 +85,19 @@ export async function getDocPage(slug: string): Promise<DocPage | null> {
       if (path.basename(file) === "_section.md") continue;
       const page = readMarkdown(file);
       if (page.slug === slug) {
+        const dates = getFileDates(file);
         return {
           title: String(page.title),
           slug,
           description: String(page.description ?? ""),
           order: Number(page.order ?? 0),
+          metaTitle: optionalString(page.metaTitle),
+          metaDescription: optionalString(page.metaDescription),
           body: page.body,
           sectionSlug: section.slug,
           sectionTitle: section.title,
+          published: dates.published,
+          modified: dates.modified,
         };
       }
     }
@@ -112,11 +125,16 @@ export async function getSitePage(slug: string): Promise<SitePage | null> {
   const file = path.join(CONTENT_DIR, "pages", `${slug}.md`);
   if (!fs.existsSync(file)) return null;
   const page = readMarkdown(file);
+  const dates = getFileDates(file);
   return {
     title: String(page.title),
     slug,
     description: String(page.description ?? ""),
     body: page.body,
+    metaTitle: optionalString(page.metaTitle),
+    metaDescription: optionalString(page.metaDescription),
+    published: dates.published,
+    modified: dates.modified,
   };
 }
 
@@ -125,4 +143,13 @@ export async function getSitePageSlugs(): Promise<string[]> {
   return markdownFiles(pagesDir).map((file) =>
     path.basename(file).replace(/\.md$/, ""),
   );
+}
+
+/** Last commit date across all content files, for the changelog page. */
+export async function getContentModified(dir: string): Promise<string> {
+  const files = markdownFiles(path.join(CONTENT_DIR, dir));
+  return files
+    .map((file) => getFileDates(file).modified)
+    .sort()
+    .reverse()[0] ?? new Date().toISOString();
 }

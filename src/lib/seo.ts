@@ -1,23 +1,35 @@
 import type { Metadata } from "next";
 
-import { SITE_NAME, SITE_URL } from "./site";
+import {
+  AUTHOR_JSON_LD,
+  GITHUB_URL,
+  ORG,
+  PYPI_URL,
+  SITE_NAME,
+  SITE_TAGLINE,
+  SITE_URL,
+  VERSION,
+} from "./site";
 
 export function absoluteUrl(path = "/"): string {
   return new URL(path, SITE_URL).toString();
 }
 
+/** Title used when a page sets none; also the site default. */
+export const DEFAULT_TITLE =
+  "Agentling, an async Python agent framework for tool use";
+
+export type PageKind = "doc" | "changelog" | "page" | "notFound";
+
 interface PageMetadataInput {
+  kind: PageKind;
+  /** Page part of the title; the layout template appends " | Agentling". */
   title: string;
-  description: string;
-  /** Route path starting with "/", used for the canonical and og:url. */
-  path: string;
-  ogType?: "website" | "article";
-  /** Extra Open Graph article fields (publish date, authors, tags). */
-  article?: {
-    publishedTime?: string;
-    authors?: string[];
-    tags?: string[];
-  };
+  /** Search-result description. Falls back to the site tagline. */
+  description?: string;
+  /** Route path starting with "/". Required for every indexable kind. */
+  path?: string;
+  dates?: { published?: string; modified?: string };
 }
 
 /**
@@ -32,17 +44,26 @@ const FEED_TYPES = {
 };
 
 /**
- * Builds the full per-page metadata: canonical URL, Open Graph, and Twitter
- * card, all derived from one title/description/path triple so they can
- * never drift apart. Relative URLs resolve against metadataBase.
+ * The one place titles, descriptions, canonicals, Open Graph and Twitter
+ * tags come from. `kind` decides the OG type, article dates, and whether
+ * the page is indexable.
  */
 export function pageMetadata({
+  kind,
   title,
-  description,
+  description = SITE_TAGLINE,
   path,
-  ogType = "website",
-  article,
+  dates,
 }: PageMetadataInput): Metadata {
+  if (kind === "notFound") {
+    return {
+      title,
+      description,
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const isArticle = kind === "doc";
   return {
     title,
     description,
@@ -52,12 +73,12 @@ export function pageMetadata({
       description,
       url: path,
       siteName: SITE_NAME,
-      type: ogType,
-      ...(ogType === "article" && article
+      type: isArticle ? "article" : "website",
+      ...(isArticle
         ? {
-            publishedTime: article.publishedTime,
-            authors: article.authors,
-            tags: article.tags,
+            publishedTime: dates?.published,
+            modifiedTime: dates?.modified,
+            authors: [AUTHOR_JSON_LD.url],
           }
         : {}),
     },
@@ -66,5 +87,136 @@ export function pageMetadata({
       title,
       description,
     },
+  };
+}
+
+/* ---------- JSON-LD ---------- */
+
+const ORG_ID = `${SITE_URL}/#org`;
+const SITE_ID = `${SITE_URL}/#site`;
+const APP_ID = `${SITE_URL}/#app`;
+
+/** Site-wide graph rendered once in the root layout. */
+export function siteGraph() {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": ORG_ID,
+        name: ORG.name,
+        url: SITE_URL,
+        sameAs: [ORG.github],
+      },
+      {
+        "@type": "WebSite",
+        "@id": SITE_ID,
+        name: SITE_NAME,
+        url: SITE_URL,
+        description: SITE_TAGLINE,
+        publisher: { "@id": ORG_ID },
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": APP_ID,
+        name: SITE_NAME,
+        description: SITE_TAGLINE,
+        applicationCategory: "DeveloperApplication",
+        operatingSystem: "Python 3.11+",
+        softwareVersion: VERSION,
+        license: "https://opensource.org/license/mit",
+        codeRepository: GITHUB_URL,
+        installUrl: PYPI_URL,
+        url: SITE_URL,
+        author: AUTHOR_JSON_LD,
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      },
+    ],
+  };
+}
+
+interface Crumb {
+  name: string;
+  path: string;
+}
+
+function breadcrumbList(crumbs: Crumb[]) {
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((crumb, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: crumb.name,
+      item: absoluteUrl(crumb.path),
+    })),
+  };
+}
+
+/** Doc page: TechArticle plus a breadcrumb with an item at every position. */
+export function docArticleGraph({
+  title,
+  description,
+  path,
+  published,
+  modified,
+  crumbs,
+}: {
+  title: string;
+  description: string;
+  path: string;
+  published: string;
+  modified: string;
+  crumbs: Crumb[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        headline: title,
+        description,
+        url: absoluteUrl(path),
+        image: absoluteUrl(`${path}/opengraph-image`),
+        datePublished: published,
+        dateModified: modified,
+        author: AUTHOR_JSON_LD,
+        publisher: { "@id": ORG_ID },
+        isPartOf: { "@id": SITE_ID },
+        about: { "@id": APP_ID },
+        inLanguage: "en",
+      },
+      breadcrumbList(crumbs),
+    ],
+  };
+}
+
+/** Changelog, contributing and legal pages. */
+export function webPageGraph({
+  title,
+  description,
+  path,
+  modified,
+  crumbs,
+}: {
+  title: string;
+  description: string;
+  path: string;
+  modified?: string;
+  crumbs: Crumb[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        name: title,
+        description,
+        url: absoluteUrl(path),
+        ...(modified ? { dateModified: modified } : {}),
+        isPartOf: { "@id": SITE_ID },
+        inLanguage: "en",
+      },
+      breadcrumbList(crumbs),
+    ],
   };
 }

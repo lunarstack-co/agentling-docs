@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { buttonClass } from "@/components/ui/button";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = pageMetadata({
+  kind: "notFound",
+  title: "Page not found",
+  description: "There is no page at this address.",
+});
 
 export default function NotFound() {
   return (

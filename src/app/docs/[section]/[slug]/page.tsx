@@ -8,8 +8,7 @@ import { Toc, TocInline } from "@/components/docs/toc";
 import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { getDocPage, getDocSections } from "@/lib/content";
-import { absoluteUrl, pageMetadata } from "@/lib/seo";
-import { AUTHOR_JSON_LD } from "@/lib/site";
+import { docArticleGraph, pageMetadata } from "@/lib/seo";
 import { extractToc } from "@/lib/toc";
 
 interface DocPageParams {
@@ -38,10 +37,11 @@ export async function generateMetadata({
   const page = await getDocPage(slug);
   if (!page) return {};
   return pageMetadata({
-    title: page.title,
-    description: page.description,
+    kind: "doc",
+    title: page.metaTitle ?? page.title,
+    description: page.metaDescription ?? page.description,
     path: `/docs/${page.sectionSlug}/${page.slug}`,
-    ogType: "article",
+    dates: { published: page.published, modified: page.modified },
   });
 }
 
@@ -67,42 +67,33 @@ export default async function DocPage({ params }: DocPageParams) {
 
   const toc = extractToc(page.body);
   const pagePath = `/docs/${page.sectionSlug}/${page.slug}`;
-  const pageUrl = absoluteUrl(pagePath);
+  const section = sections.find((entry) => entry.slug === page.sectionSlug);
+  const sectionFirst = section?.pages[0];
 
   return (
     <div className="flex w-full min-w-0 justify-between gap-12">
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@graph": [
+        data={docArticleGraph({
+          title: page.title,
+          description: page.description,
+          path: pagePath,
+          published: page.published,
+          modified: page.modified,
+          crumbs: [
+            { name: "Docs", path: "/docs/getting-started/introduction" },
             {
-              "@type": "TechArticle",
-              headline: page.title,
-              description: page.description,
-              url: pageUrl,
-              author: AUTHOR_JSON_LD,
-              isPartOf: {
-                "@type": "WebSite",
-                name: "Agentling Documentation",
-                url: absoluteUrl("/docs"),
-              },
+              name: page.sectionTitle,
+              path: sectionFirst ? `/docs/${page.sectionSlug}/${sectionFirst.slug}` : pagePath,
             },
-            {
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Docs", item: absoluteUrl("/docs") },
-                { "@type": "ListItem", position: 2, name: page.sectionTitle },
-                { "@type": "ListItem", position: 3, name: page.title, item: pageUrl },
-              ],
-            },
+            { name: page.title, path: pagePath },
           ],
-        }}
+        })}
       />
 
       <article className="min-w-0 max-w-[680px] flex-1">
         <div className="flex items-center gap-2 text-ui text-fg-secondary">
           <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2">
-            <Link href="/docs" className="shrink-0 transition-colors duration-150 hover:text-fg">
+            <Link href="/docs/getting-started/introduction" className="inline-flex min-h-6 shrink-0 items-center transition-colors duration-150 hover:text-fg">
               Docs
             </Link>
             <span className="text-border-default" aria-hidden>/</span>
