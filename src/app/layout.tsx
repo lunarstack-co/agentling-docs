@@ -1,32 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 
-import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import type { SearchItem } from "@/components/search";
-import { getBlogPosts, getChangelog, getDocSections } from "@/lib/content";
+import { getChangelog, getDocSections } from "@/lib/content";
 import { SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 
 import "./globals.css";
 
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-plex-sans",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
+  variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} · The agent framework you can read in one sitting`,
+    default: `${SITE_NAME} Documentation`,
     template: `%s · ${SITE_NAME}`,
   },
   description: SITE_TAGLINE,
@@ -36,7 +33,7 @@ export const metadata: Metadata = {
   publisher: SITE_NAME,
   category: "technology",
   keywords: [
-    "agentling",
+    "Agentling",
     "AI agents",
     "agent framework",
     "Python",
@@ -60,8 +57,7 @@ export const metadata: Metadata = {
   alternates: {
     types: {
       "application/rss+xml": [
-        { url: "/feed.xml", title: "agentling blog" },
-        { url: "/changelog.xml", title: "agentling changelog" },
+        { url: "/changelog.xml", title: "Agentling changelog" },
       ],
     },
   },
@@ -78,15 +74,14 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0b0e14" },
-    { media: "(prefers-color-scheme: light)", color: "#fbfbf9" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
   ],
 };
 
 async function buildSearchIndex(): Promise<SearchItem[]> {
-  const [sections, posts, releases] = await Promise.all([
+  const [sections, releases] = await Promise.all([
     getDocSections(),
-    getBlogPosts(),
     getChangelog(),
   ]);
 
@@ -99,12 +94,6 @@ async function buildSearchIndex(): Promise<SearchItem[]> {
         group: section.title,
       })),
     ),
-    ...posts.map((post) => ({
-      title: post.title,
-      description: post.excerpt,
-      href: `/blog/${post.slug}`,
-      group: "Blog",
-    })),
     ...releases.map((release) => ({
       title: `v${release.version} ${release.title}`.trim(),
       description: `Released ${release.releaseDate}`,
@@ -124,21 +113,20 @@ export default async function RootLayout({
       lang="en"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${plexSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col font-sans bg-background text-foreground">
         <ThemeProvider>
           <a
             href="#main"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:text-accent-foreground"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-[4px] focus:bg-foreground focus:px-3 focus:py-1.5 focus:text-xs focus:font-medium focus:text-background"
           >
             Skip to content
           </a>
           <SiteHeader searchItems={searchItems} />
-          <main id="main" className="flex-1">
+          <div id="main" className="flex-1 flex flex-col">
             {children}
-          </main>
-          <SiteFooter />
+          </div>
         </ThemeProvider>
       </body>
     </html>

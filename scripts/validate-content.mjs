@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Validates everything under /content so broken frontmatter, duplicate
- * slugs, dead internal links, or stray em dashes fail CI before they ship.
+ * slugs, or dead internal links fail CI before they ship.
  *
  * Usage: node scripts/validate-content.mjs
  */
@@ -98,10 +98,9 @@ function checkDashes(file, raw) {
 
 /* ---------- Collect and validate every collection ---------- */
 
-const validRoutes = new Set(["/", "/docs", "/blog", "/changelog"]);
+const validRoutes = new Set(["/", "/docs", "/changelog"]);
 const docSlugs = new Map();
 const sectionSlugs = new Map();
-const blogSlugs = new Map();
 const versions = new Map();
 const pageSlugs = new Map();
 const allFiles = [];
@@ -152,32 +151,9 @@ for (const dirent of fs.readdirSync(path.join(CONTENT, "docs"), {
     });
     checkOptional(file, page.data, { description: "string" });
     checkSlug(file, page.data.slug);
-    // Doc page slugs are globally unique because pages are looked up by
-    // slug alone.
     checkUnique(file, docSlugs, page.data.slug, "doc page slug");
     validRoutes.add(`/docs/${dirent.name}/${page.data.slug}`);
   }
-}
-
-for (const file of markdownFiles(path.join(CONTENT, "blog"))) {
-  const post = read(file);
-  if (!post) continue;
-  allFiles.push({ file, raw: post.content });
-  requireFields(file, post.data, {
-    title: "string",
-    slug: "string",
-    publishDate: "date",
-  });
-  checkOptional(file, post.data, {
-    excerpt: "string",
-    authorName: "string",
-    tags: "string[]",
-    featured: "boolean",
-    readingMinutes: "number",
-  });
-  checkSlug(file, post.data.slug);
-  checkUnique(file, blogSlugs, post.data.slug, "blog slug");
-  validRoutes.add(`/blog/${post.data.slug}`);
 }
 
 for (const file of markdownFiles(path.join(CONTENT, "changelog"))) {
@@ -228,5 +204,5 @@ if (errors.length > 0) {
 
 console.log(
   `Content OK: ${docSlugs.size} doc pages in ${sectionSlugs.size} sections, ` +
-    `${blogSlugs.size} posts, ${versions.size} releases, ${pageSlugs.size} site pages.`,
+    `${versions.size} releases, ${pageSlugs.size} site pages.`,
 );

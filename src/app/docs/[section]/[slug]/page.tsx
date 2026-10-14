@@ -1,21 +1,28 @@
-import { ArrowLeft, ArrowRight, ChevronRight, PencilLine } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CopyMarkdownButton } from "@/components/copy-markdown-button";
+import { FeedbackWidget } from "@/components/docs/feedback-widget";
+import { Toc } from "@/components/docs/toc";
 import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
-import { ShareLinks } from "@/components/share-links";
-import { Toc } from "@/components/docs/toc";
 import { getDocPage, getDocSections } from "@/lib/content";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
-import { AUTHOR_JSON_LD, GITHUB_DOCS_URL } from "@/lib/site";
+import { AUTHOR_JSON_LD } from "@/lib/site";
 import { extractToc } from "@/lib/toc";
 
 interface DocPageParams {
   params: Promise<{ section: string; slug: string }>;
 }
+
+const TEMPLATE_BADGES: Record<string, { label: string; color: string }> = {
+  "getting-started": { label: "Tutorial", color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" },
+  "core-concepts": { label: "Concept", color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20" },
+  guides: { label: "How-To Guide", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" },
+  reference: { label: "API Reference", color: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20" },
+};
 
 export async function generateStaticParams() {
   const sections = await getDocSections();
@@ -59,11 +66,11 @@ export default async function DocPage({ params }: DocPageParams) {
   const next = index < flat.length - 1 ? flat[index + 1] : null;
 
   const toc = extractToc(page.body);
-
   const pageUrl = absoluteUrl(`/docs/${page.sectionSlug}/${page.slug}`);
+  const templateBadge = TEMPLATE_BADGES[page.sectionSlug] ?? { label: "Guide", color: "bg-muted text-muted-foreground border-border" };
 
   return (
-    <div className="grid grid-cols-1 gap-10 py-10 lg:py-14 lg:pl-12 xl:grid-cols-[minmax(0,1fr)_13rem]">
+    <div className="flex w-full justify-between gap-12">
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -76,7 +83,7 @@ export default async function DocPage({ params }: DocPageParams) {
               author: AUTHOR_JSON_LD,
               isPartOf: {
                 "@type": "WebSite",
-                name: "agentling documentation",
+                name: "Agentling Documentation",
                 url: absoluteUrl("/docs"),
               },
             },
@@ -91,96 +98,93 @@ export default async function DocPage({ params }: DocPageParams) {
           ],
         }}
       />
-      <article className="min-w-0 max-w-3xl">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm">
-          <Link
-            href="/docs"
-            className="text-muted-foreground transition-colors duration-150 hover:text-foreground"
-          >
-            Docs
-          </Link>
-          <ChevronRight className="size-3.5 text-faint" aria-hidden />
-          <span className="text-muted-foreground">{page.sectionTitle}</span>
-          <ChevronRight className="size-3.5 text-faint" aria-hidden />
-          <span className="font-medium text-foreground">{page.title}</span>
-        </nav>
 
-        <h1 className="mt-5 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+      {/* Centre Column: max-w-[720px] for prose, code breaks wider up to 860px */}
+      <article className="min-w-0 max-w-[720px] flex-1 pb-16">
+        {/* Breadcrumb + Diataxis badge */}
+        <div className="flex items-center justify-between gap-2 text-xs mb-3">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-muted-foreground">
+            <Link href="/docs" className="hover:text-foreground transition-colors">
+              Docs
+            </Link>
+            <span className="text-border-strong">/</span>
+            <span>{page.sectionTitle}</span>
+          </nav>
+
+          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-medium border ${templateBadge.color}`}>
+            {templateBadge.label}
+          </span>
+        </div>
+
+        {/* H1 Title */}
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground leading-tight">
           {page.title}
         </h1>
+
+        {/* One-sentence summary in larger, muted text */}
         {page.description && (
-          <p className="mt-3 text-lg leading-relaxed text-muted-foreground">
+          <p className="mt-3 text-lg leading-relaxed text-muted-foreground font-normal">
             {page.description}
           </p>
         )}
 
-        <div className="mt-8">
+        {/* Action Header Strip */}
+        <div className="mt-6 flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground">
+          <span className="font-mono text-[11px] text-faint">Python 3.11+ &bull; MIT</span>
+          <CopyMarkdownButton markdown={page.body} />
+        </div>
+
+        {/* Markdown Content */}
+        <div className="mt-6">
           <Markdown source={page.body} />
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
-          <div className="flex flex-wrap items-center gap-5">
-            <a
-              href={`${GITHUB_DOCS_URL}/blob/main/content/docs/${page.sectionSlug}/${page.slug}.md`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground"
-            >
-              <PencilLine className="size-3.5" aria-hidden />
-              Edit this page on GitHub
-            </a>
-            <CopyMarkdownButton
-              markdown={`# ${page.title}\n\n> ${page.description}\n\n${page.body}\n`}
-            />
-          </div>
-          <ShareLinks url={pageUrl} title={`${page.title} · agentling docs`} />
+        {/* Was this helpful? Widget */}
+        <div className="mt-14 pt-8 border-t border-border">
+          <FeedbackWidget />
         </div>
 
-        <nav aria-label="Pagination" className="mt-6 grid gap-4 sm:grid-cols-2">
-          {previous ? (
-            <Link
-              href={previous.href}
-              className="group rounded-xl border border-border bg-card p-4 transition-colors duration-150 hover:border-border-strong"
-            >
-              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <ArrowLeft
-                  className="size-3.5 transition-transform duration-150 group-hover:-translate-x-0.5"
-                  aria-hidden
-                />
-                Previous
-              </span>
-              <span className="mt-1.5 block text-sm font-medium text-foreground">
-                {previous.title}
-              </span>
-            </Link>
-          ) : (
-            <span aria-hidden />
-          )}
-          {next && (
-            <Link
-              href={next.href}
-              className="group rounded-xl border border-border bg-card p-4 text-right transition-colors duration-150 hover:border-border-strong sm:col-start-2"
-            >
-              <span className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
-                Next
-                <ArrowRight
-                  className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5"
-                  aria-hidden
-                />
-              </span>
-              <span className="mt-1.5 block text-sm font-medium text-foreground">
-                {next.title}
-              </span>
-            </Link>
-          )}
-        </nav>
+        {/* Prev / Next within section */}
+        {(previous || next) && (
+          <nav
+            aria-label="Pagination"
+            className="mt-8 grid gap-4 border-t border-border pt-6 sm:grid-cols-2 text-xs font-sans"
+          >
+            {previous ? (
+              <Link
+                href={previous.href}
+                className="group flex flex-col rounded border border-border p-3.5 hover:border-foreground/30 transition-all bg-card"
+              >
+                <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
+                  <ArrowLeft className="size-3" />
+                  Previous
+                </span>
+                <span className="mt-1 font-medium text-foreground">
+                  {previous.title}
+                </span>
+              </Link>
+            ) : <div />}
+
+            {next && (
+              <Link
+                href={next.href}
+                className="group flex flex-col rounded border border-border p-3.5 text-right hover:border-foreground/30 transition-all sm:col-start-2 bg-card"
+              >
+                <span className="text-muted-foreground flex items-center justify-end gap-1 text-[11px]">
+                  Next
+                  <ArrowRight className="size-3" />
+                </span>
+                <span className="mt-1 font-medium text-foreground">
+                  {next.title}
+                </span>
+              </Link>
+            )}
+          </nav>
+        )}
       </article>
 
-      <aside className="hidden xl:block">
-        <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto">
-          <Toc entries={toc} />
-        </div>
-      </aside>
+      {/* Right Rail: 220px TOC + Quiet Trust Signals */}
+      <Toc items={toc} sectionSlug={page.sectionSlug} slug={page.slug} />
     </div>
   );
 }

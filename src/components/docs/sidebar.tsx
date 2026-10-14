@@ -1,67 +1,112 @@
 "use client";
 
-import {
-  BookOpen,
-  ChevronDown,
-  Code,
-  Compass,
-  Layers,
-  Rocket,
-  type LucideIcon,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import type { DocSection } from "@/lib/content/types";
+import { GITHUB_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-const ICONS: Record<string, LucideIcon> = {
-  rocket: Rocket,
-  layers: Layers,
-  compass: Compass,
-  code: Code,
-  "book-open": BookOpen,
+// Diátaxis classification tags for section headers
+const DIATAXIS_HINTS: Record<string, string> = {
+  "getting-started": "Tutorials",
+  "core-concepts": "Concepts",
+  guides: "How-To",
+  reference: "Reference",
 };
 
 function SectionNav({ sections }: { sections: DocSection[] }) {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Documentation" className="space-y-7">
-      {sections.map((section) => {
-        const Icon = ICONS[section.icon] ?? BookOpen;
-        return (
-          <div key={section.slug}>
-            <p className="flex items-center gap-2 font-mono text-xs font-semibold tracking-wider text-foreground uppercase">
-              <Icon className="size-3.5 text-accent" aria-hidden />
-              {section.title}
-            </p>
-            <ul className="mt-3 space-y-0.5 border-l border-border">
-              {section.pages.map((page) => {
-                const href = `/docs/${section.slug}/${page.slug}`;
-                const active = pathname === href;
-                return (
-                  <li key={page.slug}>
-                    <Link
-                      href={href}
-                      aria-current={active ? "page" : undefined}
-                      className={cn(
-                        "-ml-px block border-l py-1.5 pl-4 text-sm transition-colors duration-150",
-                        active
-                          ? "border-accent font-medium text-accent"
-                          : "border-transparent text-muted-foreground hover:border-border-strong hover:text-foreground",
-                      )}
-                    >
-                      {page.title}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        );
-      })}
+    <nav aria-label="Documentation" className="space-y-6 text-xs flex flex-col justify-between min-h-[calc(100vh-6.5rem)]">
+      <div className="space-y-6">
+        {sections.map((section) => {
+          const modeHint = DIATAXIS_HINTS[section.slug];
+          return (
+            <div key={section.slug} className="space-y-1">
+              <div className="flex items-center justify-between px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                <span>{section.title}</span>
+                {modeHint && (
+                  <span className="font-mono text-[9px] text-faint border border-border px-1 py-0.2 rounded font-normal">
+                    {modeHint}
+                  </span>
+                )}
+              </div>
+              <ul className="space-y-0.5">
+                {section.pages.map((page) => {
+                  const href = `/docs/${section.slug}/${page.slug}`;
+                  const active = pathname === href;
+                  return (
+                    <li key={page.slug}>
+                      <Link
+                        href={href}
+                        aria-current={active ? "page" : undefined}
+                        className={cn(
+                          "block px-2.5 py-1.5 rounded transition-colors text-xs leading-snug",
+                          active
+                            ? "bg-muted font-medium text-foreground"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                        )}
+                      >
+                        {page.title}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Trust & Project Links */}
+      <div className="border-t border-border pt-4 pb-2 space-y-1 font-mono text-[11px]">
+        <div className="px-2 py-1 text-[10px] uppercase text-faint font-semibold">
+          Legal & Project
+        </div>
+        <ul className="space-y-0.5">
+          <li>
+            <Link
+              href="/privacy"
+              className={cn(
+                "block px-2 py-1 rounded transition-colors",
+                pathname === "/privacy"
+                  ? "bg-muted text-foreground font-semibold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/40",
+              )}
+            >
+              Privacy policy
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/terms"
+              className={cn(
+                "block px-2 py-1 rounded transition-colors",
+                pathname === "/terms"
+                  ? "bg-muted text-foreground font-semibold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/40",
+              )}
+            >
+              Terms of use
+            </Link>
+          </li>
+          <li>
+            <a
+              href={`${GITHUB_URL}/blob/main/LICENSE`}
+              target="_blank"
+              rel="noreferrer"
+              className="px-2 py-1 rounded transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/40 flex items-center justify-between"
+            >
+              <span>MIT license</span>
+              <span className="text-[10px] text-faint">↗</span>
+            </a>
+          </li>
+        </ul>
+      </div>
     </nav>
   );
 }
@@ -81,15 +126,15 @@ export function DocsSidebar({ sections }: { sections: DocSection[] }) {
 
   return (
     <>
-      {/* Mobile: collapsible page picker */}
-      <div className="sticky top-16 z-30 -mx-4 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur-md lg:hidden">
+      {/* Mobile: bottom drawer toggle */}
+      <div className="sticky top-14 z-30 flex w-full items-center justify-between border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur-md lg:hidden">
         <button
           onClick={() => setMobileOpen((open) => !open)}
           aria-expanded={mobileOpen}
-          className="flex w-full cursor-pointer items-center justify-between text-sm"
+          className="flex w-full cursor-pointer items-center justify-between text-xs font-medium"
         >
-          <span className="font-medium text-foreground">
-            {current?.title ?? "Browse docs"}
+          <span className="text-foreground">
+            {current?.title ?? "Documentation"}
           </span>
           <ChevronDown
             className={cn(
@@ -100,15 +145,18 @@ export function DocsSidebar({ sections }: { sections: DocSection[] }) {
           />
         </button>
         {mobileOpen && (
-          <div className="max-h-[60vh] overflow-y-auto py-4" onClick={() => setMobileOpen(false)}>
+          <div
+            className="absolute left-0 right-0 top-full max-h-[75vh] overflow-y-auto border-b border-border bg-background p-4 shadow-xl z-50"
+            onClick={() => setMobileOpen(false)}
+          >
             <SectionNav sections={sections} />
           </div>
         )}
       </div>
 
-      {/* Desktop: sticky rail */}
-      <aside className="hidden lg:block">
-        <div className="sticky top-16 max-h-[calc(100vh-4rem)] overflow-y-auto py-10 pr-6">
+      {/* Desktop: 260px Left Map Rail */}
+      <aside className="hidden lg:block w-[260px] shrink-0 border-r border-border">
+        <div className="sticky top-14 max-h-[calc(100vh-3.5rem)] overflow-y-auto p-4 pr-3">
           <SectionNav sections={sections} />
         </div>
       </aside>

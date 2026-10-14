@@ -9,9 +9,11 @@ export default async function DocsLayout({
   const sections = await getDocSections();
 
   return (
-    <div className="mx-auto grid max-w-7xl grid-cols-1 px-4 sm:px-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
+    <div className="mx-auto flex w-full max-w-[1400px] flex-1">
       <DocsSidebar sections={sections} />
-      {children}
+      <div className="min-w-0 flex-1 px-6 py-8 sm:px-10 lg:py-10">
+        {children}
+      </div>
     </div>
   );
 }

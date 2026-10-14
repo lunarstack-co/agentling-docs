@@ -1,4 +1,4 @@
-export const SITE_NAME = "agentling";
+export const SITE_NAME = "Agentling";
 export const SITE_TAGLINE =
   "A tiny async framework for reliable, observable, tool-using agents.";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://agentling.dev";

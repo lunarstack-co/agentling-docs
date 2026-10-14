@@ -3,8 +3,6 @@ import path from "node:path";
 import matter from "gray-matter";
 
 import type {
-  BlogPost,
-  BlogPostMeta,
   ChangelogEntry,
   DocPage,
   DocSection,
@@ -13,8 +11,7 @@ import type {
 
 /**
  * The site's data layer. All content lives as markdown with frontmatter in
- * /content and is read from the filesystem at build time, so publishing
- * docs, blog posts, or changelog entries is a commit followed by a deploy.
+ * /content and is read from the filesystem at build time.
  */
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
@@ -95,68 +92,37 @@ export async function getDocPage(slug: string): Promise<DocPage | null> {
   return null;
 }
 
-function readBlogPosts(): BlogPost[] {
-  return markdownFiles(path.join(CONTENT_DIR, "blog"))
-    .map((file) => {
-      const post = readMarkdown(file);
-      return {
-        title: String(post.title),
-        slug: String(post.slug),
-        excerpt: String(post.excerpt ?? ""),
-        body: post.body,
-        publishDate: toIsoString(post.publishDate),
-        authorName: String(post.authorName ?? ""),
-        tags: (post.tags as string[]) ?? [],
-        featured: Boolean(post.featured),
-        readingMinutes: Number(post.readingMinutes ?? 5),
-      };
-    })
-    .sort((a, b) => b.publishDate.localeCompare(a.publishDate));
-}
-
-export async function getBlogPosts(): Promise<BlogPostMeta[]> {
-  return readBlogPosts().map((post) => {
-    const meta: BlogPostMeta & { body?: string } = { ...post };
-    delete meta.body;
-    return meta;
-  });
-}
-
-export async function getBlogPost(slug: string): Promise<BlogPost | null> {
-  return readBlogPosts().find((post) => post.slug === slug) ?? null;
-}
-
 export async function getChangelog(): Promise<ChangelogEntry[]> {
-  return markdownFiles(path.join(CONTENT_DIR, "changelog"))
+  const changelogDir = path.join(CONTENT_DIR, "changelog");
+  return markdownFiles(changelogDir)
     .map((file) => {
       const entry = readMarkdown(file);
       return {
         version: String(entry.version),
         title: String(entry.title ?? ""),
-        releaseDate: toIsoString(entry.releaseDate).slice(0, 10),
+        releaseDate: toIsoString(entry.releaseDate),
         body: entry.body,
         tags: (entry.tags as string[]) ?? [],
       };
     })
-    .sort((a, b) => b.releaseDate.localeCompare(a.releaseDate));
-}
-
-function readSitePages(): SitePage[] {
-  return markdownFiles(path.join(CONTENT_DIR, "pages")).map((file) => {
-    const page = readMarkdown(file);
-    return {
-      title: String(page.title),
-      slug: String(page.slug),
-      description: String(page.description ?? ""),
-      body: page.body,
-    };
-  });
+    .sort((a, b) => b.version.localeCompare(a.version, undefined, { numeric: true }));
 }
 
 export async function getSitePage(slug: string): Promise<SitePage | null> {
-  return readSitePages().find((page) => page.slug === slug) ?? null;
+  const file = path.join(CONTENT_DIR, "pages", `${slug}.md`);
+  if (!fs.existsSync(file)) return null;
+  const page = readMarkdown(file);
+  return {
+    title: String(page.title),
+    slug,
+    description: String(page.description ?? ""),
+    body: page.body,
+  };
 }
 
 export async function getSitePageSlugs(): Promise<string[]> {
-  return readSitePages().map((page) => page.slug);
+  const pagesDir = path.join(CONTENT_DIR, "pages");
+  return markdownFiles(pagesDir).map((file) =>
+    path.basename(file).replace(/\.md$/, ""),
+  );
 }
