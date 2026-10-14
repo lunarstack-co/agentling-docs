@@ -1,7 +1,8 @@
 "use client";
 
-import { AlertCircle, FileText, GitPullRequest } from "lucide-react";
+import { AlertCircle, ChevronDown, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
+
 import type { TocEntry } from "@/lib/toc";
 import { GITHUB_DOCS_URL, GITHUB_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -12,12 +13,11 @@ interface TocProps {
   slug: string;
 }
 
-export function Toc({ items, sectionSlug, slug }: TocProps) {
+function useActiveHeading(items: TocEntry[]): string {
   const [activeId, setActiveId] = useState<string>("");
 
   useEffect(() => {
     if (items.length === 0) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -29,42 +29,40 @@ export function Toc({ items, sectionSlug, slug }: TocProps) {
       },
       { rootMargin: "0% 0% -65% 0%", threshold: 0.1 },
     );
-
     const elements = items
       .map((item) => document.getElementById(item.id))
       .filter((el): el is HTMLElement => Boolean(el));
-
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, [items]);
 
-  return (
-    <nav
-      aria-label="On this page"
-      className="hidden xl:block w-[220px] shrink-0 text-xs"
-    >
-      <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pl-4 border-l border-border flex flex-col justify-between">
-        <div>
-          <p className="font-semibold text-foreground text-xs mb-3">
-            On this page
-          </p>
+  return activeId;
+}
 
-          {items.length > 0 && (
-            <ul className="space-y-2">
+/** Right rail from xl up. */
+export function Toc({ items, sectionSlug, slug }: TocProps) {
+  const activeId = useActiveHeading(items);
+
+  return (
+    <nav aria-label="On this page" className="hidden w-[220px] shrink-0 text-ui xl:block">
+      <div className="sticky top-24 grid max-h-[calc(100vh-7rem)] gap-6 overflow-y-auto border-l border-border-subtle pl-4">
+        {items.length > 0 && (
+          <div>
+            <p className="mb-2 font-semibold text-fg">On this page</p>
+            <ul className="grid gap-1.5">
               {items.map((item) => {
                 const active = activeId === item.id;
                 return (
-                  <li
-                    key={item.id}
-                    style={{ paddingLeft: item.depth === 3 ? "0.75rem" : "0" }}
-                  >
+                  <li key={item.id}>
                     <a
                       href={`#${item.id}`}
+                      aria-current={active ? "true" : undefined}
                       className={cn(
-                        "block transition-colors leading-snug",
+                        "-ml-[17px] block border-l-2 pl-4 leading-snug transition-colors duration-150",
+                        item.depth === 3 && "pl-7",
                         active
-                          ? "text-accent font-medium"
-                          : "text-muted-foreground hover:text-foreground",
+                          ? "border-accent text-accent"
+                          : "border-transparent text-fg-secondary hover:text-fg",
                       )}
                     >
                       {item.text}
@@ -73,44 +71,52 @@ export function Toc({ items, sectionSlug, slug }: TocProps) {
                 );
               })}
             </ul>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Quiet Trust Signals under the TOC outline */}
-        <div className="mt-10 pt-6 border-t border-border space-y-2.5 text-[11px] text-muted-foreground">
-          <p className="text-faint">Version: 0.1.0 (Latest)</p>
-
+        <div className={cn("grid gap-1.5 text-fg-tertiary", items.length > 0 && "border-t border-border-subtle pt-4")}>
           <a
             href={`${GITHUB_DOCS_URL}/blob/main/content/docs/${sectionSlug}/${slug}.md`}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+            className="flex items-center gap-1.5 transition-colors duration-150 hover:text-fg"
           >
-            <FileText className="size-3 text-faint" />
-            <span>Edit this page</span>
+            <Pencil className="size-3" aria-hidden />
+            Edit this page
           </a>
-
           <a
             href={`${GITHUB_URL}/issues/new`}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+            className="flex items-center gap-1.5 transition-colors duration-150 hover:text-fg"
           >
-            <AlertCircle className="size-3 text-faint" />
-            <span>Report an issue</span>
-          </a>
-
-          <a
-            href={`${GITHUB_URL}/pulls`}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1.5 hover:text-foreground transition-colors"
-          >
-            <GitPullRequest className="size-3 text-faint" />
-            <span>Open a PR</span>
+            <AlertCircle className="size-3" aria-hidden />
+            Report an issue
           </a>
         </div>
       </div>
     </nav>
+  );
+}
+
+/** Collapsible "On this page" shown under the lede below xl. */
+export function TocInline({ items }: { items: TocEntry[] }) {
+  if (items.length === 0) return null;
+  return (
+    <details className="group mt-4 rounded-panel border border-border-subtle bg-raised text-ui xl:hidden">
+      <summary className="flex h-9 cursor-pointer list-none items-center justify-between px-3 font-medium text-fg [&::-webkit-details-marker]:hidden">
+        On this page
+        <ChevronDown className="size-3.5 text-fg-tertiary transition-transform duration-150 group-open:rotate-180" aria-hidden />
+      </summary>
+      <ul className="grid gap-1.5 px-3 pb-2.5 pt-1">
+        {items.map((item) => (
+          <li key={item.id} className={cn(item.depth === 3 && "pl-3")}>
+            <a href={`#${item.id}`} className="text-fg-secondary hover:text-fg">
+              {item.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </details>
   );
 }

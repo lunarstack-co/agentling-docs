@@ -1,117 +1,77 @@
 "use client";
 
-import { ChevronDown, FileText, X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 
+import { buttonClass } from "@/components/ui/button";
 import type { DocSection } from "@/lib/content/types";
 import { GITHUB_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-// Diátaxis classification tags for section headers
-const DIATAXIS_HINTS: Record<string, string> = {
-  "getting-started": "Tutorials",
-  "core-concepts": "Concepts",
-  guides: "How-To",
-  reference: "Reference",
-};
-
 const emptySubscribe = () => () => {};
 
-function SectionNav({ sections, onNavigate }: { sections: DocSection[]; onNavigate?: () => void }) {
+const ROW =
+  "flex h-8 items-center rounded-control px-2 text-ui transition-[background-color,color] duration-150";
+const ROW_IDLE = "text-fg-secondary hover:bg-sunken hover:text-fg";
+const ROW_ACTIVE = "bg-sunken font-medium text-fg shadow-[inset_2px_0_0_var(--accent)]";
+
+function SectionNav({
+  sections,
+  onNavigate,
+}: {
+  sections: DocSection[];
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Documentation" className="space-y-6 text-xs flex flex-col justify-between min-h-full">
-      <div className="space-y-6">
-        {sections.map((section) => {
-          const modeHint = DIATAXIS_HINTS[section.slug];
-          return (
-            <div key={section.slug} className="space-y-1">
-              <div className="flex items-center justify-between px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                <span>{section.title}</span>
-                {modeHint && (
-                  <span className="font-mono text-[9px] text-faint border border-border px-1 py-0.2 rounded font-normal">
-                    {modeHint}
-                  </span>
-                )}
-              </div>
-              <ul className="space-y-0.5">
-                {section.pages.map((page) => {
-                  const href = `/docs/${section.slug}/${page.slug}`;
-                  const active = pathname === href;
-                  return (
-                    <li key={page.slug}>
-                      <Link
-                        href={href}
-                        onClick={onNavigate}
-                        aria-current={active ? "page" : undefined}
-                        className={cn(
-                          "block px-2.5 py-1.5 rounded transition-colors text-xs leading-snug",
-                          active
-                            ? "bg-muted font-medium text-foreground"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                        )}
-                      >
-                        {page.title}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Trust & Project Links */}
-      <div className="border-t border-border pt-4 pb-2 space-y-1 font-mono text-[11px]">
-        <div className="px-2 py-1 text-[10px] uppercase text-faint font-semibold">
-          Legal & Project
+    <nav aria-label="Documentation" className="flex min-h-full flex-col gap-6">
+      {sections.map((section) => (
+        <div key={section.slug} className="grid gap-0.5">
+          <div className="eyebrow px-2 pb-1.5">{section.title}</div>
+          {section.pages.map((page) => {
+            const href = `/docs/${section.slug}/${page.slug}`;
+            const active = pathname === href;
+            return (
+              <Link
+                key={page.slug}
+                href={href}
+                onClick={onNavigate}
+                aria-current={active ? "page" : undefined}
+                className={cn(ROW, active ? ROW_ACTIVE : ROW_IDLE)}
+              >
+                {page.title}
+              </Link>
+            );
+          })}
         </div>
-        <ul className="space-y-0.5">
-          <li>
-            <Link
-              href="/privacy"
-              onClick={onNavigate}
-              className={cn(
-                "block px-2 py-1 rounded transition-colors",
-                pathname === "/privacy"
-                  ? "bg-muted text-foreground font-semibold"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/40",
-              )}
-            >
-              Privacy policy
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/terms"
-              onClick={onNavigate}
-              className={cn(
-                "block px-2 py-1 rounded transition-colors",
-                pathname === "/terms"
-                  ? "bg-muted text-foreground font-semibold"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/40",
-              )}
-            >
-              Terms of use
-            </Link>
-          </li>
-          <li>
-            <a
-              href={`${GITHUB_URL}/blob/main/LICENSE`}
-              target="_blank"
-              rel="noreferrer"
-              className="px-2 py-1 rounded transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/40 flex items-center justify-between"
-            >
-              <span>MIT license</span>
-              <span className="text-[10px] text-faint">↗</span>
-            </a>
-          </li>
-        </ul>
+      ))}
+
+      <div className="mt-auto grid gap-0.5 border-t border-border-subtle pt-4">
+        {[
+          { href: "/privacy", label: "Privacy" },
+          { href: "/terms", label: "Terms" },
+        ].map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={onNavigate}
+            className={cn(ROW, "h-7", pathname === item.href ? ROW_ACTIVE : ROW_IDLE)}
+          >
+            {item.label}
+          </Link>
+        ))}
+        <a
+          href={`${GITHUB_URL}/blob/main/LICENSE`}
+          target="_blank"
+          rel="noreferrer"
+          className={cn(ROW, "h-7", ROW_IDLE)}
+        >
+          MIT license
+        </a>
       </div>
     </nav>
   );
@@ -121,26 +81,47 @@ export function DocsSidebar({ sections }: { sections: DocSection[] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
 
-  // Close the sheet whenever the route changes.
   const [lastPathname, setLastPathname] = useState(pathname);
   if (lastPathname !== pathname) {
     setLastPathname(pathname);
     setMobileOpen(false);
   }
 
-  // Lock page scroll and close on Escape while the sheet is open.
+  // While the sheet is open: lock page scroll, move focus in, trap Tab,
+  // close on Escape, and return focus to the trigger afterwards.
   useEffect(() => {
     if (!mobileOpen) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setMobileOpen(false);
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const sheet = closeRef.current?.closest<HTMLElement>("[role=dialog]");
+      const focusable = sheet?.querySelectorAll<HTMLElement>("a[href], button");
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => {
       document.body.style.overflow = previous;
       window.removeEventListener("keydown", onKeyDown);
+      triggerRef.current?.focus();
     };
   }, [mobileOpen]);
 
@@ -153,28 +134,28 @@ export function DocsSidebar({ sections }: { sections: DocSection[] }) {
     )
     .find((page) => page.href === pathname);
 
-  // Rendered through a portal: the sticky bar below uses backdrop-filter,
-  // which would otherwise become the containing block for this fixed sheet.
+  // Portaled so the sticky bar's backdrop-filter cannot become this fixed
+  // sheet's containing block.
   const sheet = (
     <div
       role="dialog"
       aria-modal="true"
       aria-label="Documentation index"
-      className="fixed inset-x-0 bottom-0 top-14 z-50 flex flex-col bg-background lg:hidden"
+      className="fixed inset-x-0 bottom-0 top-14 z-50 flex flex-col bg-base lg:hidden"
     >
-      <div className="flex items-center justify-between border-b border-border px-4 py-3 bg-muted/40">
-        <span className="text-xs font-semibold text-foreground uppercase tracking-wider font-mono">
-          Documentation Index
-        </span>
+      <div className="flex h-11 items-center justify-between border-b border-border-subtle bg-sunken px-4">
+        <span className="text-ui font-medium text-fg">Documentation</span>
         <button
+          ref={closeRef}
+          type="button"
           onClick={() => setMobileOpen(false)}
-          className="flex size-8 cursor-pointer items-center justify-center rounded border border-border text-muted-foreground hover:text-foreground"
+          className={buttonClass({ variant: "outline", icon: true })}
           aria-label="Close menu"
         >
-          <X className="size-4" />
+          <X className="size-3.5" aria-hidden />
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto p-5 overscroll-contain">
+      <div className="flex-1 overflow-y-auto overscroll-contain p-4">
         <SectionNav sections={sections} onNavigate={() => setMobileOpen(false)} />
       </div>
     </div>
@@ -182,35 +163,26 @@ export function DocsSidebar({ sections }: { sections: DocSection[] }) {
 
   return (
     <>
-      {/* Mobile: sticky page selector bar */}
-      <div className="sticky top-14 z-30 w-full border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur-md lg:hidden">
+      {/* Below lg: sticky page selector. */}
+      <div className="sticky top-14 z-30 w-full border-b border-border-subtle bg-base/95 px-4 backdrop-blur-md lg:hidden">
         <button
+          ref={triggerRef}
+          type="button"
           onClick={() => setMobileOpen((open) => !open)}
           aria-expanded={mobileOpen}
-          aria-controls="docs-mobile-index"
-          className="flex w-full cursor-pointer items-center justify-between text-xs font-medium"
+          aria-haspopup="dialog"
+          className="flex h-10 w-full cursor-pointer items-center justify-between gap-2 text-ui font-medium text-fg"
         >
-          <div className="flex items-center gap-2 truncate pr-2">
-            <FileText className="size-3.5 text-muted-foreground shrink-0" />
-            <span className="text-foreground truncate">
-              {current?.title ?? "Documentation"}
-            </span>
-          </div>
-          <ChevronDown
-            className={cn(
-              "size-4 text-muted-foreground transition-transform duration-200 shrink-0",
-              mobileOpen && "rotate-180",
-            )}
-            aria-hidden
-          />
+          <span className="truncate">{current?.title ?? "Documentation"}</span>
+          <ChevronDown className="size-3.5 shrink-0 text-fg-tertiary" aria-hidden />
         </button>
       </div>
 
       {mobileOpen && mounted && createPortal(sheet, document.body)}
 
-      {/* Desktop: 260px Left Map Rail */}
-      <aside className="hidden lg:block w-[260px] shrink-0 border-r border-border">
-        <div className="sticky top-14 max-h-[calc(100vh-3.5rem)] overflow-y-auto p-4 pr-3">
+      {/* From lg: 240px rail. */}
+      <aside className="hidden w-60 shrink-0 border-r border-border-subtle lg:block">
+        <div className="sticky top-14 max-h-[calc(100vh-3.5rem)] overflow-y-auto py-5 pl-4 pr-3">
           <SectionNav sections={sections} />
         </div>
       </aside>
