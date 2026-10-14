@@ -2,6 +2,8 @@
 title: Terms of Use
 slug: terms
 description: The terms that apply to this website and to the agentling open source software.
+metaTitle: "Terms of use for this site and the software"
+metaDescription: "The terms that apply to using this website and to the agentling open source software, which is MIT licensed."
 ---
 
 Last updated: 7 July 2026

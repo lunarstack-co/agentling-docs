@@ -3,6 +3,8 @@ title: Memory
 slug: memory
 description: A run is a list of typed steps that serialize, replay, and resume.
 order: 3
+metaTitle: "Memory: typed steps that persist and resume"
+metaDescription: "A run is a list of TaskStep, ActionStep, and FinalStep objects. Each renders into model messages and saves as JSON for persistence, replay, and resuming."
 ---
 
 A run is recorded as a list of typed steps rather than a flat list of messages. Steps know how to render themselves back into model messages and how to serialize to JSON, which gives you persistence, replay, and multi-turn continuation without extra machinery.

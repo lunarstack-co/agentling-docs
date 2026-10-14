@@ -3,6 +3,8 @@ title: Installation
 slug: installation
 description: Install agentling with pip or uv and configure your provider key.
 order: 2
+metaTitle: "Install Agentling with pip or uv"
+metaDescription: "Install agentling with pip or uv on Python 3.11 or newer, set an API key for OpenAI or any compatible provider, and check the install in one command."
 ---
 
 Install agentling from PyPI:

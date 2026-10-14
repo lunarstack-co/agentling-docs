@@ -3,6 +3,8 @@ title: The Agent Loop
 slug: agent-loop
 description: One async generator drives every run, one iteration at a time.
 order: 1
+metaTitle: "The agent loop: one generator drives every run"
+metaDescription: "How one generator runs each iteration: render the prompt, stream the model, run tool calls, record the step, and stop at a final answer or the step limit."
 ---
 
 The whole framework hangs off a single async generator, `AgentSession._run_stream`. `run()` is a thin dispatcher: in streaming mode it hands back that generator, and in blocking mode it drains the generator and returns the final answer. There is no second implementation to keep in sync.

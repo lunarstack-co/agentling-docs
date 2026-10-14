@@ -3,6 +3,8 @@ title: Persistence and Resuming
 slug: persistence-and-resuming
 description: Serialize a session's memory to JSON, restore it later, and continue runs with reset=False.
 order: 2
+metaTitle: "Persist a session to JSON and resume it later"
+metaDescription: "Serialize a session's memory to JSON, restore it in a new process, and continue the run with reset=False so the model picks up exactly where it stopped."
 ---
 
 Every session records its run as typed memory that serializes to JSON. That gives you persistence, replay, and multi-turn continuation without any extra infrastructure.

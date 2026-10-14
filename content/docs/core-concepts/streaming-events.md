@@ -3,6 +3,8 @@ title: Streaming Events
 slug: streaming-events
 description: A small set of typed events reports everything the loop does.
 order: 4
+metaTitle: "Streaming events: typed events from every run"
+metaDescription: "The small set of typed events the loop emits while it runs: text deltas, tool calls, tool results, and the final event, and how to consume them."
 ---
 
 The loop communicates progress through a small set of frozen event types. Pass `stream=True` to `run()` and you get an async iterator of these events; leave it off and the same generator is drained for you. One code path serves both modes.
