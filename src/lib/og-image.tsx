@@ -7,13 +7,21 @@ export const OG_CONTENT_TYPE = "image/png";
 
 const FONTS_DIR = path.join(process.cwd(), "src/assets/fonts");
 
+/* Light-theme tokens from globals.css. The card cannot follow the viewer's
+   theme, so it uses the paper ground, which also reads well in dark feeds. */
+const PAPER = "#fafaf7";
+const INK = "#1a1a18";
+const INK_SECONDARY = "#5f6059";
+const INK_TERTIARY = "#6d6e67";
+const ACCENT = "#4338ca";
+const HAIRLINE = "#e7e7e1";
+
 type OgFont = NonNullable<
   NonNullable<ConstructorParameters<typeof ImageResponse>[1]>["fonts"]
 >[number];
 
 let fonts: OgFont[] | null = null;
 
-/** Brand fonts for the card, loaded once per process. */
 function loadFonts(): OgFont[] {
   fonts ??= [
     {
@@ -30,9 +38,7 @@ function loadFonts(): OgFont[] {
     },
     {
       name: "JetBrains Mono",
-      data: fs.readFileSync(
-        path.join(FONTS_DIR, "JetBrainsMono-SemiBold.ttf"),
-      ),
+      data: fs.readFileSync(path.join(FONTS_DIR, "JetBrainsMono-SemiBold.ttf")),
       weight: 600,
       style: "normal",
     },
@@ -45,8 +51,9 @@ function truncate(text: string, max: number): string {
 }
 
 /**
- * Shared 1200x630 Open Graph card used by every route: dark brand
- * background, terminal mark, an eyebrow for context, and the page title.
+ * The 1200x630 Open Graph card for every route: paper ground, the mark and
+ * wordmark, a mono eyebrow for the section, the page title, the
+ * description, and a hairline footer. Same geometry as src/app/icon.svg.
  */
 export function renderOgImage({
   eyebrow,
@@ -66,83 +73,60 @@ export function renderOgImage({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "64px 72px",
-          backgroundColor: "#0b0e14",
-          backgroundImage:
-            "radial-gradient(circle at 12% -10%, rgba(52, 211, 153, 0.22), transparent 55%), radial-gradient(circle at 100% 110%, rgba(52, 211, 153, 0.10), transparent 45%)",
-          color: "#e8ecf4",
+          padding: "64px 72px 56px",
+          backgroundColor: PAPER,
+          color: INK,
           fontFamily: "IBM Plex Sans",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: 14,
-              backgroundColor: "#0e1219",
-              border: "2px solid #2b3345",
-              color: "#34d399",
-              fontSize: 28,
-              fontWeight: 600,
-              fontFamily: "JetBrains Mono",
-            }}
-          >
-            {">_"}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              fontSize: 36,
-              fontWeight: 600,
-              fontFamily: "JetBrains Mono",
-            }}
-          >
-            <span>agent</span>
-            <span style={{ color: "#34d399" }}>ling</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+          <svg width="44" height="44" viewBox="0 0 32 32" fill="none">
+            <rect x="7" y="7" width="18" height="4" rx="2" fill={INK} />
+            <rect x="7" y="14" width="12" height="4" rx="2" fill={INK} />
+            <rect x="7" y="21" width="6" height="4" rx="2" fill={ACCENT} />
+          </svg>
+          <div style={{ display: "flex", fontSize: 32, fontWeight: 600, letterSpacing: -0.5 }}>
+            Agentling
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div
             style={{
               display: "flex",
-              fontSize: 24,
+              fontSize: 22,
               fontWeight: 600,
               fontFamily: "JetBrains Mono",
-              letterSpacing: 4,
+              letterSpacing: 2,
               textTransform: "uppercase",
-              color: "#34d399",
+              color: ACCENT,
             }}
           >
-            {truncate(eyebrow, 48)}
+            {truncate(eyebrow, 40)}
           </div>
           <div
             style={{
               display: "flex",
-              fontSize: 74,
+              fontSize: 72,
               fontWeight: 600,
-              lineHeight: 1.08,
-              letterSpacing: -2,
-              maxWidth: 1000,
+              lineHeight: 1.1,
+              letterSpacing: -1.5,
+              maxWidth: 1020,
             }}
           >
-            {truncate(title, 72)}
+            {truncate(title, 64)}
           </div>
           {subtitle ? (
             <div
               style={{
                 display: "flex",
-                fontSize: 30,
+                fontSize: 28,
                 lineHeight: 1.4,
-                color: "#98a3b8",
-                maxWidth: 950,
+                color: INK_SECONDARY,
+                maxWidth: 960,
               }}
             >
-              {truncate(subtitle, 120)}
+              {truncate(subtitle, 110)}
             </div>
           ) : null}
         </div>
@@ -152,12 +136,15 @@ export function renderOgImage({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            fontSize: 26,
-            color: "#5f6b82",
+            paddingTop: 24,
+            borderTop: `1px solid ${HAIRLINE}`,
+            fontFamily: "JetBrains Mono",
+            fontSize: 22,
+            color: INK_TERTIARY,
           }}
         >
           <div style={{ display: "flex" }}>agentling.dev</div>
-          <div style={{ display: "flex" }}>Open source · MIT · Python 3.11+</div>
+          <div style={{ display: "flex" }}>Python 3.11+ · MIT</div>
         </div>
       </div>
     ),
