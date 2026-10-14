@@ -128,8 +128,10 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
           </nav>
         </div>
 
-        {/* Center: Search. Icon-only below sm, a full field above. */}
-        <div className="shrink-0 sm:shrink sm:flex-1 sm:min-w-0 sm:max-w-xs md:max-w-md sm:mx-2">
+        {/* Search: icon-only below sm, a field from sm up. Below lg it sits
+            with the right-hand controls (ml-auto) rather than floating in
+            the middle; from lg it takes the centre column. */}
+        <div className="ml-auto shrink-0 sm:min-w-0 sm:w-full sm:max-w-xs lg:ml-0 lg:mx-2 lg:flex-1 lg:max-w-md">
           <SearchDialog items={searchItems} />
         </div>
 
