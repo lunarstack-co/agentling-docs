@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { Markdown } from "@/components/markdown";
 import { getChangelog } from "@/lib/content";
@@ -10,7 +9,7 @@ import { formatDate } from "@/lib/utils";
 export const metadata: Metadata = pageMetadata({
   title: "Changelog",
   description:
-    "Every agentling release, documented. The format follows Keep a Changelog and the project aims to follow semantic versioning.",
+    "Every Agentling release, documented. Follows Keep a Changelog and semantic versioning.",
   path: "/changelog",
 });
 
@@ -18,32 +17,21 @@ export default async function ChangelogPage() {
   const entries = await getChangelog();
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
-      <p className="font-mono text-xs font-semibold tracking-wider text-accent uppercase">
+    <div className="mx-auto max-w-3xl px-6 py-10 sm:px-8 lg:py-14">
+      <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
         Changelog
-      </p>
-      <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-        What shipped, release by release
       </h1>
-      <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-        The format follows Keep a Changelog, and the project aims to follow
-        semantic versioning. Releases are tagged on{" "}
+      <p className="mt-3 text-base text-muted-foreground leading-relaxed">
+        What shipped, release by release. Releases are tagged on{" "}
         <a
           href={`${GITHUB_URL}/releases`}
           target="_blank"
           rel="noreferrer"
-          className="font-medium text-accent underline decoration-accent/40 underline-offset-2 hover:decoration-accent"
+          className="font-medium text-foreground underline underline-offset-2 hover:text-foreground"
         >
           GitHub
         </a>
-        , and the{" "}
-        <Link
-          href="/roadmap"
-          className="font-medium text-accent underline decoration-accent/40 underline-offset-2 hover:decoration-accent"
-        >
-          roadmap
-        </Link>{" "}
-        shows what is coming next.
+        .
       </p>
 
       <div className="mt-12 space-y-0">
@@ -51,14 +39,14 @@ export default async function ChangelogPage() {
           <section
             key={entry.version}
             id={`v${entry.version}`}
-            className="relative grid scroll-mt-24 gap-4 border-l border-border pb-14 pl-8 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-8"
+            className="relative grid scroll-mt-24 gap-4 border-l border-border pb-12 pl-6 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-8"
           >
             <span
               aria-hidden
-              className="absolute -left-[5px] top-1.5 size-2.5 rounded-full bg-accent ring-4 ring-background"
+              className="absolute -left-[5px] top-1.5 size-2 rounded-full bg-foreground"
             />
             <header>
-              <h2 className="font-mono text-lg font-semibold text-foreground">
+              <h2 className="font-mono text-base font-semibold text-foreground">
                 v{entry.version}
               </h2>
               <time
@@ -67,11 +55,11 @@ export default async function ChangelogPage() {
               >
                 {formatDate(entry.releaseDate)}
               </time>
-              <p className="mt-3 flex flex-wrap gap-1.5">
+              <p className="mt-2.5 flex flex-wrap gap-1">
                 {entry.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full bg-accent-soft px-2.5 py-0.5 font-mono text-[11px] font-medium text-accent"
+                    className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground"
                   >
                     {tag}
                   </span>
@@ -80,11 +68,11 @@ export default async function ChangelogPage() {
             </header>
             <div>
               {entry.title && (
-                <h3 className="text-xl font-semibold tracking-tight text-foreground">
+                <h3 className="text-lg font-semibold tracking-tight text-foreground">
                   {entry.title}
                 </h3>
               )}
-              <div className="mt-3">
+              <div className="mt-2.5">
                 <Markdown source={entry.body} className="prose-sm" />
               </div>
             </div>

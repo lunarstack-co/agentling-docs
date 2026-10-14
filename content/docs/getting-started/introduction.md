@@ -1,24 +1,24 @@
 ---
 title: Introduction
 slug: introduction
-description: What agentling is, the idea behind it, and when to reach for it.
+description: What Agentling is, the idea behind it, and when to reach for it.
 order: 1
 ---
 
-agentling is a tiny async framework for building reliable, observable, tool-using agents in Python. It gives you a clean ReAct loop, typed memory, streaming events, recoverable failures, and progressive-disclosure skills, in a codebase small enough to read in one sitting.
+Agentling is a small async Python framework for building tool-using agents. It gives you a clean ReAct loop, typed memory, streaming events, and recoverable failures in an auditable codebase.
 
-The framework is built around one idea: an agent is a loop that turns a model, some tools, and a memory of what happened into more actions, until it has an answer. Everything else, including streaming, skills, self-healing, and persistence, is a thin layer on top of that loop.
+The design centers on one core idea: an agent is a loop that combines a model, tools, and a memory of past turns to choose further actions until it finishes. Features like streaming, skills, self-healing, and persistence are layered directly onto this single loop.
 
-## Why agentling
+## Why Agentling
 
-- **Async first.** The loop, tools, and model calls are all `async`. Tool calls in a single step run concurrently by default.
-- **One code path.** Blocking and streaming share the exact same loop. There is a single async generator; blocking mode just drains it.
-- **Typed memory.** A run is a list of typed steps, not a bag of raw messages. Steps know how to render themselves back into model messages and serialize to JSON for persistence and replay.
-- **Progressive-disclosure skills.** Drop a `SKILL.md` folder in and the model sees only its name and description until it decides to load it. Big skill libraries stay cheap.
-- **Self-healing.** A tool that raises becomes an observation the model can recover from, not a crash.
-- **Small and readable.** No metaclasses, no plugin registry, no DSL. A handful of focused modules you can actually read, with more test code than source.
+- **Async first.** The loop, tools, and model calls are async. Tool calls in a single step run concurrently by default.
+- **One code path.** Blocking and streaming modes share the exact same async generator. Blocking mode drains the stream for you.
+- **Typed memory.** Runs are lists of typed step objects, not raw message dictionaries. Steps render themselves into model messages and serialize to JSON for offline replay and persistence.
+- **Progressive skills.** Place a `SKILL.md` folder into your project. The model only sees its name and summary until it decides to load the full instructions.
+- **Self-healing.** When a tool raises an exception, the loop turns it into an observation with recovery guidance so the model can correct its arguments instead of crashing.
+- **Auditable codebase.** No metaclasses, no plugin registries, and no domain-specific languages. The framework consists of a few concise modules backed by extensive tests.
 
-## A taste of the API
+## Basic example
 
 ```python
 import asyncio
@@ -44,16 +44,16 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-That is a complete, working agent. The `@tool` decorator turns a plain function into a schema-validated tool, and `Agent.run` drives the loop until the model produces an answer.
+The `@tool` decorator inspects your function signature to build a schema-validated tool, and `Agent.run` executes the loop until the model returns its final text.
 
 ## When to use it
 
-agentling is a good fit when you want to understand and control every part of your agent: a service that calls a handful of trusted tools, a CLI assistant, a background worker that needs resumable runs, or a research harness where you want full visibility into each step.
+Agentling suits projects where you need full visibility into agent operations: backend workers calling trusted tools, CLI assistants, resumable background processes, or test harnesses where runs must be recorded and replayed deterministically.
 
-It is deliberately small, so some things are out of scope: there is no built-in tracing backend, no sandboxing, and no automatic context summarization. The [Limitations](/docs/getting-started/installation#requirements) are documented honestly, and the hooks to build those layers yourself are part of the public API.
+To keep the codebase focused, several features remain out of scope: there is no hosted tracing backend, no execution sandbox, and no automatic prompt summarization. Review the [requirements and scope boundaries](/docs/getting-started/installation#requirements) for details on customizing these layers through public APIs.
 
 ## Next steps
 
-- [Install agentling](/docs/getting-started/installation)
-- [Build your first agent](/docs/getting-started/quickstart)
-- [Understand the agent loop](/docs/core-concepts/agent-loop)
+- [Install Agentling](/docs/getting-started/installation)
+- [Quickstart guide](/docs/getting-started/quickstart)
+- [The agent loop](/docs/core-concepts/agent-loop)

@@ -1,6 +1,6 @@
+import MiniSearch from "minisearch";
+
 import {
-  getBlogPosts,
-  getBlogPost,
   getChangelog,
   getDocPage,
   getDocSections,
@@ -8,105 +8,86 @@ import {
   getSitePageSlugs,
 } from ".";
 
-export interface SearchDocument {
+export interface SearchDoc {
   id: string;
-  href: string;
   title: string;
-  description: string;
-  group: string;
-  headings: string;
   body: string;
+  href: string;
+  section: string;
 }
 
-/**
- * Reduces markdown to plain searchable text: code fence markers, link
- * syntax, and emphasis go away while the words (including identifiers
- * inside code) stay.
- */
-function stripMarkdown(markdown: string): string {
-  return markdown
-    .replace(/^```.*$/gm, " ")
-    .replace(/^#{1,6}\s+/gm, " ")
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/[`*_>|]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+let cachedIndex: MiniSearch<SearchDoc> | null = null;
+let cachedDocs: SearchDoc[] | null = null;
 
-function extractHeadings(markdown: string): string {
-  return markdown
-    .split("\n")
-    .filter((line) => /^#{2,4}\s/.test(line))
-    .map((line) => line.replace(/^#{2,4}\s+/, "").replace(/[`*]/g, ""))
-    .join(" ");
-}
+export async function buildSearchDocs(): Promise<SearchDoc[]> {
+  if (cachedDocs) return cachedDocs;
 
-/** Builds the corpus served at /search-index.json and used by the Cmd+K dialog. */
-export async function getSearchDocuments(): Promise<SearchDocument[]> {
-  const [sections, posts, releases, sitePageSlugs] = await Promise.all([
-    getDocSections(),
-    getBlogPosts(),
-    getChangelog(),
-    getSitePageSlugs(),
-  ]);
+  const docs: SearchDoc[] = [];
 
-  const documents: SearchDocument[] = [];
-
+  const sections = await getDocSections();
   for (const section of sections) {
-    for (const meta of section.pages) {
-      const page = await getDocPage(meta.slug);
+    for (const pageMeta of section.pages) {
+      const page = await getDocPage(pageMeta.slug);
       if (!page) continue;
-      documents.push({
-        id: `docs:${page.slug}`,
-        href: `/docs/${section.slug}/${page.slug}`,
+      docs.push({
+        id: `doc:${page.slug}`,
         title: page.title,
-        description: page.description,
-        group: section.title,
-        headings: extractHeadings(page.body),
-        body: stripMarkdown(page.body),
+        body: page.body,
+        href: `/docs/${section.slug}/${page.slug}`,
+        section: section.title,
       });
     }
   }
 
-  for (const meta of posts) {
-    const post = await getBlogPost(meta.slug);
-    if (!post) continue;
-    documents.push({
-      id: `blog:${post.slug}`,
-      href: `/blog/${post.slug}`,
-      title: post.title,
-      description: post.excerpt,
-      group: "Blog",
-      headings: extractHeadings(post.body),
-      body: stripMarkdown(post.body),
-    });
-  }
-
+  const releases = await getChangelog();
   for (const release of releases) {
-    documents.push({
+    docs.push({
       id: `changelog:${release.version}`,
-      href: "/changelog",
       title: `v${release.version} ${release.title}`.trim(),
-      description: `Released ${release.releaseDate}`,
-      group: "Changelog",
-      headings: "",
-      body: stripMarkdown(release.body),
+      body: release.body,
+      href: "/changelog",
+      section: "Changelog",
     });
   }
 
-  for (const slug of sitePageSlugs) {
+  const pageSlugs = await getSitePageSlugs();
+  for (const slug of pageSlugs) {
     const page = await getSitePage(slug);
     if (!page) continue;
-    documents.push({
-      id: `page:${page.slug}`,
-      href: `/${page.slug}`,
+    docs.push({
+      id: `page:${slug}`,
       title: page.title,
-      description: page.description,
-      group: "Pages",
-      headings: extractHeadings(page.body),
-      body: stripMarkdown(page.body),
+      body: page.body,
+      href: `/${slug}`,
+      section: "Site",
     });
   }
 
-  return documents;
+  cachedDocs = docs;
+  return docs;
+}
+
+export async function getSearchIndex(): Promise<MiniSearch<SearchDoc>> {
+  if (cachedIndex) return cachedIndex;
+
+  const docs = await buildSearchDocs();
+  const miniSearch = new MiniSearch<SearchDoc>({
+    fields: ["title", "body"],
+    storeFields: ["title", "href", "section"],
+    searchOptions: {
+      boost: { title: 3 },
+      fuzzy: 0.2,
+      prefix: true,
+    },
+  });
+
+  miniSearch.addAll(docs);
+  cachedIndex = miniSearch;
+  return miniSearch;
+}
+
+export async function search(query: string, limit = 8) {
+  if (!query.trim()) return [];
+  const index = await getSearchIndex();
+  return index.search(query).slice(0, limit);
 }

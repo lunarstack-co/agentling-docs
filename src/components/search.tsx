@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Newspaper, Search as SearchIcon, Tag } from "lucide-react";
+import { FileText, Search as SearchIcon, Tag } from "lucide-react";
 import MiniSearch from "minisearch";
 import { useRouter } from "next/navigation";
 import {
@@ -9,7 +9,9 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
+import { createPortal } from "react-dom";
 
 import { cn } from "@/lib/utils";
 
@@ -24,11 +26,8 @@ interface ScoredItem extends SearchItem {
   score: number;
 }
 
-/**
- * Full-content engine over /search-index.json (titles, headings, and body
- * text). Fetched once, lazily, the first time the dialog opens; until it
- * arrives the dialog falls back to metadata-only matching.
- */
+const emptySubscribe = () => () => {};
+
 let enginePromise: Promise<MiniSearch<SearchItem>> | null = null;
 
 function loadEngine(): Promise<MiniSearch<SearchItem>> {
@@ -68,7 +67,6 @@ function scoreItem(item: SearchItem, query: string): number {
 }
 
 function groupIcon(group: string) {
-  if (group === "Blog") return Newspaper;
   if (group === "Changelog") return Tag;
   return FileText;
 }
@@ -76,6 +74,7 @@ function groupIcon(group: string) {
 export function SearchDialog({ items }: { items: SearchItem[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const [engine, setEngine] = useState<MiniSearch<SearchItem> | null>(null);
@@ -89,9 +88,7 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
       .then((loaded) => {
         if (!cancelled) setEngine(loaded);
       })
-      .catch(() => {
-        // Index unavailable; metadata matching keeps working.
-      });
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
@@ -138,6 +135,10 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
         event.preventDefault();
         setOpen((current) => !current);
       }
+      if (event.key === "/" && !["INPUT", "TEXTAREA"].includes((event.target as HTMLElement)?.tagName)) {
+        event.preventDefault();
+        setOpen(true);
+      }
       if (event.key === "Escape") close();
     }
     window.addEventListener("keydown", onKeyDown);
@@ -145,11 +146,17 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
   }, [close]);
 
   useEffect(() => {
-    if (open) inputRef.current?.focus();
+    if (open) {
+      document.body.style.overflow = "hidden";
+      setTimeout(() => inputRef.current?.focus(), 50);
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
-  // Reset the highlighted row whenever the query changes, adjusting state
-  // during render instead of in an effect.
   const [lastQuery, setLastQuery] = useState(query);
   if (lastQuery !== query) {
     setLastQuery(query);
@@ -169,92 +176,125 @@ export function SearchDialog({ items }: { items: SearchItem[] }) {
     }
   }
 
+  const modalNode = (
+    <div
+      className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/60 backdrop-blur-sm p-4 pt-[10vh] sm:pt-[14vh]"
+      onClick={close}
+      role="presentation"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Search documentation"
+        className="w-full max-w-[640px] overflow-hidden rounded-xl border border-border bg-card shadow-2xl transition-all"
+        onClick={(event) => event.stopPropagation()}
+      >
+        {/* Search Input Bar */}
+        <div className="flex items-center gap-3 border-b border-border px-4 py-3 bg-card">
+          <SearchIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          <input
+            ref={inputRef}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={onInputKeyDown}
+            placeholder="Search documentation, API, concepts..."
+            aria-label="Search query"
+            data-focus-ring="none"
+            className="h-7 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-faint font-sans"
+          />
+          <kbd className="shrink-0 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-faint">
+            esc
+          </kbd>
+        </div>
+
+        {/* Results List */}
+        <div
+          ref={listRef}
+          className="max-h-[380px] overflow-y-auto p-2 divide-y divide-border/30"
+        >
+          {results.length === 0 ? (
+            <div className="py-12 text-center text-xs text-muted-foreground">
+              <p>No results found for &ldquo;{query}&rdquo;</p>
+              <p className="mt-1 text-faint">Try searching for an API method or concept</p>
+            </div>
+          ) : (
+            results.map((item, index) => {
+              const Icon = groupIcon(item.group);
+              const isSelected = index === activeIndex;
+              return (
+                <button
+                  key={item.href}
+                  onClick={() => select(item.href)}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  className={cn(
+                    "flex w-full cursor-pointer items-start gap-3 rounded-md px-3 py-2.5 text-left transition-colors duration-100",
+                    isSelected
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground hover:bg-muted/50",
+                  )}
+                >
+                  <Icon
+                    className={cn(
+                      "size-4 shrink-0 mt-0.5",
+                      isSelected ? "text-accent" : "text-faint",
+                    )}
+                    aria-hidden
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span
+                        className={cn(
+                          "text-xs font-medium truncate",
+                          isSelected ? "text-foreground font-semibold" : "text-foreground",
+                        )}
+                      >
+                        {item.title}
+                      </span>
+                      <span className="font-mono text-[10px] text-faint shrink-0">
+                        {item.group}
+                      </span>
+                    </div>
+                    {item.description && (
+                      <p className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+                </button>
+              );
+            })
+          )}
+        </div>
+
+        {/* Footer Navigation Hints */}
+        <div className="flex items-center justify-between border-t border-border px-4 py-2 font-mono text-[10px] text-faint bg-muted/40">
+          <div className="flex items-center gap-3">
+            <span>↑↓ Navigate</span>
+            <span>↵ Open</span>
+          </div>
+          <span>ESC to close</span>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <button
         onClick={() => setOpen(true)}
         aria-label="Search documentation"
-        className="flex h-9 cursor-pointer items-center gap-2 rounded-full border border-border bg-card px-3.5 text-sm text-muted-foreground transition-colors duration-150 hover:border-border-strong hover:text-foreground"
+        className="group flex h-8.5 w-full cursor-pointer items-center justify-between rounded border border-border bg-card px-3 text-xs text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
       >
-        <SearchIcon className="size-3.5" aria-hidden />
-        <span className="hidden sm:inline">Search</span>
-        <kbd className="hidden rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] font-medium sm:inline">
+        <div className="flex items-center gap-2">
+          <SearchIcon className="size-3.5 text-faint group-hover:text-muted-foreground transition-colors" aria-hidden />
+          <span className="font-normal">Search or ask...</span>
+        </div>
+        <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-faint">
           ⌘K
         </kbd>
       </button>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 pt-[12vh] backdrop-blur-sm"
-          onClick={close}
-          role="presentation"
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label="Search"
-            className="w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-card shadow-soft"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex items-center gap-3 border-b border-border px-4">
-              <SearchIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-              <input
-                ref={inputRef}
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                onKeyDown={onInputKeyDown}
-                placeholder="Search docs, blog, changelog..."
-                aria-label="Search query"
-                data-focus-ring="none"
-                className="h-13 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-faint"
-              />
-              <kbd className="shrink-0 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-                esc
-              </kbd>
-            </div>
-
-            <div ref={listRef} className="max-h-80 overflow-y-auto p-2">
-              {results.length === 0 ? (
-                <p className="px-3 py-8 text-center text-sm text-muted-foreground">
-                  No results for &ldquo;{query}&rdquo;
-                </p>
-              ) : (
-                results.map((item, index) => {
-                  const Icon = groupIcon(item.group);
-                  return (
-                    <button
-                      key={item.href}
-                      onClick={() => select(item.href)}
-                      onMouseEnter={() => setActiveIndex(index)}
-                      className={cn(
-                        "flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors duration-100",
-                        index === activeIndex ? "bg-muted" : "bg-transparent",
-                      )}
-                    >
-                      <Icon
-                        className={cn(
-                          "size-4 shrink-0",
-                          index === activeIndex ? "text-accent" : "text-faint",
-                        )}
-                        aria-hidden
-                      />
-                      <span className="min-w-0">
-                        <span className="block truncate text-sm font-medium text-foreground">
-                          {item.title}
-                        </span>
-                        <span className="block truncate text-xs text-muted-foreground">
-                          {item.group}
-                          {item.description ? ` · ${item.description}` : ""}
-                        </span>
-                      </span>
-                    </button>
-                  );
-                })
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {open && mounted && createPortal(modalNode, document.body)}
     </>
   );
 }
