@@ -192,6 +192,9 @@ body {
   font-size: 0.875rem;
   margin: 1.75rem 0;
   border: 1px solid var(--border);
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .prose :where(thead th) {
@@ -272,7 +275,7 @@ body {
   background: var(--code-bg);
   border-radius: 6px;
   overflow: hidden;
-  max-width: 860px;
+  max-width: 100%;
 }
 
 [data-rehype-pretty-code-figure] pre {

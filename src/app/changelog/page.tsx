@@ -17,11 +17,11 @@ export default async function ChangelogPage() {
   const entries = await getChangelog();
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10 sm:px-8 lg:py-14">
-      <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+    <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 lg:py-12 min-w-0 overflow-hidden">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground">
         Changelog
       </h1>
-      <p className="mt-3 text-base text-muted-foreground leading-relaxed">
+      <p className="mt-3 text-sm sm:text-base text-muted-foreground leading-relaxed">
         What shipped, release by release. Releases are tagged on{" "}
         <a
           href={`${GITHUB_URL}/releases`}
@@ -34,18 +34,18 @@ export default async function ChangelogPage() {
         .
       </p>
 
-      <div className="mt-12 space-y-0">
+      <div className="mt-10 sm:mt-12 space-y-0">
         {entries.map((entry) => (
           <section
             key={entry.version}
             id={`v${entry.version}`}
-            className="relative grid scroll-mt-24 gap-4 border-l border-border pb-12 pl-6 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-8"
+            className="relative grid scroll-mt-24 gap-4 border-l border-border pb-10 pl-5 sm:pb-12 sm:pl-8 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-8 min-w-0"
           >
             <span
               aria-hidden
               className="absolute -left-[5px] top-1.5 size-2 rounded-full bg-foreground"
             />
-            <header>
+            <header className="min-w-0">
               <h2 className="font-mono text-base font-semibold text-foreground">
                 v{entry.version}
               </h2>
@@ -66,13 +66,13 @@ export default async function ChangelogPage() {
                 ))}
               </p>
             </header>
-            <div>
+            <div className="min-w-0 overflow-hidden">
               {entry.title && (
-                <h3 className="text-lg font-semibold tracking-tight text-foreground">
+                <h3 className="text-base sm:text-lg font-semibold tracking-tight text-foreground">
                   {entry.title}
                 </h3>
               )}
-              <div className="mt-2.5">
+              <div className="mt-2.5 min-w-0 break-words">
                 <Markdown source={entry.body} className="prose-sm" />
               </div>
             </div>
