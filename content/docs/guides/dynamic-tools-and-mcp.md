@@ -40,11 +40,20 @@ When the other side validates arguments anyway, set `validate_arguments = False`
 agentling has no MCP dependency. This recipe uses the official [MCP Python SDK](https://pypi.org/project/mcp/) (`pip install "mcp>=2.3,<3"`) in your own code to wrap each tool on an MCP server as an agentling `Tool`:
 
 ```python
+import hashlib
+import re
 from typing import Any
 
 from mcp import Client
 
 from agentling import Agent, OpenAIModel, Tool
+
+
+def safe_name(prefix: str, name: str) -> str:
+    full = re.sub(r"[^A-Za-z0-9_-]", "_", f"{prefix}__{name}")
+    if len(full) <= 64:
+        return full
+    return f"{full[:55]}_{hashlib.sha256(full.encode()).hexdigest()[:8]}"
 
 
 class McpTool(Tool):
@@ -56,7 +65,7 @@ class McpTool(Tool):
     def __init__(self, client: Client, remote: Any, prefix: str) -> None:
         self._client = client
         self._remote_name = remote.name
-        self.name = f"{prefix}__{remote.name}"
+        self.name = safe_name(prefix, remote.name)
         self.description = remote.description or ""
         self.parameters = remote.input_schema
 
@@ -79,7 +88,7 @@ async def main() -> None:
 
 A few things to handle in real use:
 
-- **Names.** agentling tool names allow letters, digits, `_` and `-`, up to 64 characters. Prefix tools with the server name so two servers can't collide, and replace any other characters and shorten long names before registering.
+- **Names.** `safe_name` keeps tool names within agentling's rules (letters, digits, `_` and `-`, up to 64 characters) and prefixes them with the server name so two servers can't collide.
 - **Schemas.** If a server's `input_schema` lacks `"type": "object"`, wrap it in `{"type": "object", "properties": {}}`, or registration fails.
 - **Changing tool lists.** When a server reports that its tools changed, list them again and call `add_tools(..., replace=True)` for new or updated tools and `remove_tools(...)` for ones that disappeared.
 - **Errors and results.** Raising inside `forward` turns into an error observation the model can recover from. Non-text content, such as images, needs your own handling. Newer servers may also ask for more input mid-call; see the SDK docs.
