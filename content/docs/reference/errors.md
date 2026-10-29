@@ -5,7 +5,7 @@ description: The exception hierarchy, which failures the model recovers from, an
 order: 4
 ---
 
-agentling's own errors share one base class, `AgentlingError`. Two other kinds of exception can still reach your code: `ValueError` or `TypeError` for bad configuration (an invalid tool name, a malformed SKILL.md), and the provider SDK's own errors (such as `openai.APIError`) once retries are used up. Just as important is what does not raise: most tool failures become observations the model can recover from.
+agentling's own errors share one base class, `AgentlingError`. Other exceptions can still reach your code: `ValueError` or `TypeError` for bad configuration (an invalid tool name, a bad SKILL.md field), `yaml.YAMLError` for SKILL.md frontmatter that doesn't parse, and the provider SDK's own errors (such as `openai.APIError`) once retries are used up. Just as important is what does not raise: most tool failures become observations the model can recover from.
 
 ## The hierarchy
 
