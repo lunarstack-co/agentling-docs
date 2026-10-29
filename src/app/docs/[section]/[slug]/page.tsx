@@ -90,7 +90,8 @@ export default async function DocPage({ params }: DocPageParams) {
         })}
       />
 
-      <article className="min-w-0 max-w-[680px] flex-1">
+      {/* Centred while the right-hand contents rail is hidden (below xl). */}
+      <article className="mx-auto min-w-0 max-w-[680px] flex-1 xl:mx-0">
         <div className="flex items-center gap-2 text-ui text-fg-secondary">
           <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2">
             <Link href="/docs/getting-started/introduction" className="inline-flex min-h-6 shrink-0 items-center transition-colors duration-150 hover:text-fg">
