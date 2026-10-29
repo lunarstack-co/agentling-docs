@@ -66,4 +66,28 @@ print(session.memory.steps)   # typed steps recorded so far
 session.interrupt()           # request a graceful stop
 ```
 
-The session owns the per-run state: the `Memory` of typed steps, the interrupt token, and any skill tools loaded during a run. See [Sessions and concurrency](/docs/guides/sessions-and-concurrency) and [Interruption](/docs/guides/interruption) for the patterns built on top of it.
+The session owns the per-run state: the `Memory` of typed steps, the interrupt token, and its own tool set, including any skill tools loaded during a run. See [Sessions and concurrency](/docs/guides/sessions-and-concurrency) and [Interruption](/docs/guides/interruption) for the patterns built on top of it.
+
+## session.add_tools() and session.remove_tools()
+
+```python
+session.add_tools([create_issue, search_issues])
+session.add_tools([updated_search_issues], replace=True)
+session.remove_tools(["create_issue"])
+```
+
+These change one session's tools. The agent and other sessions are not affected. The model sees the change from its next call, which can be the next step of a run that is already going.
+
+`add_tools(tools, *, replace=False)`
+
+- Checks every tool first and adds nothing if any check fails.
+- Raises `ValueError` when a name is invalid, a schema isn't an object, a name appears twice in `tools`, or a name is already in the session and `replace` is `False`.
+- With `replace=True`, a tool with an existing name takes the old one's place, keeping its position in the list the model sees.
+
+`remove_tools(names)`
+
+- Removes the named tools. A name given twice is removed once.
+- Raises `ValueError("Unknown tool: '<name>'")` and removes nothing if any name isn't in the session.
+- If the model later calls a removed tool, it gets an unknown-tool observation and can carry on.
+
+Both refuse the built-in tools: `final_answer`, and `load_skill` when the agent has skills. Change tools through these methods rather than editing `session.tools` directly.
