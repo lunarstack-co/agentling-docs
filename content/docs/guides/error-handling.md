@@ -51,14 +51,16 @@ Tool output and error messages are fed back into the model's context, so two kno
 
 ## The exception hierarchy
 
-Everything the framework raises derives from `AgentlingError`, with domain subclasses such as `ToolCallError`, `ModelError`, and `MemoryLoadError`. Catch the base class for a blanket handler, or the subclass you care about:
+agentling's own errors derive from `AgentlingError`, with subclasses such as `ToolCallError`, `ModelError`, and `MemoryLoadError`. Provider errors (for example `openai.APIError`, after retries) are not wrapped, so catch them too if you want one handler for a failed run:
 
 ```python
+import openai
+
 from agentling import AgentlingError
 
 try:
     answer = await agent.run(task)
-except AgentlingError as exc:
+except (AgentlingError, openai.APIError) as exc:
     logger.error("agent run failed: %s", exc)
 ```
 

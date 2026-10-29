@@ -1,6 +1,6 @@
 export const SITE_NAME = "Agentling";
 /** Latest released version, shown in the header. */
-export const VERSION = "0.1.0";
+export const VERSION = "0.1.1";
 export const SITE_TAGLINE =
   "An async Python agent loop you can read in an afternoon. Typed memory, streamed events, and tools that are plain functions.";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://agentling.dev";
