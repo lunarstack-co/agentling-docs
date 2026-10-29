@@ -3,6 +3,8 @@ title: Interruption
 slug: interruption
 description: Stop a running agent gracefully with session.interrupt() and resume it exactly where it paused.
 order: 3
+metaTitle: "Interrupt a running agent and resume it"
+metaDescription: "Stop a running agent gracefully with session.interrupt(), what the loop does at the next safe point, and how to resume from the step where it paused."
 ---
 
 Sometimes you need to stop an agent mid-run: a user hits a stop button, a deadline passes, or your process receives a shutdown signal. agentling supports graceful interruption that preserves the run so you can resume it later.

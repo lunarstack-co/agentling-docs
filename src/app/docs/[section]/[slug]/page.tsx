@@ -1,27 +1,26 @@
-import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CopyMarkdownButton } from "@/components/copy-markdown-button";
 import { FeedbackWidget } from "@/components/docs/feedback-widget";
-import { Toc } from "@/components/docs/toc";
+import { Toc, TocInline } from "@/components/docs/toc";
 import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { getDocPage, getDocSections } from "@/lib/content";
-import { absoluteUrl, pageMetadata } from "@/lib/seo";
-import { AUTHOR_JSON_LD } from "@/lib/site";
+import { docArticleGraph, pageMetadata } from "@/lib/seo";
 import { extractToc } from "@/lib/toc";
 
 interface DocPageParams {
   params: Promise<{ section: string; slug: string }>;
 }
 
-const TEMPLATE_BADGES: Record<string, { label: string; color: string }> = {
-  "getting-started": { label: "Tutorial", color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" },
-  "core-concepts": { label: "Concept", color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20" },
-  guides: { label: "How-To Guide", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" },
-  reference: { label: "API Reference", color: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20" },
+/** Diátaxis mode per section, shown as one neutral eyebrow. */
+const PAGE_KIND: Record<string, string> = {
+  "getting-started": "Tutorial",
+  "core-concepts": "Concept",
+  guides: "Guide",
+  reference: "Reference",
 };
 
 export async function generateStaticParams() {
@@ -38,10 +37,11 @@ export async function generateMetadata({
   const page = await getDocPage(slug);
   if (!page) return {};
   return pageMetadata({
-    title: page.title,
-    description: page.description,
+    kind: "doc",
+    title: page.metaTitle ?? page.title,
+    description: page.metaDescription ?? page.description,
     path: `/docs/${page.sectionSlug}/${page.slug}`,
-    ogType: "article",
+    dates: { published: page.published, modified: page.modified },
   });
 }
 
@@ -66,124 +66,92 @@ export default async function DocPage({ params }: DocPageParams) {
   const next = index < flat.length - 1 ? flat[index + 1] : null;
 
   const toc = extractToc(page.body);
-  const pageUrl = absoluteUrl(`/docs/${page.sectionSlug}/${page.slug}`);
-  const templateBadge = TEMPLATE_BADGES[page.sectionSlug] ?? { label: "Guide", color: "bg-muted text-muted-foreground border-border" };
+  const pagePath = `/docs/${page.sectionSlug}/${page.slug}`;
+  const section = sections.find((entry) => entry.slug === page.sectionSlug);
+  const sectionFirst = section?.pages[0];
 
   return (
-    <div className="flex w-full justify-between gap-12">
+    <div className="flex w-full min-w-0 justify-between gap-12">
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@graph": [
+        data={docArticleGraph({
+          title: page.title,
+          description: page.description,
+          path: pagePath,
+          published: page.published,
+          modified: page.modified,
+          crumbs: [
+            { name: "Docs", path: "/docs/getting-started/introduction" },
             {
-              "@type": "TechArticle",
-              headline: page.title,
-              description: page.description,
-              url: pageUrl,
-              author: AUTHOR_JSON_LD,
-              isPartOf: {
-                "@type": "WebSite",
-                name: "Agentling Documentation",
-                url: absoluteUrl("/docs"),
-              },
+              name: page.sectionTitle,
+              path: sectionFirst ? `/docs/${page.sectionSlug}/${sectionFirst.slug}` : pagePath,
             },
-            {
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Docs", item: absoluteUrl("/docs") },
-                { "@type": "ListItem", position: 2, name: page.sectionTitle },
-                { "@type": "ListItem", position: 3, name: page.title, item: pageUrl },
-              ],
-            },
+            { name: page.title, path: pagePath },
           ],
-        }}
+        })}
       />
 
-      {/* Centre Column: max-w-[720px] for prose, code breaks wider up to 860px */}
-      <article className="min-w-0 max-w-[720px] flex-1 pb-16">
-        {/* Breadcrumb + Diataxis badge */}
-        <div className="flex items-center justify-between gap-2 text-xs mb-3">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-muted-foreground">
-            <Link href="/docs" className="hover:text-foreground transition-colors">
+      <article className="min-w-0 max-w-[680px] flex-1">
+        <div className="flex items-center gap-2 text-ui text-fg-secondary">
+          <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2">
+            <Link href="/docs/getting-started/introduction" className="inline-flex min-h-6 shrink-0 items-center transition-colors duration-150 hover:text-fg">
               Docs
             </Link>
-            <span className="text-border-strong">/</span>
-            <span>{page.sectionTitle}</span>
+            <span className="text-border-default" aria-hidden>/</span>
+            <span className="truncate">{page.sectionTitle}</span>
           </nav>
-
-          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-medium border ${templateBadge.color}`}>
-            {templateBadge.label}
-          </span>
+          {PAGE_KIND[page.sectionSlug] && (
+            <span className="eyebrow ml-auto shrink-0">{PAGE_KIND[page.sectionSlug]}</span>
+          )}
         </div>
 
-        {/* H1 Title */}
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground leading-tight">
+        <h1 className="mt-4 text-balance text-h1 font-semibold tracking-[-0.02em] text-fg">
           {page.title}
         </h1>
 
-        {/* One-sentence summary in larger, muted text */}
         {page.description && (
-          <p className="mt-3 text-lg leading-relaxed text-muted-foreground font-normal">
-            {page.description}
-          </p>
+          <p className="mt-2.5 text-lede text-fg-secondary">{page.description}</p>
         )}
 
-        {/* Action Header Strip */}
-        <div className="mt-6 flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground">
-          <span className="font-mono text-[11px] text-faint">Python 3.11+ &bull; MIT</span>
+        <TocInline items={toc} />
+
+        <div className="mt-5 flex items-center justify-end border-t border-border-subtle pt-2">
           <CopyMarkdownButton markdown={page.body} />
         </div>
 
-        {/* Markdown Content */}
-        <div className="mt-6">
+        <div className="mt-4 min-w-0 max-w-full">
           <Markdown source={page.body} />
         </div>
 
-        {/* Was this helpful? Widget */}
-        <div className="mt-14 pt-8 border-t border-border">
-          <FeedbackWidget />
+        <div className="mt-12">
+          <FeedbackWidget pageTitle={page.title} pagePath={pagePath} />
         </div>
 
-        {/* Prev / Next within section */}
         {(previous || next) && (
-          <nav
-            aria-label="Pagination"
-            className="mt-8 grid gap-4 border-t border-border pt-6 sm:grid-cols-2 text-xs font-sans"
-          >
+          <nav aria-label="Pagination" className="mt-8 grid gap-3 sm:grid-cols-2">
             {previous ? (
               <Link
                 href={previous.href}
-                className="group flex flex-col rounded border border-border p-3.5 hover:border-foreground/30 transition-all bg-card"
+                className="grid gap-0.5 rounded-panel border border-border-subtle bg-raised px-3.5 py-3 transition-colors duration-150 hover:border-border-default"
               >
-                <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
-                  <ArrowLeft className="size-3" />
-                  Previous
-                </span>
-                <span className="mt-1 font-medium text-foreground">
-                  {previous.title}
-                </span>
+                <span className="eyebrow">Previous</span>
+                <span className="text-ui font-medium text-fg">{previous.title}</span>
               </Link>
-            ) : <div />}
-
+            ) : (
+              <div />
+            )}
             {next && (
               <Link
                 href={next.href}
-                className="group flex flex-col rounded border border-border p-3.5 text-right hover:border-foreground/30 transition-all sm:col-start-2 bg-card"
+                className="grid gap-0.5 rounded-panel border border-border-subtle bg-raised px-3.5 py-3 text-right transition-colors duration-150 hover:border-border-default sm:col-start-2"
               >
-                <span className="text-muted-foreground flex items-center justify-end gap-1 text-[11px]">
-                  Next
-                  <ArrowRight className="size-3" />
-                </span>
-                <span className="mt-1 font-medium text-foreground">
-                  {next.title}
-                </span>
+                <span className="eyebrow">Next</span>
+                <span className="text-ui font-medium text-fg">{next.title}</span>
               </Link>
             )}
           </nav>
         )}
       </article>
 
-      {/* Right Rail: 220px TOC + Quiet Trust Signals */}
       <Toc items={toc} sectionSlug={page.sectionSlug} slug={page.slug} />
     </div>
   );

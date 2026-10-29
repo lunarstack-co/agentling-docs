@@ -3,6 +3,8 @@ title: Sessions and Concurrency
 slug: sessions-and-concurrency
 description: How Agent and AgentSession split configuration from run state, and how to run agents safely under concurrency.
 order: 1
+metaTitle: "Sessions and concurrency: Agent vs AgentSession"
+metaDescription: "How Agent holds configuration and AgentSession holds per-run state, and the rules for sharing agents across tasks and running sessions concurrently."
 ---
 
 agentling separates what an agent is from what a run does. An `Agent` is immutable configuration, and an `AgentSession` holds the state of one conversation. Understanding that split is the key to running agents safely under concurrency.

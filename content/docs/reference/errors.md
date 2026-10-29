@@ -3,6 +3,8 @@ title: Errors
 slug: errors
 description: The exception hierarchy, which failures the model recovers from, and what redact_errors changes.
 order: 4
+metaTitle: "Errors reference: the exception hierarchy"
+metaDescription: "Every exception under AgentlingError, which failures the loop recovers from on its own, and what redact_errors changes about what the model sees."
 ---
 
 agentling's own errors share one base class, `AgentlingError`. Other exceptions can still reach your code: `ValueError` or `TypeError` for bad configuration (an invalid tool name, a bad SKILL.md field), `yaml.YAMLError` for SKILL.md frontmatter that doesn't parse, and the provider SDK's own errors (such as `openai.APIError`) once retries are used up. Just as important is what does not raise: most tool failures become observations the model can recover from.

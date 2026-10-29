@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 export default function DocsIndexPage() {
-  redirect("/docs/getting-started/introduction");
+  permanentRedirect("/docs/getting-started/introduction");
 }

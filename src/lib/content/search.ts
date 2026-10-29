@@ -45,7 +45,7 @@ export async function buildSearchDocs(): Promise<SearchDoc[]> {
       id: `changelog:${release.version}`,
       title: `v${release.version} ${release.title}`.trim(),
       body: release.body,
-      href: "/changelog",
+      href: `/changelog#v${release.version}`,
       section: "Changelog",
     });
   }

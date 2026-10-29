@@ -1,4 +1,6 @@
 import Link from "next/link";
+
+import { Mark } from "@/components/icons/mark";
 import { cn } from "@/lib/utils";
 
 export function Logo({ className }: { className?: string }) {
@@ -6,25 +8,13 @@ export function Logo({ className }: { className?: string }) {
     <Link
       href="/docs/getting-started/introduction"
       className={cn(
-        "group inline-flex items-center font-sans font-bold tracking-tight text-foreground text-base hover:opacity-90 transition-opacity",
+        "inline-flex items-center gap-2 text-[15px] font-semibold tracking-[-0.01em] text-fg transition-opacity duration-150 hover:opacity-80",
         className,
       )}
       aria-label="Agentling"
     >
-      <span>Agentling</span>
-    </Link>
-  );
-}
-
-export function LogoMark({ className }: { className?: string }) {
-  return (
-    <span
-      className={cn(
-        "font-sans font-bold tracking-tight text-foreground text-sm",
-        className,
-      )}
-    >
+      <Mark className="size-[18px]" />
       Agentling
-    </span>
+    </Link>
   );
 }

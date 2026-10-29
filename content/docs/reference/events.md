@@ -3,6 +3,8 @@ title: Events
 slug: events
 description: Every streaming event type, what it carries, and how to consume the stream.
 order: 3
+metaTitle: "Events reference: every streaming event type"
+metaDescription: "Every event the loop can emit, the fields each one carries, and how to consume the stream in blocking and streaming modes."
 ---
 
 When you call `run(task, stream=True)`, the loop communicates progress through a small set of frozen event types. This page is the reference for each one and for `print_events`, the ready-made consumer.

@@ -73,6 +73,17 @@ function checkOptional(file, data, fields) {
   }
 }
 
+// Search-result lengths: the title template appends " | Agentling" (12 chars).
+const TITLE_SUFFIX = 12;
+function checkMetaLengths(file, data) {
+  if (typeof data.metaTitle === "string" && data.metaTitle.length + TITLE_SUFFIX > 60) {
+    fail(file, `metaTitle is ${data.metaTitle.length + TITLE_SUFFIX} chars with the suffix; keep it at 60 or under`);
+  }
+  if (typeof data.metaDescription === "string" && data.metaDescription.length > 155) {
+    fail(file, `metaDescription is ${data.metaDescription.length} chars; keep it at 155 or under`);
+  }
+}
+
 function checkSlug(file, slug) {
   if (typeof slug === "string" && !SLUG_PATTERN.test(slug)) {
     fail(file, `slug "${slug}" is not kebab-case`);
@@ -149,7 +160,12 @@ for (const dirent of fs.readdirSync(path.join(CONTENT, "docs"), {
       slug: "string",
       order: "number",
     });
-    checkOptional(file, page.data, { description: "string" });
+    checkOptional(file, page.data, {
+      description: "string",
+      metaTitle: "string",
+      metaDescription: "string",
+    });
+    checkMetaLengths(file, page.data);
     checkSlug(file, page.data.slug);
     checkUnique(file, docSlugs, page.data.slug, "doc page slug");
     validRoutes.add(`/docs/${dirent.name}/${page.data.slug}`);
@@ -174,7 +190,12 @@ for (const file of markdownFiles(path.join(CONTENT, "pages"))) {
   if (!page) continue;
   allFiles.push({ file, raw: page.content });
   requireFields(file, page.data, { title: "string", slug: "string" });
-  checkOptional(file, page.data, { description: "string" });
+  checkOptional(file, page.data, {
+    description: "string",
+    metaTitle: "string",
+    metaDescription: "string",
+  });
+  checkMetaLengths(file, page.data);
   checkSlug(file, page.data.slug);
   checkUnique(file, pageSlugs, page.data.slug, "site page slug");
   validRoutes.add(`/${page.data.slug}`);

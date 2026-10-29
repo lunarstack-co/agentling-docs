@@ -3,6 +3,8 @@ title: Skills
 slug: skills
 description: Instruction folders the model loads on demand, catalog first.
 order: 5
+metaTitle: "Skills: instruction folders loaded on demand"
+metaDescription: "Put a SKILL.md folder in your project. The model sees its name and summary in a catalog and loads the full instructions only when it decides it needs them."
 ---
 
 A skill is a folder containing a `SKILL.md` file: YAML frontmatter followed by a markdown body of instructions. Skills let you package expertise, and progressive disclosure keeps them cheap until the model actually needs them.

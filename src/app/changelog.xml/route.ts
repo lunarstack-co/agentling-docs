@@ -25,6 +25,7 @@ export async function GET() {
     renderRss({
       title: "agentling changelog",
       path: "/changelog",
+      feedPath: "/changelog.xml",
       description: "Every agentling release, documented.",
       items,
     }),

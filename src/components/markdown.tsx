@@ -16,7 +16,7 @@ export async function Markdown({
       <div
         data-markdown-root
         className={cn(
-          "prose prose-neutral max-w-none dark:prose-invert",
+          "prose max-w-none",
           className,
         )}
         dangerouslySetInnerHTML={{ __html: html }}

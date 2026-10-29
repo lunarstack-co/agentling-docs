@@ -2,13 +2,12 @@
 
 import { useEffect } from "react";
 
-const CHECK_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>`;
-const COPY_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
+const CHECK_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>`;
+const COPY_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true"><rect width="12" height="12" x="9" y="9" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>`;
 
 /**
- * Progressively enhances rendered markdown with a copy button on every code
- * block. The markdown itself is server-rendered HTML, so the button has to
- * be attached after hydration.
+ * Adds a copy button to every server-rendered code block after hydration.
+ * The button is styled by the [data-copy-button] rules in globals.css.
  */
 export function CopyCodeButtons() {
   useEffect(() => {
@@ -23,11 +22,10 @@ export function CopyCodeButtons() {
       if (!pre) return;
 
       const button = document.createElement("button");
+      button.type = "button";
       button.setAttribute("data-copy-button", "");
       button.setAttribute("aria-label", "Copy code");
       button.setAttribute("title", "Copy code");
-      button.className =
-        "absolute right-2.5 top-2.5 flex size-8 cursor-pointer items-center justify-center rounded-md border border-code-border bg-code-bg text-muted-foreground opacity-0 transition-opacity duration-150 hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100";
       button.innerHTML = COPY_ICON;
 
       let timeout: ReturnType<typeof setTimeout> | undefined;
@@ -35,9 +33,11 @@ export function CopyCodeButtons() {
         try {
           await navigator.clipboard.writeText(pre.innerText.trimEnd());
           button.innerHTML = CHECK_ICON;
+          button.setAttribute("aria-label", "Copied");
           if (timeout) clearTimeout(timeout);
           timeout = setTimeout(() => {
             button.innerHTML = COPY_ICON;
+            button.setAttribute("aria-label", "Copy code");
           }, 1600);
         } catch {
           // Clipboard access denied; leave the button as-is.
@@ -45,7 +45,6 @@ export function CopyCodeButtons() {
       };
 
       button.addEventListener("click", onClick);
-      figure.classList.add("group");
       figure.appendChild(button);
 
       cleanups.push(() => {
