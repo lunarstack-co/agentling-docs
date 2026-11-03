@@ -34,9 +34,8 @@ jobs:
   examples:
     runs-on: ubuntu-latest
     env:
-      # Keep in step with [tool.uv.sources] in pyproject.toml; after the 0.2.0
-      # release this becomes the v0.2.0 tag.
-      AGENTLING_REF: 60e8075d80bfc7fabbe66b694231cf3559a7a649
+      # The tag of the Agentling version pinned in pyproject.toml.
+      AGENTLING_REF: v0.2.0
       AGENTLING_SRC: ${{ github.workspace }}/../agentling
     steps:
       - uses: actions/checkout@v4

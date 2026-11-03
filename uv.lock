@@ -9,9 +9,13 @@ resolution-markers = [
 [[package]]
 name = "agentling"
 version = "0.2.0"
-source = { git = "https://github.com/lunarstack-co/agentling?rev=60e8075d80bfc7fabbe66b694231cf3559a7a649#60e8075d80bfc7fabbe66b694231cf3559a7a649" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b2/27/511e95721305f29038c1a6df90a01c934d12ba97036a0805fca6b2d30751/agentling-0.2.0.tar.gz", hash = "sha256:f3c523072c354950f079e207684b7ae16eb0c1613493b4fa1f2db6bcb831a6cb", size = 148232, upload-time = "2026-11-03T16:44:03.467Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1d/33/6c94cfa0b240c9748628e7017e88a61e99a86e5577e1b27e47126c419361/agentling-0.2.0-py3-none-any.whl", hash = "sha256:a0187d074b6edae79a3c98058b8e3b1fa151193abd28da9f64a8adef5b14225e", size = 41972, upload-time = "2026-11-03T16:44:02.085Z" },
 ]
 
 [[package]]
@@ -33,7 +37,7 @@ dev = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "agentling", git = "https://github.com/lunarstack-co/agentling?rev=60e8075d80bfc7fabbe66b694231cf3559a7a649" },
+    { name = "agentling", specifier = "==0.2.0" },
     { name = "httpx", specifier = ">=0.28" },
     { name = "mypy", specifier = ">=1.14" },
     { name = "pytest", specifier = ">=9.1" },
