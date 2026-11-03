@@ -1,5 +1,6 @@
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
+import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
@@ -12,7 +13,10 @@ import { rehypeCallouts } from "./rehype-callouts";
 const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
-  .use(remarkRehype)
+  // Content is written in this repository, so raw HTML (the inline SVG
+  // diagrams) is trusted and passed through.
+  .use(remarkRehype, { allowDangerousHtml: true })
+  .use(rehypeRaw)
   .use(rehypeCallouts)
   .use(rehypeSlug)
   .use(rehypeAutolinkHeadings, {
@@ -24,8 +28,8 @@ const processor = unified()
     content: { type: "text", value: "#" },
   })
   .use(rehypePrettyCode, {
-    // Code blocks are dark in both themes, so one theme is enough.
-    theme: "github-dark-dimmed",
+    // One syntax theme per site theme; globals.css picks between them.
+    theme: { light: "github-light", dark: "github-dark" },
     keepBackground: false,
     // Block scope only: a bare string would also run every inline code
     // span through shiki, breaking the prose inline-code styling.

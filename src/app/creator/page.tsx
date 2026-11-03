@@ -25,7 +25,7 @@ import { AUTHOR, GITHUB_URL, PERSON_ID, PYPI_URL, SITE_URL } from "@/lib/site";
 const PATH = "/creator";
 const TITLE = "Folarin Akinloye - AI Engineer & Agentling Creator";
 const DESCRIPTION =
-  "Folarin Akinloye is an AI engineer building agentic systems and AI-powered products, and the creator of the open-source Agentling framework.";
+  "Folarin Akinloye is an AI engineer building agentic systems and AI-powered products, and the creator of Agentling, an open-source agent engine for Python.";
 const BLOG_URL = `${AUTHOR.url}/blog`;
 
 export const metadata: Metadata = pageMetadata({
@@ -132,7 +132,7 @@ export default function CreatorPage() {
               url: AUTHOR.url,
               jobTitle: "AI Engineer",
               description:
-                "AI engineer who builds agentic systems and AI-powered products, and the creator of Agentling, an open-source Python framework for building AI agents.",
+                "AI engineer who builds agentic systems and AI-powered products, and the creator of Agentling, an open-source agent engine for Python.",
               knowsAbout: [
                 "Agentic AI systems",
                 "AI product engineering",
@@ -154,7 +154,7 @@ export default function CreatorPage() {
       </h1>
       <p className="mt-3 text-lede text-fg-secondary">
         I build agentic systems and AI-powered products, and I created
-        Agentling, an open-source Python framework for building AI agents.
+        Agentling, an open-source agent engine for Python.
       </p>
 
       <div className="prose mt-6 max-w-none border-t border-border-subtle pt-6">
@@ -223,12 +223,12 @@ export default function CreatorPage() {
 
         <h2 id="why-i-built-agentling">Why I built Agentling</h2>
         <p>
-          Most agent frameworks hide the loop. When something goes wrong at
+          Most agent stacks hide the loop. When something goes wrong at
           three in the morning, that is exactly the part you need to read. I
-          wanted a framework where the whole execution model fits in your head:
+          wanted an engine where the whole execution model fits in your head:
           one async generator drives every run, every step is a typed object,
           and every event the loop emits is one you can see. Agentling is that
-          framework, built Python-first for asyncio, and kept small enough that
+          engine, built Python-first for asyncio, and kept small enough that
           the source is the documentation of last resort.
         </p>
         <ul>
@@ -262,9 +262,10 @@ export default function CreatorPage() {
             run can be interrupted and resumed from the step where it paused.
           </li>
           <li>
-            <strong>Provider abstraction.</strong> The built-in adapter speaks
-            to any OpenAI-compatible endpoint, and the Model protocol is small
-            enough to implement for a provider of your own.
+            <strong>Any model you bring.</strong> A model is any object with a{" "}
+            <code>stream()</code> method. Copy a reference adapter for
+            OpenAI-compatible servers, Anthropic or Ollama, or write your own
+            against the Model protocol.
           </li>
           <li>
             <strong>Runs without a key.</strong> The repository ships examples
@@ -277,7 +278,7 @@ export default function CreatorPage() {
           <ExternalLink href={GITHUB_URL}>Source on GitHub</ExternalLink>,{" "}
           <Link href="/docs/getting-started/introduction">documentation</Link>,{" "}
           <Link href="/docs/getting-started/installation">installation</Link>,{" "}
-          <ExternalLink href={`${GITHUB_URL}/tree/main/examples`}>examples</ExternalLink>, and{" "}
+          <ExternalLink href={`${GITHUB_URL}/tree/v0.2.0/examples`}>examples</ExternalLink>, and{" "}
           <ExternalLink href={PYPI_URL}>the package on PyPI</ExternalLink>. MIT
           licensed, Python 3.11 or newer.
         </p>
@@ -304,9 +305,9 @@ export default function CreatorPage() {
             a demo that happened to go well.
           </li>
           <li>
-            <strong>Abstractions should solve real problems.</strong> A
-            framework earns its abstractions by removing work, and it must
-            never hide the execution details you need when something breaks.
+            <strong>Abstractions should solve real problems.</strong> An
+            abstraction earns its place by removing work, and it must never
+            hide the execution details you need when something breaks.
           </li>
           <li>
             <strong>AI belongs in products.</strong> The model, the tools, the
@@ -321,9 +322,9 @@ export default function CreatorPage() {
             <strong>
               <ExternalLink href={GITHUB_URL}>Agentling</ExternalLink>
             </strong>
-            . An async Python framework for tool-using agents with typed memory,
-            streamed events, concurrent tool calls, recoverable failures, and
-            resumable runs. The problem it addresses is execution you can read,
+            . A small agent engine for Python with typed memory, streamed
+            events, concurrent tool calls, recoverable failures, resumable runs
+            and any model you bring. The problem it addresses is execution you can read,
             replay, and trust.
           </li>
           <li>
@@ -390,7 +391,7 @@ export default function CreatorPage() {
         <p>
           Folarin Akinloye is an AI engineer who builds agentic systems and
           AI-powered products. He is the creator of Agentling, an open-source
-          Python framework for building AI agents. His work focuses on agent
+          agent engine for Python. His work focuses on agent
           architectures, AI product engineering, and the infrastructure needed
           to build reliable AI systems.
         </p>

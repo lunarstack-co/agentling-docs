@@ -12,35 +12,25 @@
  *   public/icon-512.png             PWA
  *   public/icon-512-maskable.png    PWA, mark inside the 80% safe zone
  *
- * Colours are the light-theme tokens from globals.css. Rasters cannot
- * follow the viewer's theme, so they use the paper ground, which is also
- * the Open Graph card's ground.
+ * Rasters cannot follow the viewer's theme, so each one is the white mark
+ * on a black tile, which reads on light and dark surfaces.
  */
 import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
-const PAPER = "#fafaf7";
-const INK = "#1a1a18";
-const ACCENT = "#4338ca";
+const TILE = "#000000";
+const MARK = "#ffffff";
 
-/** The mark on a 32-unit grid, with a separate 16-unit drawing for 16px. */
-function markSvg({ size, ground, pad = 0, radius = 0 }) {
-  const grid = size <= 16 ? 16 : 32;
-  const bars =
-    grid === 16
-      ? `<rect x="3" y="3" width="10" height="2" rx="1" fill="${INK}"/>
-         <rect x="3" y="7" width="7" height="2" rx="1" fill="${INK}"/>
-         <rect x="3" y="11" width="4" height="2" rx="1" fill="${ACCENT}"/>`
-      : `<rect x="7" y="7" width="18" height="4" rx="2" fill="${INK}"/>
-         <rect x="7" y="14" width="12" height="4" rx="2" fill="${INK}"/>
-         <rect x="7" y="21" width="6" height="4" rx="2" fill="${ACCENT}"/>`;
-  const inner = size - pad * 2;
-  const scale = inner / grid;
+/** The small-size cut of the mark on a 256-unit grid, drawn for light-on-dark. */
+const MARK_D = "M97.75 196.5Q68.55 196.5 47.9 175.85Q27.25 155.2 27.25 126Q27.25 96.8 47.9 76.15Q68.55 55.5 97.75 55.5L147.75 55.5C159.07 55.5 168.25 64.68 168.25 76L168.25 155.5L208.25 155.5C219.57 155.5 228.75 164.68 228.75 176C228.75 187.32 219.57 196.5 208.25 196.5ZM127.25 126Q127.25 113.78 118.61 105.14Q109.97 96.5 97.75 96.5Q85.53 96.5 76.89 105.14Q68.25 113.78 68.25 126Q68.25 138.22 76.89 146.86Q85.53 155.5 97.75 155.5L127.25 155.5Z";
+
+function markSvg({ size, pad = 0, radius = 0 }) {
+  const scale = (size - pad * 2) / 256;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-    ${ground ? `<rect width="${size}" height="${size}" rx="${radius}" fill="${ground}"/>` : ""}
-    <g transform="translate(${pad} ${pad}) scale(${scale})">${bars}</g>
+    <rect width="${size}" height="${size}" rx="${radius}" fill="${TILE}"/>
+    <g transform="translate(${pad} ${pad}) scale(${scale})"><path fill="${MARK}" d="${MARK_D}"/></g>
   </svg>`;
 }
 
@@ -83,24 +73,23 @@ function write(rel, data) {
 
 console.log("Generating icons");
 
-// favicon.ico cannot follow the colour scheme, so it sits on a paper tile
-// that reads on both light and dark tab strips. Browsers that support SVG
-// favicons use icon.svg instead, which does follow the scheme.
+// favicon.ico cannot follow the colour scheme, so it sits on the black tile.
+// Browsers that support SVG favicons use icon.svg instead, which does.
 write(
   "src/app/favicon.ico",
   ico([
-    { size: 32, data: await png(markSvg({ size: 32, ground: PAPER, radius: 6 }), 32) },
-    { size: 16, data: await png(markSvg({ size: 16, ground: PAPER, radius: 3 }), 16) },
+    { size: 32, data: await png(markSvg({ size: 32, pad: 3, radius: 6 }), 32) },
+    { size: 16, data: await png(markSvg({ size: 16, pad: 1, radius: 3 }), 16) },
   ]),
 );
 
 // Apple touch icon: iOS adds its own corner radius; solid ground, 12% padding.
-write("src/app/apple-icon.png", await png(markSvg({ size: 180, ground: PAPER, pad: 22 }), 180));
+write("src/app/apple-icon.png", await png(markSvg({ size: 180, pad: 22 }), 180));
 
 // PWA icons on a solid ground. The maskable one keeps the mark inside the
 // central 80% safe zone.
-write("public/icon-192.png", await png(markSvg({ size: 192, ground: PAPER, pad: 24, radius: 36 }), 192));
-write("public/icon-512.png", await png(markSvg({ size: 512, ground: PAPER, pad: 64, radius: 96 }), 512));
-write("public/icon-512-maskable.png", await png(markSvg({ size: 512, ground: PAPER, pad: 128 }), 512));
+write("public/icon-192.png", await png(markSvg({ size: 192, pad: 24, radius: 36 }), 192));
+write("public/icon-512.png", await png(markSvg({ size: 512, pad: 64, radius: 96 }), 512));
+write("public/icon-512-maskable.png", await png(markSvg({ size: 512, pad: 128 }), 512));
 
 console.log("Done");

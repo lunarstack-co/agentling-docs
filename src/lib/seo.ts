@@ -16,8 +16,7 @@ export function absoluteUrl(path = "/"): string {
 }
 
 /** Title used when a page sets none; also the site default. */
-export const DEFAULT_TITLE =
-  "Agentling, an async Python agent framework for tool use";
+export const DEFAULT_TITLE = "Agentling, a small agent engine for Python";
 
 export type PageKind = "doc" | "changelog" | "page" | "notFound";
 

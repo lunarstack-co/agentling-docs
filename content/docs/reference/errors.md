@@ -1,45 +1,107 @@
 ---
 title: Errors
 slug: errors
-description: The exception hierarchy, which failures the model recovers from, and what redact_errors changes.
+description: Every exception Agentling defines, which ones the loop retries, and which ones reach your code.
 order: 4
-metaTitle: "Errors reference: the exception hierarchy"
-metaDescription: "Every exception under AgentlingError, which failures the loop recovers from on its own, and what redact_errors changes about what the model sees."
+metaTitle: "Errors reference: exception classes"
+metaDescription: "AgentlingError and its subclasses, the ModelError family with retryable defaults, retry_after and status, and which failures reach your code."
 ---
 
-agentling's own errors share one base class, `AgentlingError`. Other exceptions can still reach your code: `ValueError` or `TypeError` for bad configuration (an invalid tool name, a bad SKILL.md field), `yaml.YAMLError` for SKILL.md frontmatter that doesn't parse, and the provider SDK's own errors (such as `openai.APIError`) once retries are used up. Just as important is what does not raise: most tool failures become observations the model can recover from.
+`agentling.errors` defines the exceptions Agentling raises and the `ModelError` classes adapters raise. Import them from `agentling`. For handling failures in a running agent, see [Handle failures](/docs/tutorial/handle-failures).
 
 ## The hierarchy
 
-| Exception | Raised when |
-| --- | --- |
-| `AgentlingError` | The base class for agentling's own errors. |
-| `ToolCallError` | A tool gets bad arguments: a missing required field, a wrong type, a value outside `enum`, or an extra key the schema forbids. Tools may also raise it themselves. The loop shows it to the model. |
-| `ModelError` | A model turn exceeds `model_timeout`, or the model keeps sending tool calls that can't be parsed. |
-| `ModelOutputError` | A tool call can't be parsed. The loop catches it and asks the model to try again, up to twice, before raising `ModelError`. |
-| `ToolTimeoutError` | A tool runs past its timeout. It is not raised: it words the observation the model sees. |
-| `MemoryLoadError` | Saved memory has an unknown version or a bad shape. Invalid JSON passed to `Memory.load_json` raises `json.JSONDecodeError` instead. |
-| `AgentRunError`, `ToolExecutionError`, `SkillLoadError` | Reserved. agentling doesn't raise these yet; they are exported so your code can catch them once it does. |
-
-## Observations, not crashes
-
-The loop draws a clear line between failures the model can fix and failures your code must handle.
-
-**Fed back to the model as observations.** Anything that goes wrong inside a tool call becomes a `ToolResult` with `is_error=True`, tagged by kind. That includes a `ToolCallError` from invalid arguments, an exception raised by the tool body, a tool timeout, and a call to an unknown tool. The observation carries a hint matched to the failure: an invalid-argument error says "Fix the arguments and try again", while an execution, timeout, or unknown-tool error says "Consider a different approach or tool". The model gets a chance to correct course, and one bad tool call does not kill the run. See [Error handling](/docs/guides/error-handling) for the practical patterns.
-
-**Raised to the caller.** Failures the model can't repair reach your code as exceptions: a `ModelError` when a turn exceeds its time budget or the model keeps sending unparseable tool calls, the provider SDK's error when its retries are used up, and a `MemoryLoadError` when saved memory doesn't validate on load.
-
-## redact_errors
-
-By default, the message of an unexpected tool exception is included in the observation, because it is usually the fastest way for the model to recover. If your tools can leak sensitive detail through exception messages, construct the agent with `redact_errors=True`:
-
-```python
-agent = Agent(model=model, tools=[query_db], redact_errors=True)
+```text
+AgentlingError
+├── AgentRunError                 reserved, not raised yet
+├── ModelError
+│   ├── ModelConnectionError
+│   ├── ModelRateLimitError
+│   ├── ModelServerError
+│   ├── ModelTimeoutError
+│   ├── ModelAuthError
+│   ├── ModelBadRequestError
+│   ├── ModelContextLengthError
+│   ├── ModelOutputError
+│   └── ModelOutputTruncatedError
+├── ToolCallError                 shown to the model, never raised from a run
+├── ToolExecutionError            reserved, not raised yet
+│   └── ToolTimeoutError          words the timeout result the model sees
+├── MemoryLoadError
+└── SkillLoadError                reserved, not raised yet
 ```
 
-With redaction on, the model still sees that the tool failed and the exception type, but the message itself is withheld and logged via the `agentling` logger instead. Pair it with `max_tool_output_chars` to also bound what tool output enters the context. See the project's security policy for the full trust model.
+Other exceptions can still reach you: `ValueError` and `TypeError` for bad configuration, and any non-`ModelError` exception an adapter raises, unchanged, because that is a bug in the adapter.
 
-## Related pages
+## ModelError
 
-- [Error handling](/docs/guides/error-handling) covers recovery patterns and loop detection.
-- [Agent API](/docs/reference/agent-api) lists `redact_errors`, `tool_timeout`, and `model_timeout`.
+```text
+ModelError(message: str = "", *, retryable: bool | None = None,
+           retry_after: float | None = None, status: int | None = None)
+```
+
+| Attribute | Default | Meaning |
+| --- | --- | --- |
+| `retryable` | the class's `default_retryable` | Whether the same request might succeed if sent again. |
+| `retry_after` | `None` | Seconds the backend asked the caller to wait, if it said. |
+| `status` | `None` | The HTTP status, when there was one. |
+| `default_retryable` | `False` | Class attribute; subclasses set their own. |
+
+The loop retries a turn only when it raised a `ModelError` with `retryable=True` before yielding anything, under the agent's [RetryPolicy](/docs/reference/retry). Every other `ModelError` ends the run and is raised from `run()` or `resume()`.
+
+| Class | Raise it when | Retryable by default |
+| --- | --- | --- |
+| `ModelConnectionError` | The backend can't be reached: DNS, a refused or dropped connection. | yes |
+| `ModelRateLimitError` | HTTP 429. Pass the `Retry-After` value as `retry_after`. | yes |
+| `ModelServerError` | HTTP 5xx, or the backend reports an overload. | yes |
+| `ModelTimeoutError` | The request timed out. The loop also raises it when a chunk takes longer than `model_timeout`. | yes |
+| `ModelAuthError` | HTTP 401 or 403, or the backend's own "bad key" error. | no |
+| `ModelBadRequestError` | The backend rejected the request itself: an unknown model, a bad field, another 4xx. | no |
+| `ModelContextLengthError` | The conversation no longer fits the context window. | no |
+| `ModelOutputError` | The output can't be used. The loop raises it when `provider_data` isn't JSON-serialisable. | no |
+| `ModelOutputTruncatedError` | Raised by the loop when the output limit cuts a tool call short. Adapters don't raise it. | no |
+
+When a turn's tool calls can't be parsed (a missing name, arguments that aren't a JSON object), the loop doesn't raise straight away. It tells the model what was wrong and asks again, up to twice in a row, then raises a plain `ModelError` whose message says how many turns failed. If the turn also stopped at the output limit, it raises `ModelOutputTruncatedError` at once instead.
+
+## Other classes
+
+| Class | Raised by | Meaning |
+| --- | --- | --- |
+| `AgentlingError` | never directly | Base class for every Agentling error. |
+| `ToolCallError` | argument validation, or your tool | A tool call had bad arguments. The model sees the message and can fix the call. See [Tools](/docs/reference/tools). |
+| `ToolTimeoutError` | nobody | A tool ran past its timeout. The loop uses it only to word the error result the model sees. |
+| `MemoryLoadError` | `Memory.from_dict`, `Memory.load_json` | Saved memory has an unknown version, an unknown step type or a missing field. See [Memory](/docs/reference/memory). |
+| `AgentRunError`, `ToolExecutionError`, `SkillLoadError` | nobody yet | Reserved and exported so code can catch them once they are raised. A bad `SKILL.md` raises `ValueError` or `yaml.YAMLError` today. |
+
+## What the model sees instead
+
+A tool that raises doesn't end the run. Its exception becomes the tool's result, marked as an error, with a hint: "Fix the arguments and try again" for a `ToolCallError`, "Consider a different approach or tool" for anything else, a timeout, or an unknown tool name. With `redact_errors=True` the message of an unexpected exception is logged instead of shown; `ToolCallError` messages are always shown.
+
+## Example
+
+```python
+from agentling import Agent, ChatMessage, ModelAuthError, ModelServerError, RetryPolicy
+from agentling.testing import ScriptedModel
+
+for name, cls in [("server", ModelServerError), ("auth", ModelAuthError)]:
+    print(name, "retryable:", cls.default_retryable)
+
+model = ScriptedModel([ModelServerError("overloaded"), ChatMessage("assistant", "ok")])
+agent = Agent(model=model, retry=RetryPolicy(base_delay=0, jitter=0))
+print(await agent.run("hi"), len(model.calls))
+
+agent = Agent(model=ScriptedModel([ModelAuthError("bad key", status=401)]))
+try:
+    await agent.run("hi")
+except ModelAuthError as exc:
+    print(type(exc).__name__, exc.status, exc.retryable)
+```
+
+Output:
+
+```text
+server retryable: True
+auth retryable: False
+ok 2
+ModelAuthError 401 False
+```

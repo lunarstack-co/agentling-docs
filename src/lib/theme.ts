@@ -4,6 +4,6 @@
  * globals.css are the source of truth; keep these in step with --bg-base.
  */
 export const THEME_COLORS = {
-  light: "#fafaf7",
-  dark: "#0f1012",
+  light: "#ffffff",
+  dark: "#0d1117",
 } as const;

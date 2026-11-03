@@ -98,13 +98,119 @@ function checkUnique(file, map, key, label) {
   }
 }
 
+/** Lines the frontmatter takes up, so reported line numbers match the file. */
+function frontmatterLines(file, raw) {
+  return fs.readFileSync(file, "utf8").split("\n").length - raw.split("\n").length;
+}
+
 function checkDashes(file, raw) {
+  const offset = frontmatterLines(file, raw);
   const lines = raw.split("\n");
   lines.forEach((line, index) => {
     if (line.includes("—") || line.includes("–")) {
-      fail(file, `line ${index + 1} contains an em or en dash`);
+      fail(file, `line ${index + offset + 1} contains an em or en dash`);
     }
   });
+}
+
+/* ---------- Prose checks ---------- */
+
+// Agentling is an engine. The migration page may say what it used to be called.
+const FRAMEWORK_ALLOWED = new Set(["content/docs/how-to/migrate-from-0-1.md"]);
+
+// Stock phrasing that reads as filler. Matched case-insensitively outside code.
+const BANNED = [
+  /\bdelve\b/,
+  /\bleverag(e|es|ed|ing)\b/,
+  /\bseamless(ly)?\b/,
+  /\brobust\b/,
+  /\bpowerful\b/,
+  /\bcrucial\b/,
+  /\bpivotal\b/,
+  /\blandscape\b/,
+  /\btestament\b/,
+  /\bunderscore(s|d)?\b/,
+  /\bshowcas(e|es|ed|ing)\b/,
+  /\bvibrant\b/,
+  /\btapestry\b/,
+  /\bharness(es|ed|ing)? (the|its|their|your|this|that)\b/,
+  /\blet's dive\b/,
+  /\bin order to\b/,
+  /\bit is important to note\b/,
+];
+
+// Words that keep their capitals in a sentence-case heading.
+const HEADING_ALLOWLIST = new Set([
+  "Agentling",
+  "Python",
+  "OpenAI",
+  "Anthropic",
+  "Ollama",
+  "LM",
+  "Studio",
+  "JSON",
+  "Schema",
+  "API",
+  "MCP",
+  "GitHub",
+  "PyPI",
+  "SKILL.md",
+  "UI",
+  "SSE",
+  "HTTP",
+  "CI",
+  "Claude",
+  "Aldwin",
+  "I",
+]);
+
+const UNPINNED = /github\.com\/lunarstack-co\/agentling\/(blob|tree)\/main\//;
+
+/** The prose lines of a Markdown body, with their 1-based line numbers. */
+function proseLines(raw) {
+  const out = [];
+  let fenced = false;
+  raw.split("\n").forEach((line, index) => {
+    if (/^\s*```/.test(line)) {
+      fenced = !fenced;
+      return;
+    }
+    if (!fenced) out.push({ line, number: index + 1 });
+  });
+  return out;
+}
+
+function checkProse(file, raw) {
+  const relative = path.relative(ROOT, file);
+  const offset = frontmatterLines(file, raw);
+  for (const { line, number: bodyLine } of proseLines(raw)) {
+    const number = bodyLine + offset;
+    const text = line.replace(/`[^`]*`/g, "");
+    if (/framework/i.test(text) && !FRAMEWORK_ALLOWED.has(relative)) {
+      fail(file, `line ${number} says "framework"; Agentling is an agent engine`);
+    }
+    for (const pattern of BANNED) {
+      const match = text.toLowerCase().match(pattern);
+      if (match) fail(file, `line ${number} uses "${match[0]}"; say it plainly`);
+    }
+    if (UNPINNED.test(line)) {
+      fail(file, `line ${number} links the agentling repo at main; pin it to the release tag`);
+    }
+    const heading = text.match(/^#{1,6}\s+(.*)$/);
+    if (heading) checkHeadingCase(file, number, heading[1]);
+  }
+}
+
+function checkHeadingCase(file, number, heading) {
+  const words = heading
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .split(/\s+/)
+    .slice(1)
+    .map((word) => word.replace(/^[^\w]+|[^\w.]+$/g, ""))
+    .filter((word) => /^[A-Z][a-z]/.test(word) && !HEADING_ALLOWLIST.has(word));
+  if (words.length >= 2) {
+    fail(file, `line ${number} heading is in title case ("${heading}"); use sentence case`);
+  }
 }
 
 /* ---------- Collect and validate every collection ---------- */
@@ -167,7 +273,8 @@ for (const dirent of fs.readdirSync(path.join(CONTENT, "docs"), {
     });
     checkMetaLengths(file, page.data);
     checkSlug(file, page.data.slug);
-    checkUnique(file, docSlugs, page.data.slug, "doc page slug");
+    // Routes are /docs/<section>/<slug>, so a slug need only be unique in its section.
+    checkUnique(file, docSlugs, `${dirent.name}/${page.data.slug}`, "doc page");
     validRoutes.add(`/docs/${dirent.name}/${page.data.slug}`);
   }
 }
@@ -207,6 +314,7 @@ const INTERNAL_LINK = /\]\((\/[^)#\s]*)(#[^)\s]*)?\)/g;
 
 for (const { file, raw } of allFiles) {
   checkDashes(file, raw);
+  checkProse(file, raw);
   for (const match of raw.matchAll(INTERNAL_LINK)) {
     const target = match[1].replace(/\/$/, "") || "/";
     if (!validRoutes.has(target)) {

@@ -30,3 +30,34 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  examples:
+    runs-on: ubuntu-latest
+    env:
+      # The tag of the Agentling version pinned in pyproject.toml.
+      AGENTLING_REF: v0.2.0
+      AGENTLING_SRC: ${{ github.workspace }}/../agentling
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out Agentling for the reference adapters
+        run: |
+          git clone --quiet https://github.com/lunarstack-co/agentling.git "$AGENTLING_SRC"
+          git -C "$AGENTLING_SRC" checkout --quiet "$AGENTLING_REF"
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Lint and type-check the tests
+        run: |
+          uv run ruff check tests
+          uv run ruff format --check tests
+          uv run mypy tests
+
+      - name: Run every example
+        run: uv run pytest -q

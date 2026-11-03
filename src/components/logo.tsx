@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 export function Logo({ className }: { className?: string }) {
   return (
     <Link
-      href="/docs/getting-started/introduction"
+      href="/"
       className={cn(
         "inline-flex items-center gap-2 text-[15px] font-semibold tracking-[-0.01em] text-fg transition-opacity duration-150 hover:opacity-80",
         className,

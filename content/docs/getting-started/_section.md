@@ -1,7 +1,7 @@
 ---
-title: Getting Started
+title: Getting started
 slug: getting-started
-description: Install agentling and run your first agent in minutes.
+description: What Agentling is, how to install it and your first agent.
 icon: rocket
 order: 1
 ---

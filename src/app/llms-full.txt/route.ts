@@ -25,7 +25,7 @@ export async function GET() {
 
   for (const section of sections) {
     for (const meta of section.pages) {
-      const page = await getDocPage(meta.slug);
+      const page = await getDocPage(section.slug, meta.slug);
       if (!page) continue;
       parts.push(
         "---",

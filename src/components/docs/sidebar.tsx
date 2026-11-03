@@ -13,10 +13,11 @@ import { cn } from "@/lib/utils";
 
 const emptySubscribe = () => () => {};
 
+// Nav rows: at least 32 px high, growing when a title wraps.
 const ROW =
-  "flex h-8 items-center rounded-control px-2 text-ui transition-[background-color,color] duration-150";
+  "flex min-h-8 items-center rounded-control px-2 py-1.5 text-ui leading-5 transition-[background-color,color] duration-150";
 const ROW_IDLE = "text-fg-secondary hover:bg-sunken hover:text-fg";
-const ROW_ACTIVE = "bg-sunken font-medium text-fg shadow-[inset_2px_0_0_var(--accent)]";
+const ROW_ACTIVE = "bg-sunken font-medium text-fg";
 
 function SectionNav({
   sections,
@@ -65,7 +66,7 @@ function SectionNav({
           </Link>
         ))}
         <a
-          href={`${GITHUB_URL}/blob/main/LICENSE`}
+          href={`${GITHUB_URL}/blob/v0.2.0/LICENSE`}
           target="_blank"
           rel="noreferrer"
           className={cn(ROW, "h-7", ROW_IDLE)}

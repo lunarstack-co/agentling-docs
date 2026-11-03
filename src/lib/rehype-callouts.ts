@@ -11,7 +11,7 @@ const CALLOUT_TYPES: Record<string, string> = {
 const MARKER = /^\[!(note|tip|important|warning|caution)\]\s*/i;
 
 /**
- * Turns GitHub-style alert blockquotes into styled callouts:
+ * Turns alert blockquotes into styled callouts:
  *
  *   > [!NOTE]
  *   > Body text.

@@ -34,7 +34,7 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 h-14 w-full border-b border-border-subtle bg-base/92 backdrop-blur-md">
+    <header className="sticky top-0 z-40 h-14 w-full border-b border-border-default bg-header">
       <div className="mx-auto flex h-full max-w-[1440px] items-center gap-3 px-4 sm:px-6">
         <div className="flex shrink-0 items-center gap-2.5">
           <Logo />
@@ -56,10 +56,11 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "inline-flex h-8 items-center whitespace-nowrap rounded-control px-2.5 text-ui transition-[background-color,color] duration-150",
+                  // The current item's bar sits on the header's bottom rule.
+                  "relative inline-flex h-8 items-center whitespace-nowrap rounded-control px-2 text-ui transition-[background-color,color] duration-150 hover:bg-neutral-muted",
                   active
-                    ? "bg-sunken font-medium text-fg"
-                    : "text-fg-secondary hover:bg-sunken hover:text-fg",
+                    ? "font-semibold text-fg after:absolute after:inset-x-2 after:-bottom-[12px] after:h-0.5 after:rounded-full after:bg-[var(--underline-active)]"
+                    : "text-fg hover:text-fg",
                 )}
               >
                 {item.label}

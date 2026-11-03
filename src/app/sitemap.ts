@@ -12,8 +12,8 @@ import { getFileDates } from "@/lib/content/dates";
 import { SITE_URL } from "@/lib/site";
 
 /**
- * Lists only indexable, canonical, 200-status URLs. The root and /docs are
- * redirects and are left out. lastModified comes from git per file.
+ * Lists only indexable, canonical, 200-status URLs. /docs is a redirect and
+ * is left out. lastModified comes from git per file.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [sections, sitePageSlugs, changelogModified] = await Promise.all([
@@ -44,8 +44,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const creatorModified = getFileDates(
     path.join(process.cwd(), "src/app/creator/page.tsx"),
   ).modified;
+  const homeModified = getFileDates(path.join(process.cwd(), "src/app/page.tsx")).modified;
 
   return [
+    { url: SITE_URL, lastModified: homeModified, priority: 1 },
     ...docRoutes,
     { url: `${SITE_URL}/changelog`, lastModified: changelogModified, priority: 0.7 },
     ...standaloneRoutes,

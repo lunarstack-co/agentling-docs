@@ -15,11 +15,14 @@ interface DocPageParams {
   params: Promise<{ section: string; slug: string }>;
 }
 
-/** Diátaxis mode per section, shown as one neutral eyebrow. */
+/**
+ * Diátaxis mode per section, shown as one neutral eyebrow. Getting started
+ * mixes modes, so it has none.
+ */
 const PAGE_KIND: Record<string, string> = {
-  "getting-started": "Tutorial",
-  "core-concepts": "Concept",
-  guides: "Guide",
+  tutorial: "Tutorial",
+  "how-to": "How-to guide",
+  concepts: "Concept",
   reference: "Reference",
 };
 
@@ -33,8 +36,8 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: DocPageParams): Promise<Metadata> {
-  const { slug } = await params;
-  const page = await getDocPage(slug);
+  const { section, slug } = await params;
+  const page = await getDocPage(section, slug);
   if (!page) return {};
   return pageMetadata({
     kind: "doc",
@@ -48,20 +51,21 @@ export async function generateMetadata({
 export default async function DocPage({ params }: DocPageParams) {
   const { section: sectionSlug, slug } = await params;
   const [page, sections] = await Promise.all([
-    getDocPage(slug),
+    getDocPage(sectionSlug, slug),
     getDocSections(),
   ]);
 
-  if (!page || page.sectionSlug !== sectionSlug) notFound();
+  if (!page) notFound();
 
   const flat = sections.flatMap((section) =>
     section.pages.map((entry) => ({
       title: entry.title,
       href: `/docs/${section.slug}/${entry.slug}`,
-      slug: entry.slug,
     })),
   );
-  const index = flat.findIndex((entry) => entry.slug === slug);
+  const index = flat.findIndex(
+    (entry) => entry.href === `/docs/${sectionSlug}/${slug}`,
+  );
   const previous = index > 0 ? flat[index - 1] : null;
   const next = index < flat.length - 1 ? flat[index + 1] : null;
 

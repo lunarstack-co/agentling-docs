@@ -77,9 +77,14 @@ export async function getDocSections(): Promise<DocSection[]> {
     .sort(byOrder);
 }
 
-export async function getDocPage(slug: string): Promise<DocPage | null> {
+/** A doc page by section and slug; slugs are unique within a section only. */
+export async function getDocPage(
+  sectionSlug: string,
+  slug: string,
+): Promise<DocPage | null> {
   const sections = await getDocSections();
   for (const section of sections) {
+    if (section.slug !== sectionSlug) continue;
     const sectionDir = path.join(CONTENT_DIR, "docs", section.slug);
     for (const file of markdownFiles(sectionDir)) {
       if (path.basename(file) === "_section.md") continue;

@@ -11,7 +11,7 @@ export default function Image() {
     eyebrow: "AI Engineer · Creator of Agentling",
     title: AUTHOR.name,
     subtitle:
-      "Builds agentic systems and AI-powered products. Creator of Agentling, an open-source Python framework for building AI agents.",
+      "Builds agentic systems and AI-powered products. Creator of Agentling, an open-source agent engine for Python.",
     footerNote: "folarin.dev",
   });
 }
