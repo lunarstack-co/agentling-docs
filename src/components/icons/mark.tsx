@@ -1,21 +1,15 @@
 import type { SVGProps } from "react";
 
 /**
- * The Agentling mark: three bars of decreasing length, a run as a list of
- * typed steps with the last one the answer. Neutral bars take the current
- * text colour; the last bar takes the accent. Drawn on a 32-unit grid.
- * The source of truth for the favicon set is src/app/icon.svg and the
- * generator in scripts/generate-icons.mjs; keep the geometry identical.
+ * The Agentling mark: a lowercase a whose stroke runs on along the baseline
+ * and out of the loop. One shape in the current text colour. This is the
+ * small-size cut on a 256-unit grid; src/app/icon.svg and
+ * scripts/generate-icons.mjs use the same geometry, so keep the three in step.
  */
-export function Mark({
-  accent = "var(--accent)",
-  ...props
-}: SVGProps<SVGSVGElement> & { accent?: string }) {
+export function Mark(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 32 32" fill="none" aria-hidden {...props}>
-      <rect x="7" y="7" width="18" height="4" rx="2" fill="currentColor" />
-      <rect x="7" y="14" width="12" height="4" rx="2" fill="currentColor" />
-      <rect x="7" y="21" width="6" height="4" rx="2" fill={accent} />
+    <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden {...props}>
+      <path d="M97.5 197Q68.09 197 47.3 176.2Q26.5 155.41 26.5 126Q26.5 96.59 47.3 75.8Q68.09 55 97.5 55L147.5 55C159.1 55 168.5 64.4 168.5 76L168.5 155L208.5 155C220.1 155 229.5 164.4 229.5 176C229.5 187.6 220.1 197 208.5 197ZM126.5 126Q126.5 113.99 118.01 105.49Q109.51 97 97.5 97Q85.49 97 76.99 105.49Q68.5 113.99 68.5 126Q68.5 138.01 76.99 146.51Q85.49 155 97.5 155L126.5 155Z" />
     </svg>
   );
 }

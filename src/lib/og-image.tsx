@@ -64,7 +64,7 @@ export function renderOgImage({
   eyebrow: string;
   title: string;
   subtitle?: string;
-  /** Right-hand footer text; the framework line by default. */
+  /** Right-hand footer text; the Python version and licence by default. */
   footerNote?: string;
 }): ImageResponse {
   return new ImageResponse(
@@ -83,10 +83,8 @@ export function renderOgImage({
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          <svg width="44" height="44" viewBox="0 0 32 32" fill="none">
-            <rect x="7" y="7" width="18" height="4" rx="2" fill={INK} />
-            <rect x="7" y="14" width="12" height="4" rx="2" fill={INK} />
-            <rect x="7" y="21" width="6" height="4" rx="2" fill={ACCENT} />
+          <svg width="44" height="44" viewBox="0 0 256 256" fill={INK}>
+            <path d="M97.5 197Q68.09 197 47.3 176.2Q26.5 155.41 26.5 126Q26.5 96.59 47.3 75.8Q68.09 55 97.5 55L147.5 55C159.1 55 168.5 64.4 168.5 76L168.5 155L208.5 155C220.1 155 229.5 164.4 229.5 176C229.5 187.6 220.1 197 208.5 197ZM126.5 126Q126.5 113.99 118.01 105.49Q109.51 97 97.5 97Q85.49 97 76.99 105.49Q68.5 113.99 68.5 126Q68.5 138.01 76.99 146.51Q85.49 155 97.5 155L126.5 155Z" />
           </svg>
           <div style={{ display: "flex", fontSize: 32, fontWeight: 600, letterSpacing: -0.5 }}>
             Agentling

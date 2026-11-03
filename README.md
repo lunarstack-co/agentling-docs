@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/brand/logo/agentling-horizontal-white.svg">
+    <img alt="Agentling" src="public/brand/logo/agentling-horizontal-black.svg" height="56">
+  </picture>
+</p>
+
 # Agentling Docs
 
 [![CI](https://github.com/lunarstack-co/agentling-docs/actions/workflows/ci.yml/badge.svg)](https://github.com/lunarstack-co/agentling-docs/actions/workflows/ci.yml)
