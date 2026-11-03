@@ -17,7 +17,7 @@ export default async function Image({
   if (!page) {
     return renderOgImage({
       eyebrow: "agentling",
-      title: "The agent framework you can read in one sitting",
+      title: "Bring your model. Run the loop.",
       subtitle: SITE_TAGLINE,
     });
   }

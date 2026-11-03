@@ -13,10 +13,11 @@ import { cn } from "@/lib/utils";
 
 const emptySubscribe = () => () => {};
 
+// Primer's ActionList item: at least 32 px, growing when a title wraps.
 const ROW =
-  "flex h-8 items-center rounded-control px-2 text-ui transition-[background-color,color] duration-150";
+  "flex min-h-8 items-center rounded-control px-2 py-1.5 text-ui leading-5 transition-[background-color,color] duration-150";
 const ROW_IDLE = "text-fg-secondary hover:bg-sunken hover:text-fg";
-const ROW_ACTIVE = "bg-sunken font-medium text-fg shadow-[inset_2px_0_0_var(--accent)]";
+const ROW_ACTIVE = "bg-sunken font-medium text-fg";
 
 function SectionNav({
   sections,

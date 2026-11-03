@@ -4,14 +4,16 @@ import { cn } from "@/lib/utils";
 
 export type ButtonVariant = "ghost" | "outline" | "primary";
 
+// Sizes and states follow Primer's medium buttons.
 const BASE =
-  "inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-control text-ui font-medium transition-[background-color,color,border-color,transform] duration-150 ease-out active:scale-[0.97] active:duration-100 disabled:pointer-events-none disabled:opacity-45";
+  "inline-flex h-8 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-control text-ui font-medium transition-[background-color,color,border-color] duration-[80ms] ease-out disabled:pointer-events-none disabled:opacity-50";
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  ghost: "px-2.5 text-fg-secondary hover:bg-sunken hover:text-fg",
+  ghost: "px-3 text-fg-secondary hover:bg-neutral-muted hover:text-fg active:bg-control-active",
   outline:
-    "border border-border-default bg-raised px-2.5 text-fg-secondary hover:bg-sunken hover:text-fg",
-  primary: "bg-accent px-3 text-accent-fg hover:bg-accent-hover",
+    "border border-border-default bg-control px-3 text-control-fg shadow-[0_1px_0_0_#1f23280a] hover:bg-control-hover active:bg-control-active",
+  primary:
+    "border border-[#1f232826] bg-primary px-3 text-accent-fg hover:bg-primary-hover",
 };
 
 /**

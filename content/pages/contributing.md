@@ -1,62 +1,97 @@
 ---
 title: Contributing
 slug: contributing
-description: How to set up a development environment, run the checks, and contribute to agentling.
+description: How to set up a development environment, run the checks, and contribute to Agentling and these docs.
 metaTitle: "Contributing: setup, checks, pull requests"
-metaDescription: "Set up a dev environment with uv, run the test, lint, format, and type checks that CI runs, and open a pull request against the agentling repository."
+metaDescription: "Set up Agentling or these docs, run the checks CI runs, write examples that are tested, and open a pull request."
 ---
 
-Thanks for your interest in improving agentling. The framework stays deliberately small, so thoughtful contributions matter more than big ones.
+Agentling stays small on purpose, so a focused contribution matters more than a big one. There are two repositories: [agentling](https://github.com/lunarstack-co/agentling), the package, and [agentling-docs](https://github.com/lunarstack-co/agentling-docs), this site.
 
-## Development setup
+## Agentling
 
-agentling uses [uv](https://docs.astral.sh/uv/) for environment and dependency management:
+Agentling uses [uv](https://docs.astral.sh/uv/) and Python 3.11 or newer.
 
 ```bash
 git clone https://github.com/lunarstack-co/agentling
 cd agentling
-uv sync   # create the environment and install all dependencies
+uv sync
 ```
 
-## The checks
-
-These all run in CI and must pass. Run them locally before opening a pull request:
+CI runs these, and all must pass:
 
 ```bash
-uv run pytest                         # tests
-uv run ruff check src tests           # lint
-uv run ruff format --check src tests  # formatting (run `ruff format` to fix)
-uv run mypy src tests                 # type-check
-uv build                              # the package builds
+uv run ruff check src tests examples
+uv run ruff format --check src tests examples
+uv run mypy src tests examples
+uv run pytest
+uv build
 ```
 
-## Guidelines
+The package also type-checks under `uv run mypy --strict src`; keep it that way. The test suite runs offline in a few seconds and executes the README's Python blocks, so a README change can fail a test. The repository's [CONTRIBUTING.md](https://github.com/lunarstack-co/agentling/blob/v0.2.0/CONTRIBUTING.md) covers branches, commit messages and how to add a tool, an example or a model adapter.
 
-- Keep the framework small and readable; prefer clarity over cleverness.
-- Add tests for new behavior, including the failure paths.
-- Type everything; the codebase is checked with mypy.
-- Match the surrounding style; `ruff format` is the source of truth.
-- Avoid new runtime dependencies unless they clearly earn their place.
+Some guidelines:
 
-## Good first contributions
+- Keep the loop small and readable. Prefer clarity over cleverness.
+- Test new behaviour, including how it fails.
+- Type everything.
+- Avoid new runtime dependencies. The package depends on `pyyaml` only.
 
-- Improve an example, or add one that shows a pattern the current set misses.
-- Sharpen a docstring or a documentation page that confused you.
-- Add a test for an edge case you hit in real usage.
-- Report friction honestly: a well-written issue about a rough edge is a contribution.
+## These docs
+
+The site is a Next.js app. Every page and changelog entry is a Markdown file under `content/`.
+
+```bash
+git clone https://github.com/lunarstack-co/agentling-docs
+cd agentling-docs
+npm ci
+npm run dev
+```
+
+The Node checks:
+
+```bash
+npm run validate
+npm run lint
+npx tsc --noEmit
+npm run build
+```
+
+### Examples are tested
+
+Every `python` code block under `content/` runs in CI against Agentling, each in its own Python process from the repository root, with top-level `await` allowed. Blocks that import `examples.providers` need the Agentling source: point `AGENTLING_SRC` at a checkout, or clone it next to this repository as `../agentling`.
+
+```bash
+uv sync
+AGENTLING_SRC=../agentling uv run pytest
+```
+
+A block that can't run, because it needs an API key or is a fragment of a longer program, starts with a marker and a reason:
+
+```text
+# not executed: needs an OpenAI API key
+```
+
+A marker without a reason fails the test. Keep markers rare; most examples can run on `ScriptedModel` or a recorded fixture in `tests/fixtures/`.
+
+### What the validator checks
+
+`npm run validate` checks frontmatter, slugs and internal links, and these writing rules:
+
+- No em or en dashes.
+- No `framework`. Agentling is an agent engine; only the migration page may mention the old word.
+- No filler words such as `seamless`, `robust`, `leverage` or `in order to`. The full list is in `scripts/validate-content.mjs`.
+- Headings in sentence case. Product names and code in backticks are fine.
+- Links into the agentling repository point at a release tag, such as `blob/v0.2.0/`, never at `main`, so a page matches the version it documents.
 
 ## Reporting bugs
 
-Open a [GitHub issue](https://github.com/lunarstack-co/agentling/issues) for bugs. Include the smallest script that reproduces the problem, your Python version, and the agentling version.
+Open a [GitHub issue](https://github.com/lunarstack-co/agentling/issues) with the smallest script that reproduces the problem, your Python version and the Agentling version. For a mistake in the docs, open an issue or a pull request on [agentling-docs](https://github.com/lunarstack-co/agentling-docs).
 
 ## Reporting vulnerabilities
 
-Please report suspected vulnerabilities privately by emailing me@folarin.dev. Do not open a public issue for a security report. Receipt is acknowledged within a few days, and you will be kept posted on the fix. The full trust model is documented in [SECURITY.md](https://github.com/lunarstack-co/agentling/blob/main/SECURITY.md).
-
-## Contributing to these docs
-
-This documentation site is open source too. Every page, blog post, and changelog entry is a markdown file in the repository, so fixing a typo or improving an explanation is a pull request against [agentling-docs](https://github.com/lunarstack-co/agentling-docs). Merged changes go live on the next deploy.
+Report suspected vulnerabilities privately by emailing me@folarin.dev. Don't open a public issue for a security report. Receipt is acknowledged within a few days, and you'll be kept posted on the fix. The trust model is in [SECURITY.md](https://github.com/lunarstack-co/agentling/blob/v0.2.0/SECURITY.md) and [Security and trust](/docs/concepts/security-and-trust).
 
 ## License
 
-agentling is [MIT licensed](https://github.com/lunarstack-co/agentling/blob/main/LICENSE). By contributing, you agree that your contributions will be licensed under the same terms.
+Agentling is [MIT licensed](https://github.com/lunarstack-co/agentling/blob/v0.2.0/LICENSE). By contributing, you agree that your contributions are licensed under the same terms.

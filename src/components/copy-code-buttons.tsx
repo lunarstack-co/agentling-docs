@@ -2,8 +2,7 @@
 
 import { useEffect } from "react";
 
-const CHECK_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>`;
-const COPY_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true"><rect width="12" height="12" x="9" y="9" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>`;
+import { CHECK_ICON_HTML, COPY_ICON_HTML } from "@/components/icons/copy";
 
 /**
  * Adds a copy button to every server-rendered code block after hydration.
@@ -26,17 +25,17 @@ export function CopyCodeButtons() {
       button.setAttribute("data-copy-button", "");
       button.setAttribute("aria-label", "Copy code");
       button.setAttribute("title", "Copy code");
-      button.innerHTML = COPY_ICON;
+      button.innerHTML = COPY_ICON_HTML;
 
       let timeout: ReturnType<typeof setTimeout> | undefined;
       const onClick = async () => {
         try {
           await navigator.clipboard.writeText(pre.innerText.trimEnd());
-          button.innerHTML = CHECK_ICON;
+          button.innerHTML = CHECK_ICON_HTML;
           button.setAttribute("aria-label", "Copied");
           if (timeout) clearTimeout(timeout);
           timeout = setTimeout(() => {
-            button.innerHTML = COPY_ICON;
+            button.innerHTML = COPY_ICON_HTML;
             button.setAttribute("aria-label", "Copy code");
           }, 1600);
         } catch {

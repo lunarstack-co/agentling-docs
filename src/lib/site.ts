@@ -1,8 +1,8 @@
 export const SITE_NAME = "Agentling";
 /** Latest released version, shown in the header. */
-export const VERSION = "0.1.1";
+export const VERSION = "0.2.0";
 export const SITE_TAGLINE =
-  "An async Python agent loop you can read in an afternoon. Typed memory, streamed events, and tools that are plain functions.";
+  "A small agent engine for Python: the tool-calling loop, typed memory and streamed events, with any model you bring.";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://agentling.dev";
 export const GITHUB_URL = "https://github.com/lunarstack-co/agentling";
 export const GITHUB_DOCS_URL = "https://github.com/lunarstack-co/agentling-docs";

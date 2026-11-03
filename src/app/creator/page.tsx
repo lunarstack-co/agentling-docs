@@ -25,7 +25,7 @@ import { AUTHOR, GITHUB_URL, PERSON_ID, PYPI_URL, SITE_URL } from "@/lib/site";
 const PATH = "/creator";
 const TITLE = "Folarin Akinloye - AI Engineer & Agentling Creator";
 const DESCRIPTION =
-  "Folarin Akinloye is an AI engineer building agentic systems and AI-powered products, and the creator of the open-source Agentling framework.";
+  "Folarin Akinloye is an AI engineer building agentic systems and AI-powered products, and the creator of Agentling, an open-source agent engine for Python.";
 const BLOG_URL = `${AUTHOR.url}/blog`;
 
 export const metadata: Metadata = pageMetadata({
@@ -132,7 +132,7 @@ export default function CreatorPage() {
               url: AUTHOR.url,
               jobTitle: "AI Engineer",
               description:
-                "AI engineer who builds agentic systems and AI-powered products, and the creator of Agentling, an open-source Python framework for building AI agents.",
+                "AI engineer who builds agentic systems and AI-powered products, and the creator of Agentling, an open-source agent engine for Python.",
               knowsAbout: [
                 "Agentic AI systems",
                 "AI product engineering",
@@ -154,7 +154,7 @@ export default function CreatorPage() {
       </h1>
       <p className="mt-3 text-lede text-fg-secondary">
         I build agentic systems and AI-powered products, and I created
-        Agentling, an open-source Python framework for building AI agents.
+        Agentling, an open-source agent engine for Python.
       </p>
 
       <div className="prose mt-6 max-w-none border-t border-border-subtle pt-6">
@@ -225,10 +225,10 @@ export default function CreatorPage() {
         <p>
           Most agent frameworks hide the loop. When something goes wrong at
           three in the morning, that is exactly the part you need to read. I
-          wanted a framework where the whole execution model fits in your head:
+          wanted an engine where the whole execution model fits in your head:
           one async generator drives every run, every step is a typed object,
           and every event the loop emits is one you can see. Agentling is that
-          framework, built Python-first for asyncio, and kept small enough that
+          engine, built Python-first for asyncio, and kept small enough that
           the source is the documentation of last resort.
         </p>
         <ul>
@@ -321,9 +321,9 @@ export default function CreatorPage() {
             <strong>
               <ExternalLink href={GITHUB_URL}>Agentling</ExternalLink>
             </strong>
-            . An async Python framework for tool-using agents with typed memory,
-            streamed events, concurrent tool calls, recoverable failures, and
-            resumable runs. The problem it addresses is execution you can read,
+            . A small agent engine for Python with typed memory, streamed
+            events, concurrent tool calls, recoverable failures, resumable runs
+            and any model you bring. The problem it addresses is execution you can read,
             replay, and trust.
           </li>
           <li>
@@ -390,7 +390,7 @@ export default function CreatorPage() {
         <p>
           Folarin Akinloye is an AI engineer who builds agentic systems and
           AI-powered products. He is the creator of Agentling, an open-source
-          Python framework for building AI agents. His work focuses on agent
+          agent engine for Python. His work focuses on agent
           architectures, AI product engineering, and the infrastructure needed
           to build reliable AI systems.
         </p>

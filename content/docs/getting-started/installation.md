@@ -1,72 +1,52 @@
 ---
-title: Installation
+title: Install
 slug: installation
-description: Install agentling with pip or uv and configure your provider key.
+description: Install Agentling with pip or uv, check it works, and find the 0.1.1 docs.
 order: 2
 metaTitle: "Install Agentling with pip or uv"
-metaDescription: "Install agentling with pip or uv on Python 3.11 or newer, set an API key for OpenAI or any compatible provider, and check the install in one command."
+metaDescription: "Install Agentling on Python 3.11 or newer with pip or uv. One dependency, no API key needed for the tutorial, and httpx for the reference adapters."
 ---
 
-Install agentling from PyPI:
+Agentling needs Python 3.11 or newer. Its only dependency is `pyyaml`, which reads skill files.
+
+## Install the package
+
+With pip:
 
 ```bash
 pip install agentling
 ```
 
-Or with [uv](https://docs.astral.sh/uv/):
+With [uv](https://docs.astral.sh/uv/):
 
 ```bash
 uv add agentling
 ```
 
-## Requirements
+## Check it works
 
-- Python 3.11 or newer.
-- The only runtime dependencies are `openai` (the client used by the built-in provider adapter) and `pyyaml` (for skill frontmatter).
+```python
+import agentling
 
-## Configure a provider key
-
-The built-in `OpenAIModel` adapter reads your key from the environment:
-
-```bash
-export OPENAI_API_KEY="sk-..."
+print(agentling.__version__)
 ```
 
-You can point the same adapter at any OpenAI-compatible endpoint (a local server, a gateway, or another vendor's compatible API) by passing `base_url`. See [Using other providers](/docs/guides/other-providers).
-
-## Verify the install
-
-Run a quick import check:
-
-```bash
-python -c "import agentling; print(agentling.__name__)"
+```text
+0.2.0
 ```
 
-If that prints `agentling`, you are ready to build your first agent.
+## What you don't need yet
 
-## Try the examples
+The first chapters of the [tutorial](/docs/getting-started/quickstart) run on `ScriptedModel`, a model that replays a script, so you need no API key and no network.
 
-The repository ships runnable examples. The offline ones need no API key at all:
-
-```bash
-git clone https://github.com/lunarstack-co/agentling
-cd agentling
-uv sync
-
-uv run python examples/cli_failure_recovery.py   # recover from tool errors
-uv run python examples/cli_memory_chat.py        # persist and continue a session
-uv run python examples/cli_advanced_observer.py  # watch every event type
-```
-
-The rest use an OpenAI-compatible model. Set `OPENAI_API_KEY`, and optionally `AGENTLING_EXAMPLE_MODEL`:
+When you [connect a real model](/docs/tutorial/connect-a-model), you copy a reference adapter into your project. The reference adapters talk HTTP with `httpx`, so install it then:
 
 ```bash
-uv run python examples/cli_math_tutor.py               # smallest useful agent
-uv run python examples/cli_repo_assistant.py "..."     # streaming plus safe file tools
-uv run python examples/cli_notes_agent.py              # file-backed notes tools
+pip install httpx
 ```
 
-## Next steps
+Agentling is async. Call it from async code, or wrap your entry point in `asyncio.run`, as the tutorial's programs do. Some short examples, including those on the reference pages, use `await` at the top level to stay brief: run them with `python -m asyncio`, or put them inside an `async def main()`.
 
-- [Quickstart](/docs/getting-started/quickstart): build and run your first agent.
-- [Tools](/docs/core-concepts/tools): how functions become schema-validated tools.
+## Using 0.1.1?
+
+Version 0.2.0 removed the bundled OpenAI model and changed several APIs, so this site no longer matches 0.1.1. The 0.1.1 docs are in the [docs repository at the `v0.1.1` tag](https://github.com/lunarstack-co/agentling-docs/tree/v0.1.1/content/docs), and the [changelog](/changelog) lists what each release changed. To move your code to 0.2.0, follow [Migrate from 0.1](/docs/how-to/migrate-from-0-1).

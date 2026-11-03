@@ -7,8 +7,8 @@ export const contentType = OG_CONTENT_TYPE;
 
 export default function Image() {
   return renderOgImage({
-    eyebrow: "Agent framework for Python",
-    title: "The agent framework you can read in one sitting",
+    eyebrow: "Agent engine for Python",
+    title: "Bring your model. Run the loop.",
     subtitle: SITE_TAGLINE,
   });
 }

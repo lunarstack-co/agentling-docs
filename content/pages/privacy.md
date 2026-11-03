@@ -34,7 +34,7 @@ The site is served by a hosting provider, which processes the technical data nec
 
 ## The agentling package
 
-The open source framework itself makes no network calls except the ones your own code configures, such as requests to the model provider you choose. It contains no telemetry, no analytics, and no phone-home behavior. Your prompts, tools, and memory stay wherever you run them.
+Agentling itself makes no network calls except the ones your own code configures, such as requests to the model provider you choose. It contains no telemetry, no analytics, and no phone-home behavior. Your prompts, tools, and memory stay wherever you run them.
 
 ## Your rights
 

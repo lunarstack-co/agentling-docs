@@ -27,10 +27,10 @@ export async function buildSearchDocs(): Promise<SearchDoc[]> {
   const sections = await getDocSections();
   for (const section of sections) {
     for (const pageMeta of section.pages) {
-      const page = await getDocPage(pageMeta.slug);
+      const page = await getDocPage(section.slug, pageMeta.slug);
       if (!page) continue;
       docs.push({
-        id: `doc:${page.slug}`,
+        id: `doc:${section.slug}/${page.slug}`,
         title: page.title,
         body: page.body,
         href: `/docs/${section.slug}/${page.slug}`,

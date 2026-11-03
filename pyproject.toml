@@ -1,0 +1,38 @@
+[project]
+name = "agentling-docs-examples"
+version = "0"
+description = "Runs every Python example on agentling.dev against Agentling."
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "agentling",
+    "httpx>=0.28",
+    "mypy>=1.14",
+    "pytest>=9.1",
+    "pytest-asyncio>=1.4",
+    "ruff>=0.9",
+]
+
+[tool.uv]
+package = false
+
+# Until 0.2.0 is on PyPI the examples run against this commit of main.
+# After the release: depend on "agentling==0.2.0" and delete this table.
+[tool.uv.sources]
+agentling = { git = "https://github.com/lunarstack-co/agentling", rev = "60e8075d80bfc7fabbe66b694231cf3559a7a649" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.mypy]
+python_version = "3.11"

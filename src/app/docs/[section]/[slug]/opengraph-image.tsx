@@ -11,8 +11,8 @@ export default async function Image({
 }: {
   params: Promise<{ section: string; slug: string }>;
 }) {
-  const { slug } = await params;
-  const page = await getDocPage(slug);
+  const { section, slug } = await params;
+  const page = await getDocPage(section, slug);
 
   if (!page) {
     return renderOgImage({

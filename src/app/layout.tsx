@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import type { ReactNode } from "react";
 
 import { JsonLd } from "@/components/json-ld";
@@ -14,21 +14,22 @@ import { THEME_COLORS } from "@/lib/theme";
 
 import "./globals.css";
 
-// Both faces are SIL Open Font License 1.1. next/font downloads them at
-// build time, subsets to Latin, self-hosts the files, and sets
-// font-display: swap.
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+// The official Mona Sans release (OFL, licence beside the files). Unlike the
+// Google Fonts build, it keeps the optical-size axis large headings use.
+const monaSans = localFont({
+  src: "../assets/fonts/mona-sans/MonaSansVF.woff2",
+  variable: "--font-mona",
+  weight: "200 900",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
+// Only the homepage labels use the mono face, so it isn't preloaded.
+const monaSansMono = localFont({
+  src: "../assets/fonts/mona-sans/MonaSansMonoVF.woff2",
+  variable: "--font-mona-mono",
+  weight: "200 900",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -46,11 +47,10 @@ export const metadata: Metadata = {
   keywords: [
     "Agentling",
     "AI agents",
-    "agent framework",
-    "Python",
-    "async",
-    "ReAct loop",
+    "agent engine",
+    "agent loop",
     "tool calling",
+    "Python",
     "LLM",
     "open source",
   ],
@@ -113,7 +113,7 @@ export default async function RootLayout({
       lang="en"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${plexSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${monaSans.variable} ${monaSansMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-base font-sans text-fg">
         <ThemeProvider>

@@ -1,58 +1,114 @@
 ---
 title: Events
 slug: events
-description: Every streaming event type, what it carries, and how to consume the stream.
-order: 3
-metaTitle: "Events reference: every streaming event type"
-metaDescription: "Every event the loop can emit, the fields each one carries, and how to consume the stream in blocking and streaming modes."
+description: The five event types a streamed run yields, their order, and print_events.
+order: 5
+metaTitle: "Events reference: streamed run events"
+metaDescription: "TextDelta, ToolCallEvent, ToolResultEvent, StepEvent and FinalEvent: their fields, the order they arrive in, and the print_events renderer."
 ---
 
-When you call `run(task, stream=True)`, the loop communicates progress through a small set of frozen event types. This page is the reference for each one and for `print_events`, the ready-made consumer.
+`agentling.events` defines what `run(..., stream=True)` yields. Import the types from `agentling`. For consuming a stream step by step, see [Stream events](/docs/tutorial/stream-events).
 
-## Event types
+## The event types
 
-| Event | Meaning |
+All five are frozen dataclasses. `Event` is their union.
+
+| Event | Fields | When |
+| --- | --- | --- |
+| `TextDelta` | `text: str` | A piece of streamed model text, as it arrives. Text on a tool-calling turn streams this way too. |
+| `ToolCallEvent` | `tool_call: ToolCall` | Before a tool call runs. |
+| `ToolResultEvent` | `result: ToolResult` | After a tool call finishes, successfully or with an error. |
+| `StepEvent` | `step: Step` | After a step is recorded in memory. Carries the `ActionStep`. |
+| `FinalEvent` | `answer: str`, `usage: Usage \| None = None`, `status: RunStatus = "completed"`, `finish_reason: FinishReason \| None = None` | Once, when the run ends. |
+
+`ToolResult` and the step types are described in [Memory](/docs/reference/memory).
+
+### FinalEvent
+
+| Field | Meaning |
 | --- | --- |
-| `TextDelta` | A chunk of streamed assistant text. Read the text from `event.text`. |
-| `ToolCallEvent` | Emitted just before a tool call runs. Carries the provider-neutral `ToolCall`, so `event.tool_call.name` and its parsed arguments are available. |
-| `ToolResultEvent` | Emitted after a tool call completes, whether it succeeded or errored. |
-| `StepEvent` | Emitted after a step is recorded to memory. Carries the exact `ActionStep` that was just written. |
-| `FinalEvent` | Emitted once when the run ends. Carries the answer and cumulative token usage. |
+| `answer` | The final answer. `"Run interrupted."` when the run was interrupted. |
+| `usage` | The run's total token usage, or `None` if the model never reported any. |
+| `status` | `"completed"` when the model finished, `"interrupted"` when `interrupt()` stopped it, `"max_steps"` when the step limit forced a final answer (the `RunStatus` type). |
+| `finish_reason` | Why the last model turn stopped, when the adapter said. `"length"` means the answer was cut off. |
 
-`StepEvent` is the bridge between the live event stream and the durable memory: the `ActionStep` it carries is the same object your `step_callbacks` receive and the same object serialized by [Memory](/docs/core-concepts/memory).
+## Order
 
-## Consuming the stream
+Within a step the order is fixed:
 
-The stream is an async iterator, and each event is a plain typed object, so `isinstance` checks are the idiomatic way to branch:
+1. the step's `TextDelta`s, as the model streams;
+2. a `ToolCallEvent` for every tool call;
+3. a `ToolResultEvent` for every result, in the same order as the calls;
+4. the `StepEvent`.
 
-```python
-from agentling import FinalEvent, TextDelta, ToolCallEvent
+A run that ends normally yields exactly one `FinalEvent`, last. A run that fails raises instead and yields no `FinalEvent`. Step callbacks run, and are awaited, before the step's `StepEvent`.
 
-async for event in agent.run("Summarize this.", stream=True):
-    if isinstance(event, TextDelta):
-        print(event.text, end="", flush=True)
-    elif isinstance(event, ToolCallEvent):
-        print(f"\n[calling {event.tool_call.name}]")
-    elif isinstance(event, FinalEvent):
-        print(f"\nDone: {event.answer}")
-```
-
-You can write a consumer that drives a UI, logs to a database, or computes metrics. Because blocking and streaming share the same loop, everything you observe in the stream matches exactly what a blocking `run()` would have done.
+A call to `final_answer` gets no `ToolCallEvent` or `ToolResultEvent`: it is how the run ends, so its step's `StepEvent` is followed by the `FinalEvent`. The call and its result are still in the `StepEvent`'s `ActionStep` and in memory. A reply with no tool calls yields its `TextDelta`s and then the `FinalEvent`, with no `StepEvent`.
 
 ## print_events
 
-`print_events` is the reference consumer: it takes the async iterator returned by `run(task, stream=True)`, prints text as it arrives along with each tool call and result, and returns the final answer.
-
-```python
-from agentling import Agent, OpenAIModel, print_events
-
-agent = Agent(model=OpenAIModel("gpt-4o-mini"), tools=[add])
-answer = await print_events(agent.run("What is 19 + 23?", stream=True))
+```text
+async print_events(events: AsyncIterator[Event], *, file: IO[str] | None = None) -> str
 ```
 
-It is the streaming CLI in about thirty lines, and a good starting point to copy when you write your own renderer.
+Prints a stream as it arrives and returns the final answer. Text prints as it streams; each tool call prints as `-> name({...})`, each result as `<- [ok] ...` or `<- [error] ...` (cut to 500 characters), and the answer as `= answer`. Writes to `file`, or stdout when it is `None`.
 
-## Related pages
+## Example
 
-- [Streaming events](/docs/core-concepts/streaming-events) explains how events relate to steps in the loop.
-- [The agent loop](/docs/core-concepts/agent-loop) shows exactly when each event is yielded.
+```python
+from agentling import Agent, ChatMessage, FinalEvent, StepEvent, TextDelta, ToolCall
+from agentling import ToolCallEvent, ToolResultEvent, Usage, tool
+from agentling.testing import ScriptedModel
+
+
+@tool
+def shout(text: str) -> str:
+    """Upper-case some text.
+
+    Args:
+        text: The text to shout.
+    """
+    return text.upper()
+
+
+model = ScriptedModel(
+    [
+        ChatMessage(
+            "assistant",
+            "Shouting.",
+            tool_calls=[ToolCall("c1", "shout", {"text": "hi"})],
+            usage=Usage(10, 4),
+        ),
+        ChatMessage(
+            "assistant",
+            tool_calls=[ToolCall("c2", "final_answer", {"answer": "HI"})],
+            usage=Usage(14, 3),
+        ),
+    ]
+)
+agent = Agent(model=model, tools=[shout])
+
+async for event in agent.run("Shout hi.", stream=True):
+    match event:
+        case TextDelta(text=text):
+            print("text", text)
+        case ToolCallEvent(tool_call=call):
+            print("call", call.name)
+        case ToolResultEvent(result=result):
+            print("result", result.content)
+        case StepEvent():
+            print("step")
+        case FinalEvent(answer=answer, usage=usage, status=status):
+            print("final", answer, usage.total_tokens, status)
+```
+
+Output:
+
+```text
+text Shouting.
+call shout
+result HI
+step
+step
+final HI 31 completed
+```

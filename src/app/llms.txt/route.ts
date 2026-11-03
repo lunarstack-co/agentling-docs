@@ -11,7 +11,7 @@ export async function GET(): Promise<Response> {
     "",
     `> ${SITE_TAGLINE}`,
     "",
-    "Agentling is an open source (MIT) Python framework. This site hosts its documentation and changelog. The complete documentation text is available at " +
+    "Agentling is an open source (MIT) agent engine for Python. This site hosts its documentation and changelog. The complete documentation text is available at " +
       `${SITE_URL}/llms-full.txt for LLM digestion.`,
     "",
     "## Documentation",

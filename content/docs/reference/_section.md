@@ -1,7 +1,7 @@
 ---
 title: Reference
 slug: reference
-description: Configuration options, events, errors, and the public API surface.
+description: Every public class and function, one module per page.
 icon: code
-order: 4
+order: 5
 ---
