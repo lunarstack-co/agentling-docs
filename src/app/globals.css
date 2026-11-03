@@ -3,53 +3,50 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Token values come from @primer/primitives 11.10 (light and dark functional
-   themes); each comment names the Primer token. */
-
 :root {
-  --bg-base: #ffffff; /* bgColor-default */
-  --bg-raised: #ffffff; /* overlay-bgColor */
-  --bg-sunken: #f6f8fa; /* bgColor-muted */
-  --bg-code: #f6f8fa; /* bgColor-muted */
-  --bg-neutral-muted: #818b981f; /* bgColor-neutral-muted */
+  --bg-base: #ffffff;
+  --bg-raised: #ffffff;
+  --bg-sunken: #f6f8fa;
+  --bg-code: #f6f8fa;
+  --bg-neutral-muted: #818b981f;
 
-  --border-subtle: #d1d9e0b3; /* borderColor-muted */
-  --border-default: #d1d9e0; /* borderColor-default */
+  --border-subtle: #d1d9e0b3;
+  --border-default: #d1d9e0;
 
-  --fg: #1f2328; /* fgColor-default */
-  --fg-secondary: #59636e; /* fgColor-muted */
-  --fg-tertiary: #59636e; /* fgColor-muted */
-  --fg-inverse: #ffffff; /* fgColor-onEmphasis */
+  --fg: #1f2328;
+  --fg-secondary: #59636e;
+  --fg-tertiary: #59636e;
+  --fg-inverse: #ffffff;
 
-  --accent: #0969da; /* fgColor-accent */
-  --accent-hover: #0969da; /* fgColor-accent; links underline on hover */
-  --accent-fg: #ffffff; /* fgColor-onEmphasis */
-  --accent-subtle: #ddf4ff; /* bgColor-accent-muted */
-  --focus: #0969da; /* focus-outlineColor */
+  --accent: #0969da;
+  --accent-hover: #0969da;
+  --accent-fg: #ffffff;
+  --accent-subtle: #ddf4ff;
+  --focus: #0969da;
 
-  --success: #1a7f37; /* fgColor-success */
-  --warning: #9a6700; /* fgColor-attention */
-  --danger: #d1242f; /* fgColor-danger */
-  --done: #8250df; /* fgColor-done */
+  --success: #1a7f37;
+  --warning: #9a6700;
+  --danger: #d1242f;
+  --done: #8250df;
 
-  --control-bg: #f6f8fa; /* control-bgColor-rest */
-  --control-bg-hover: #eff2f5; /* control-bgColor-hover */
-  --control-bg-active: #e6eaef; /* control-bgColor-active */
-  --control-fg: #25292e; /* control-fgColor-rest */
-  --button-primary-bg: #1f883d; /* button-primary-bgColor-rest */
-  --button-primary-bg-hover: #1c8139; /* button-primary-bgColor-hover */
+  --control-bg: #f6f8fa;
+  --control-bg-hover: #eff2f5;
+  --control-bg-active: #e6eaef;
+  --control-fg: #25292e;
+  --button-primary-bg: #1f883d;
+  --button-primary-bg-hover: #1c8139;
 
-  --code-fg: #1f2328; /* fgColor-default */
-  --code-muted: #59636e; /* fgColor-muted */
-  --code-title: #59636e; /* fgColor-muted */
-  --code-border: #d1d9e0b3; /* borderColor-muted */
+  --code-fg: #1f2328;
+  --code-muted: #59636e;
+  --code-title: #59636e;
+  --code-border: #d1d9e0b3;
 
-  --selection: #0969da33; /* selection-bgColor */
-  --underline-active: #fd8c73; /* underlineNav-borderColor-active */
-  --header-bg: #f6f8fa; /* bgColor-muted, the logged-in app header */
+  --selection: #0969da33;
+  --underline-active: #fd8c73;
+  --header-bg: #f6f8fa;
 
-  /* Primer display colours for the homepage doors: display-*-borderColor-emphasis
-     and display-*-bgColor-muted. */
+  /* Homepage doors: one hue each, a strong value for the corner and a muted
+     one for the hover tint. */
   --display-teal: #127e81;
   --display-teal-muted: #c7f5ef;
   --display-indigo: #5a61e7;
@@ -58,10 +55,10 @@
   --display-orange-muted: #ffe7d1;
 
   /* The framing rules and graph-paper lines on the homepage. */
-  --brand-frame: #d1d9e0b3; /* borderColor-muted */
+  --brand-frame: #d1d9e0b3;
   --brand-grid: #1f23280d;
-  --shadow-popover: 0 0 0 1px #d1d9e040, 0 6px 12px -3px #25292e0a, 0 6px 18px 0 #25292e1f; /* shadow-floating-small */
-  --shadow-dialog: 0 0 0 1px #d1d9e000, 0 40px 80px 0 #25292e3d; /* shadow-floating-large */
+  --shadow-popover: 0 0 0 1px #d1d9e040, 0 6px 12px -3px #25292e0a, 0 6px 18px 0 #25292e1f;
+  --shadow-dialog: 0 0 0 1px #d1d9e000, 0 40px 80px 0 #25292e3d;
 }
 
 .dark {
@@ -104,7 +101,7 @@
 
   --selection: #1f6febb3;
   --underline-active: #f78166;
-  --header-bg: #010409; /* bgColor-inset, the logged-in app header */
+  --header-bg: #010409;
   --display-teal: #158a8a;
   --display-teal-muted: #041f25;
   --display-indigo: #7070e1;
@@ -162,7 +159,7 @@
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  /* Primer radii: borderRadius-medium for controls and boxes, large for overlays. */
+  /* Radii: 6 px for controls and boxes, 12 px for overlays. */
   --radius-*: initial;
   --radius-control: 6px;
   --radius-panel: 6px;
@@ -175,13 +172,12 @@
 
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
 
-  /* Primer fontStack-sansSerif and fontStack-monospace. */
   --font-sans: var(--font-mona), -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-  /* github.com brand labels and figures. */
+  /* Uppercase labels and figures on the homepage. */
   --font-brand-mono: var(--font-mona-mono), ui-monospace, SFMono-Regular, monospace;
 
-  /* Type scale: Primer's body and title sizes at line height 1.5. */
+  /* Type scale: body and title sizes at line height 1.5. */
   --text-*: initial;
   --text-2xs: 11px;
   --text-2xs--line-height: 16px;
@@ -276,7 +272,7 @@
     mask-image: radial-gradient(ellipse at 50% 40%, #000 30%, transparent 75%);
   }
 
-  /* Primer Label. */
+  /* The version chip. */
   .chip {
     display: inline-flex;
     align-items: center;
@@ -295,7 +291,6 @@
 
 /* Prose and code blocks stay outside a layer so they beat the typography
    plugin's defaults; no utility targets these elements. */
-/* Prose follows github.com's Markdown rendering. */
 
 .prose {
   --tw-prose-body: var(--fg);
@@ -481,7 +476,7 @@
   color: var(--accent);
 }
 
-/* Callouts follow GitHub's Markdown alerts. */
+/* Callouts: the five alert types from `> [!NOTE]` style blockquotes. */
 
 .callout {
   margin: 0 0 16px;

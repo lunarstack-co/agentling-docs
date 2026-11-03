@@ -28,7 +28,7 @@ const processor = unified()
     content: { type: "text", value: "#" },
   })
   .use(rehypePrettyCode, {
-    // GitHub's own syntax themes; globals.css picks one per site theme.
+    // One syntax theme per site theme; globals.css picks between them.
     theme: { light: "github-light", dark: "github-dark" },
     keepBackground: false,
     // Block scope only: a bare string would also run every inline code

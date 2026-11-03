@@ -174,7 +174,7 @@ function BrandButton({
   );
 }
 
-/** One Primer display colour per door, for its corner and its hover tint. */
+/** One colour per door, for its corner and its hover tint. */
 const TONES = {
   teal: "[--tone:var(--display-teal)] [--tone-muted:var(--display-teal-muted)]",
   indigo: "[--tone:var(--display-indigo)] [--tone-muted:var(--display-indigo-muted)]",

@@ -36,4 +36,3 @@ The white versions are drawn slightly thinner, because white on black looks heav
 - Leave clear space on every side equal to the height of the bottom stroke.
 - Keep the counter's square corner square.
 - Below 80 px wide, use the symbol instead of the horizontal lockup.
-- No trademark search has been run yet.

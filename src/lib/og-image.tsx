@@ -2,19 +2,21 @@ import fs from "node:fs";
 import path from "node:path";
 import { ImageResponse } from "next/og";
 
+import { MARK_PATH } from "@/lib/brand-mark";
+
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_CONTENT_TYPE = "image/png";
 
 const FONTS_DIR = path.join(process.cwd(), "src/assets/fonts");
 
-/* Light-theme tokens from globals.css. The card cannot follow the viewer's
-   theme, so it uses the paper ground, which also reads well in dark feeds. */
-const PAPER = "#fafaf7";
-const INK = "#1a1a18";
-const INK_SECONDARY = "#5f6059";
-const INK_TERTIARY = "#6d6e67";
-const ACCENT = "#4338ca";
-const HAIRLINE = "#e7e7e1";
+/* Light tokens from globals.css. The card cannot follow the viewer's theme,
+   so it uses the light ground, which also reads well in dark feeds. */
+const PAPER = "#ffffff";
+const INK = "#1f2328";
+const INK_SECONDARY = "#59636e";
+const INK_TERTIARY = "#59636e";
+const ACCENT = "#1f2328";
+const HAIRLINE = "#d1d9e0";
 
 type OgFont = NonNullable<
   NonNullable<ConstructorParameters<typeof ImageResponse>[1]>["fonts"]
@@ -51,7 +53,7 @@ function truncate(text: string, max: number): string {
 }
 
 /**
- * The 1200x630 Open Graph card for every route: paper ground, the mark and
+ * The 1200x630 Open Graph card for every route: light ground, the mark and
  * wordmark, a mono eyebrow for the section, the page title, the
  * description, and a hairline footer. Same geometry as src/app/icon.svg.
  */
@@ -84,7 +86,7 @@ export function renderOgImage({
       >
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           <svg width="44" height="44" viewBox="0 0 256 256" fill={INK}>
-            <path d="M97.5 197Q68.09 197 47.3 176.2Q26.5 155.41 26.5 126Q26.5 96.59 47.3 75.8Q68.09 55 97.5 55L147.5 55C159.1 55 168.5 64.4 168.5 76L168.5 155L208.5 155C220.1 155 229.5 164.4 229.5 176C229.5 187.6 220.1 197 208.5 197ZM126.5 126Q126.5 113.99 118.01 105.49Q109.51 97 97.5 97Q85.49 97 76.99 105.49Q68.5 113.99 68.5 126Q68.5 138.01 76.99 146.51Q85.49 155 97.5 155L126.5 155Z" />
+            <path d={MARK_PATH} />
           </svg>
           <div style={{ display: "flex", fontSize: 32, fontWeight: 600, letterSpacing: -0.5 }}>
             Agentling

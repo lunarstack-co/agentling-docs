@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 export type ButtonVariant = "ghost" | "outline" | "primary";
 
-// Sizes and states follow Primer's medium buttons.
+// Medium buttons: 32 px high, with rest, hover and active states.
 const BASE =
   "inline-flex h-8 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-control text-ui font-medium transition-[background-color,color,border-color] duration-[80ms] ease-out disabled:pointer-events-none disabled:opacity-50";
 
