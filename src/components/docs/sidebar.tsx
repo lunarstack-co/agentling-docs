@@ -66,7 +66,7 @@ function SectionNav({
           </Link>
         ))}
         <a
-          href={`${GITHUB_URL}/blob/main/LICENSE`}
+          href={`${GITHUB_URL}/blob/v0.2.0/LICENSE`}
           target="_blank"
           rel="noreferrer"
           className={cn(ROW, "h-7", ROW_IDLE)}

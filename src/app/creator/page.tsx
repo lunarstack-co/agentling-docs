@@ -223,7 +223,7 @@ export default function CreatorPage() {
 
         <h2 id="why-i-built-agentling">Why I built Agentling</h2>
         <p>
-          Most agent frameworks hide the loop. When something goes wrong at
+          Most agent stacks hide the loop. When something goes wrong at
           three in the morning, that is exactly the part you need to read. I
           wanted an engine where the whole execution model fits in your head:
           one async generator drives every run, every step is a typed object,
@@ -262,9 +262,10 @@ export default function CreatorPage() {
             run can be interrupted and resumed from the step where it paused.
           </li>
           <li>
-            <strong>Provider abstraction.</strong> The built-in adapter speaks
-            to any OpenAI-compatible endpoint, and the Model protocol is small
-            enough to implement for a provider of your own.
+            <strong>Any model you bring.</strong> A model is any object with a{" "}
+            <code>stream()</code> method. Copy a reference adapter for
+            OpenAI-compatible servers, Anthropic or Ollama, or write your own
+            against the Model protocol.
           </li>
           <li>
             <strong>Runs without a key.</strong> The repository ships examples
@@ -277,7 +278,7 @@ export default function CreatorPage() {
           <ExternalLink href={GITHUB_URL}>Source on GitHub</ExternalLink>,{" "}
           <Link href="/docs/getting-started/introduction">documentation</Link>,{" "}
           <Link href="/docs/getting-started/installation">installation</Link>,{" "}
-          <ExternalLink href={`${GITHUB_URL}/tree/main/examples`}>examples</ExternalLink>, and{" "}
+          <ExternalLink href={`${GITHUB_URL}/tree/v0.2.0/examples`}>examples</ExternalLink>, and{" "}
           <ExternalLink href={PYPI_URL}>the package on PyPI</ExternalLink>. MIT
           licensed, Python 3.11 or newer.
         </p>
@@ -304,9 +305,9 @@ export default function CreatorPage() {
             a demo that happened to go well.
           </li>
           <li>
-            <strong>Abstractions should solve real problems.</strong> A
-            framework earns its abstractions by removing work, and it must
-            never hide the execution details you need when something breaks.
+            <strong>Abstractions should solve real problems.</strong> An
+            abstraction earns its place by removing work, and it must never
+            hide the execution details you need when something breaks.
           </li>
           <li>
             <strong>AI belongs in products.</strong> The model, the tools, the

@@ -15,11 +15,14 @@ interface DocPageParams {
   params: Promise<{ section: string; slug: string }>;
 }
 
-/** Diátaxis mode per section, shown as one neutral eyebrow. */
+/**
+ * Diátaxis mode per section, shown as one neutral eyebrow. Getting started
+ * mixes modes, so it has none.
+ */
 const PAGE_KIND: Record<string, string> = {
-  "getting-started": "Tutorial",
-  "core-concepts": "Concept",
-  guides: "Guide",
+  tutorial: "Tutorial",
+  "how-to": "How-to guide",
+  concepts: "Concept",
   reference: "Reference",
 };
 
