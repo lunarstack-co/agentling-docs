@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { GITHUB_URL, ORG } from "@/lib/site";
+import { GITHUB_URL, ORG, PYPI_URL } from "@/lib/site";
 
 const LINKS = [
   { label: "Changelog", href: "/changelog" },
@@ -36,6 +36,14 @@ export function SiteFooter() {
             className="inline-flex min-h-6 items-center transition-colors duration-150 hover:text-fg"
           >
             GitHub
+          </a>
+          <a
+            href={PYPI_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-6 items-center transition-colors duration-150 hover:text-fg"
+          >
+            PyPI
           </a>
           <a
             href="/changelog.xml"

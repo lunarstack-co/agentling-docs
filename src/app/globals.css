@@ -45,15 +45,6 @@
   --underline-active: #fd8c73;
   --header-bg: #f6f8fa;
 
-  /* Homepage doors: one hue each, a strong value for the corner and a muted
-     one for the hover tint. */
-  --display-teal: #127e81;
-  --display-teal-muted: #c7f5ef;
-  --display-indigo: #5a61e7;
-  --display-indigo-muted: #e5e9ff;
-  --display-orange: #b8500f;
-  --display-orange-muted: #ffe7d1;
-
   /* The framing rules and graph-paper lines on the homepage. */
   --brand-frame: #d1d9e0b3;
   --brand-grid: #1f23280d;
@@ -102,12 +93,6 @@
   --selection: #1f6febb3;
   --underline-active: #f78166;
   --header-bg: #010409;
-  --display-teal: #158a8a;
-  --display-teal-muted: #041f25;
-  --display-indigo: #7070e1;
-  --display-indigo-muted: #1b183f;
-  --display-orange: #c46212;
-  --display-orange-muted: #311708;
   --brand-frame: #3d444db3;
   --brand-grid: #f0f6fc0d;
   --shadow-popover: 0 0 0 1px #3d444d, 0 6px 12px -3px #01040966, 0 6px 18px 0 #01040966;
@@ -286,6 +271,41 @@
     line-height: 18px;
     color: var(--fg-secondary);
     white-space: nowrap;
+  }
+}
+
+/* Homepage loop illustration: sans labels, stage captions, and mono engine label. */
+
+.hero-loop-label {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.hero-loop-caption {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0;
+}
+
+.hero-loop-engine-label {
+  font-family: var(--font-brand-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 639px) {
+  .hero-loop-label {
+    font-size: 17px;
+  }
+  .hero-loop-caption {
+    font-size: 16px;
+  }
+  .hero-loop-engine-label {
+    font-size: 14px;
   }
 }
 
@@ -640,5 +660,8 @@
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+  .hero-loop-caption {
+    opacity: 1 !important;
   }
 }
